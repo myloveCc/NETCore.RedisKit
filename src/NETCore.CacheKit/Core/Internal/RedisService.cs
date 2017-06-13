@@ -6,16 +6,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace NETCore.RedisKit.Core.Internal
 {
     public class RedisService : IRedisService
     {
         private readonly IRedisProvider _RedisProvider;
+        private readonly ILogger _Logger;
 
-        public RedisService(IRedisProvider redisProvider)
+        public RedisService(IRedisProvider redisProvider,ILogger<RedisService> logger)
         {
             _RedisProvider = redisProvider;
+            _Logger = logger;
         }
 
         #region Sync
@@ -30,6 +33,7 @@ namespace NETCore.RedisKit.Core.Internal
         /// <returns>返回自增之后的值</returns>
         public long Increment(RedisKey key, CommandFlags flags = CommandFlags.None)
         {
+            _Logger.LogInformation("Increment {key} with value 1",key);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -46,6 +50,7 @@ namespace NETCore.RedisKit.Core.Internal
         /// <returns>返回加后结果</returns>
         public long Increment(RedisKey key, long value, CommandFlags flags = CommandFlags.None)
         {
+            _Logger.LogInformation("Increment {key} with long value {value}",key,value);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -62,6 +67,8 @@ namespace NETCore.RedisKit.Core.Internal
         /// <returns></returns>
         public double Increment(RedisKey key, double value, CommandFlags flags = CommandFlags.None)
         {
+            _Logger.LogInformation("Increment {key} with double value {value}", key, value);
+
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -77,6 +84,7 @@ namespace NETCore.RedisKit.Core.Internal
         /// <returns></returns>
         public long Decrement(RedisKey key, CommandFlags flags = CommandFlags.None)
         {
+            _Logger.LogInformation("Decrement {key} with value 1", key);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -93,6 +101,7 @@ namespace NETCore.RedisKit.Core.Internal
         /// <returns>返回减后结果</returns>
         public long Decrement(RedisKey key, long value, CommandFlags flags = CommandFlags.None)
         {
+			_Logger.LogInformation("Decrement {key} with long value {value}", key, value);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -109,6 +118,7 @@ namespace NETCore.RedisKit.Core.Internal
         /// <returns>返回减后结果</returns>
         public double Decrement(RedisKey key, double value, CommandFlags flags = CommandFlags.None)
         {
+            _Logger.LogInformation("Decrement {key} with double value {value}", key, value);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -125,11 +135,19 @@ namespace NETCore.RedisKit.Core.Internal
         /// <returns></returns>
         public bool KeyRename(RedisKey oldKey, RedisKey newKey, CommandFlags flags = CommandFlags.None)
         {
+            _Logger.LogInformation("Rename oldKey{oldkey} to newKey {newKey} with flags {flags}", oldKey, newKey, flags);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                if (oldKey.Equals(newKey) || !db.KeyExists(oldKey, flags))
+                if (oldKey.Equals(newKey))
                 {
+                    _Logger.LogWarning("oldKey {oldKey} equals newKey {newKey}",oldKey,newKey);
+                    return false;
+                }
+
+                if(!db.KeyExists(oldKey, flags))
+                {
+                    _Logger.LogWarning("oldKey {oldKey} don't exist with flags {flags}", oldKey, flags);
                     return false;
                 }
                 return db.KeyRename(oldKey, newKey, When.Always, flags);

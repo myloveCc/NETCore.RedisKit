@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace NETCore.RedisKit.Tests
 {
@@ -18,7 +19,9 @@ namespace NETCore.RedisKit.Tests
                 EndPoints = "127.0.0.1:6379"
             });
 
-            _RedisService = new RedisService(redisProvider);
+			ILogger<RedisService> logger = new LoggerFactory().CreateLogger<RedisService>();
+
+			_RedisService = new RedisService(redisProvider, logger);
         }
 
         [Fact(DisplayName = "在List值之前（左侧）插入")]

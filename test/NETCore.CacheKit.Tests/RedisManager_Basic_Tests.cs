@@ -1,5 +1,6 @@
 using NETCore.RedisKit.Core.Internal;
 using NETCore.RedisKit;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using NETCore.RedisKit.Infrastructure.Internal;
 using StackExchange.Redis;
@@ -15,7 +16,9 @@ namespace NETCore.RedisKit.Tests
                 EndPoints="127.0.0.1:6379"
             });
 
-            _RedisService = new RedisService(redisProvider);
+            ILogger<RedisService> logger = new LoggerFactory().CreateLogger<RedisService>();    
+
+            _RedisService = new RedisService(redisProvider,logger);
         }
 
         [Fact(DisplayName = "自增(加1)")]

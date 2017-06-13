@@ -6,6 +6,7 @@ using Xunit;
 using StackExchange.Redis;
 using NETCore.RedisKit.Core.Internal;
 using NETCore.RedisKit.Infrastructure.Internal;
+using Microsoft.Extensions.Logging;
 
 namespace NETCore.RedisKit.Tests
 {
@@ -19,7 +20,9 @@ namespace NETCore.RedisKit.Tests
                 EndPoints = "127.0.0.1:6379"
             });
 
-            _RedisService = new RedisService(redisProvider);
+			ILogger<RedisService> logger = new LoggerFactory().CreateLogger<RedisService>();
+
+			_RedisService = new RedisService(redisProvider, logger);
         }
 
         [Fact(DisplayName = "设置String值")]

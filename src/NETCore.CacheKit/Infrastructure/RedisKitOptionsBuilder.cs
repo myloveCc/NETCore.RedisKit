@@ -37,7 +37,8 @@ namespace NETCore.RedisKit.Infrastructure
         {
             Guard.ArgumentNotNull(options, nameof(options));
 
-            AddCoreService(options);
+            AddProviderService(options);
+               
             serviceCollection.TryAdd(new ServiceDescriptor(typeof(IRedisService), typeof(RedisService), lifetime));
             return this;
         }
@@ -46,7 +47,7 @@ namespace NETCore.RedisKit.Infrastructure
         /// add core service 
         /// </summary>
         /// <param name="options"></param>
-        private void AddCoreService(IRedisKitOptions options)
+        private void AddProviderService(IRedisKitOptions options)
         {
             RedisProvider provider = new RedisProvider(options);
             serviceCollection.TryAddSingleton<IRedisProvider>(provider);
