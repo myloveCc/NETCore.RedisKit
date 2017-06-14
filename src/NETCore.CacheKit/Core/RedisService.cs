@@ -34,7 +34,7 @@ namespace NETCore.RedisKit.Core
         /// <returns>返回自增之后的值</returns>
         public long Increment(RedisKey key, CommandFlags flags = CommandFlags.None)
         {
-            _Logger.LogInformation("Increment {key} with value 1", key);
+            _Logger.LogInformation("Increment key={key} with value=1", key);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -51,7 +51,7 @@ namespace NETCore.RedisKit.Core
         /// <returns>返回加后结果</returns>
         public long Increment(RedisKey key, long value, CommandFlags flags = CommandFlags.None)
         {
-            _Logger.LogInformation("Increment {key} with long value {value}", key, value);
+            _Logger.LogInformation("Increment {key}=with long valu={value}", key, value);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -68,7 +68,7 @@ namespace NETCore.RedisKit.Core
         /// <returns></returns>
         public double Increment(RedisKey key, double value, CommandFlags flags = CommandFlags.None)
         {
-            _Logger.LogInformation("Increment {key} with double value {value}", key, value);
+            _Logger.LogInformation("Increment key={key} with double value={value}", key, value);
 
             using (var redis = _RedisProvider.Redis)
             {
@@ -85,7 +85,7 @@ namespace NETCore.RedisKit.Core
         /// <returns></returns>
         public long Decrement(RedisKey key, CommandFlags flags = CommandFlags.None)
         {
-            _Logger.LogInformation("Decrement {key} with value 1", key);
+            _Logger.LogInformation("Decrement key={key} with value=1", key);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -102,7 +102,7 @@ namespace NETCore.RedisKit.Core
         /// <returns>返回减后结果</returns>
         public long Decrement(RedisKey key, long value, CommandFlags flags = CommandFlags.None)
         {
-            _Logger.LogInformation("Decrement {key} with long value {value}", key, value);
+            _Logger.LogInformation("Decrement key={key} with long value={value}", key, value);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -119,7 +119,7 @@ namespace NETCore.RedisKit.Core
         /// <returns>返回减后结果</returns>
         public double Decrement(RedisKey key, double value, CommandFlags flags = CommandFlags.None)
         {
-            _Logger.LogInformation("Decrement {key} with double value {value}", key, value);
+            _Logger.LogInformation("Decrement key={key} with double value={value}", key, value);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -136,7 +136,7 @@ namespace NETCore.RedisKit.Core
         /// <returns></returns>
         public bool KeyRename(RedisKey oldKey, RedisKey newKey, CommandFlags flags = CommandFlags.None)
         {
-            _Logger.LogInformation("Rename oldKey{oldkey} to newKey {newKey} with flags {flags}", oldKey, newKey, flags);
+            _Logger.LogInformation("Rename oldKey={oldkey} to newKey={newKey}.Condition: flags={flags}", oldKey, newKey, flags);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -163,6 +163,7 @@ namespace NETCore.RedisKit.Core
         /// <returns></returns>
         public RedisType KeyType(RedisKey key, CommandFlags flags = CommandFlags.None)
         {
+            _Logger.LogInformation("Get reids key type with key={key}.Condition:flags={flags}", key, flags);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -178,6 +179,7 @@ namespace NETCore.RedisKit.Core
         /// <returns></returns>
         public bool KeyExists(RedisKey key, CommandFlags flags = CommandFlags.None)
         {
+            _Logger.LogInformation("Check reids key exist with key={key}.Condition:flags={flags}", key, flags);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -227,6 +229,7 @@ namespace NETCore.RedisKit.Core
             using (var redis = _RedisProvider.Redis)
             {
                 RedisValue value = JsonSerialize(val);
+                _Logger.LogInformation("StringSet Key={key} with value={value} expiresAt={expiresAt}. Condition: When={when},Flags={flags} ", key, value, expiresAt, when, flags);
                 var db = redis.GetDatabase();
                 var timeSpan = expiresAt.Subtract(DateTime.Now);
                 return db.StringSet(key, value, timeSpan, when, flags);
@@ -248,6 +251,8 @@ namespace NETCore.RedisKit.Core
             using (var redis = _RedisProvider.Redis)
             {
                 RedisValue value = JsonSerialize(val);
+                _Logger.LogInformation("StringSet Key={key} with value={value} expiresAt={expiresIn}. Condition: When={when},Flags={flags} ", key, value, expiresIn, when, flags);
+
                 var db = redis.GetDatabase();
                 return db.StringSet(key, value, expiresIn, when, flags);
             }
