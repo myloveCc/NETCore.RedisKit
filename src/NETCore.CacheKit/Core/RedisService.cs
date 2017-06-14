@@ -7,15 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using NETCore.RedisKit.Core.Internal;
 
-namespace NETCore.RedisKit.Core.Internal
+namespace NETCore.RedisKit.Core
 {
     public class RedisService : IRedisService
     {
         private readonly IRedisProvider _RedisProvider;
-        private readonly ILogger _Logger;
+        private readonly IRedisKitLogger _Logger;
 
-        public RedisService(IRedisProvider redisProvider,ILogger<RedisService> logger)
+        public RedisService(IRedisProvider redisProvider, IRedisKitLogger logger)
         {
             _RedisProvider = redisProvider;
             _Logger = logger;
@@ -33,7 +34,7 @@ namespace NETCore.RedisKit.Core.Internal
         /// <returns>返回自增之后的值</returns>
         public long Increment(RedisKey key, CommandFlags flags = CommandFlags.None)
         {
-            _Logger.LogInformation("Increment {key} with value 1",key);
+            _Logger.LogInformation("Increment {key} with value 1", key);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -50,7 +51,7 @@ namespace NETCore.RedisKit.Core.Internal
         /// <returns>返回加后结果</returns>
         public long Increment(RedisKey key, long value, CommandFlags flags = CommandFlags.None)
         {
-            _Logger.LogInformation("Increment {key} with long value {value}",key,value);
+            _Logger.LogInformation("Increment {key} with long value {value}", key, value);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -101,7 +102,7 @@ namespace NETCore.RedisKit.Core.Internal
         /// <returns>返回减后结果</returns>
         public long Decrement(RedisKey key, long value, CommandFlags flags = CommandFlags.None)
         {
-			_Logger.LogInformation("Decrement {key} with long value {value}", key, value);
+            _Logger.LogInformation("Decrement {key} with long value {value}", key, value);
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
@@ -141,13 +142,13 @@ namespace NETCore.RedisKit.Core.Internal
                 var db = redis.GetDatabase();
                 if (oldKey.Equals(newKey))
                 {
-                    _Logger.LogWarning("oldKey {oldKey} equals newKey {newKey}",oldKey,newKey);
+                    _Logger.LogWarning("oldKey={oldKey} equals newKey={newKey}", oldKey, newKey);
                     return false;
                 }
 
-                if(!db.KeyExists(oldKey, flags))
+                if (!db.KeyExists(oldKey, flags))
                 {
-                    _Logger.LogWarning("oldKey {oldKey} don't exist with flags {flags}", oldKey, flags);
+                    _Logger.LogWarning("oldKey={oldKey} don't exist. Condition:flags={flags}", oldKey, flags);
                     return false;
                 }
                 return db.KeyRename(oldKey, newKey, When.Always, flags);
@@ -202,6 +203,9 @@ namespace NETCore.RedisKit.Core.Internal
             using (var redis = _RedisProvider.Redis)
             {
                 RedisValue value = JsonSerialize(val);
+
+                _Logger.LogInformation("StringSet Key={key} with value={value}. Condition: When={when},Flags={flags} ", key, value, when, flags);
+
                 var db = redis.GetDatabase();
 
                 return db.StringSet(key, value, null, when, flags);
@@ -263,9 +267,14 @@ namespace NETCore.RedisKit.Core.Internal
                 var db = redis.GetDatabase();
                 RedisValue value = db.StringGet(key, flags);
 
+                _Logger.LogInformation("StringGet value={value} by key={key}. Condition:Flags={flags} ", value, key, flags);
+
                 if (value.IsNullOrEmpty)
                 {
-                    return default(T);
+                    var result = default(T);
+                    _Logger.LogWarning("StringGet default value={value} by key={key}. Condition:Flags={flags} ", result, key, flags);
+
+                    return result;
                 }
                 return JsonDserialize<T>(value);
             }

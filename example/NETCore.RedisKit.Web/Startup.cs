@@ -32,11 +32,14 @@ namespace NETCore.RedisKit.Web
             // Add framework services.
             services.AddMvc();
 
-            services.AddRedisKit(options =>
+            services.AddRedisKit(optionsBuilder =>
             {
-                options.UseRedis(new RedisKitOptions() {
-                    EndPoints= "127.0.0.1:6379"   
-                });
+                optionsBuilder.UseRedis(
+                  options: new RedisKitOptions()
+                  {
+                      EndPoints = "127.0.0.1:6379"
+                  },
+                  isShowLog: true);
             });
         }
 

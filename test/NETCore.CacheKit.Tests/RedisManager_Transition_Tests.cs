@@ -1,4 +1,5 @@
 using NETCore.RedisKit.Core.Internal;
+using NETCore.RedisKit.Core;
 using NETCore.RedisKit.Infrastructure.Internal;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,12 @@ namespace NETCore.RedisKit.Tests
             IRedisProvider redisProvider = new RedisProvider(new RedisKitOptions()
             {
                 EndPoints = "127.0.0.1:6379"
-            });
+            }, true);
 
-			ILogger<RedisService> logger = new LoggerFactory().CreateLogger<RedisService>();
 
-			_RedisService = new RedisService(redisProvider, logger);
+            IRedisKitLogger logger = new RedisKitLogger(new LoggerFactory(), redisProvider);
+
+            _RedisService = new RedisService(redisProvider, logger);
         }
 
         [Fact(DisplayName = "Redis事务")]

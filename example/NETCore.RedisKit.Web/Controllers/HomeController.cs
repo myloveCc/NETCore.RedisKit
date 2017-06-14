@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using NETCore.RedisKit.Core.Internal;
+using NETCore.RedisKit.Core;
 
 namespace NETCore.RedisKit.Web.Controllers
 {

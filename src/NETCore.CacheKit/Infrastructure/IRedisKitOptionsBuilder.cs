@@ -17,8 +17,9 @@ namespace NETCore.RedisKit.Infrastructure
         /// get redis options and add ConnectionMultiplexer to sercice collection
         /// </summary>
         /// <param name="options">redis options</param>
+        /// <param name="isShowLog">is show redis service log</param>
         /// <param name="lifetime"><see cref="ServiceLifetime"/></param>
         /// <returns></returns>
-        IRedisKitOptionsBuilder UseRedis(IRedisKitOptions options, ServiceLifetime lifetime = ServiceLifetime.Scoped);
+        IRedisKitOptionsBuilder UseRedis(IRedisKitOptions options, bool isShowLog = false, ServiceLifetime lifetime = ServiceLifetime.Scoped);
     }
 }

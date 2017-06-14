@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NETCore.RedisKit.Core.Internal
+namespace NETCore.RedisKit.Core
 {
     public interface IRedisService
     {
-
         #region Sync
 
         #region Basic
