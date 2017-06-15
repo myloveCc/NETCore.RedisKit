@@ -10,15 +10,22 @@ Install-Package NETCore.RedisKit
 ## Add RedisKit in startup like 
 
 ```
-services.AddRedisKit(optionsBuilder =>
-          {
-              optionsBuilder.UseRedis(
-                options: new RedisKitOptions()
-                {
-                    EndPoints = "127.0.0.1:6379"
-                },
-                isShowLog: true);
-          });
+public void ConfigureServices(IServiceCollection services)
+{
+  // Add framework services.
+  services.AddMvc();
+
+  services.AddRedisKit(optionsBuilder =>
+  {
+      optionsBuilder.UseRedis(
+        options: new RedisKitOptions()
+        {
+            EndPoints = "127.0.0.1:6379"
+        },
+        isShowLog: true);
+  });
+}
+
 ```
 
 ## Use RedisService like 
