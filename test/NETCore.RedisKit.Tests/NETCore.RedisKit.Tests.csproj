@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\NETCore.CacheKit\NETCore.RedisKit.csproj" />
+    <ProjectReference Include="..\..\src\NETCore.RedisKit\NETCore.RedisKit.csproj" />
   </ItemGroup>
 
   <ItemGroup>

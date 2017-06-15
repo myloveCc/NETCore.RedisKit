@@ -19,7 +19,7 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\NETCore.CacheKit\NETCore.RedisKit.csproj" />
+    <ProjectReference Include="..\..\src\NETCore.RedisKit\NETCore.RedisKit.csproj" />
   </ItemGroup>
 
 </Project>

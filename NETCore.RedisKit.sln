@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETCore.RedisKit", "src\NETCore.CacheKit\NETCore.RedisKit.csproj", "{4621B87B-0803-46E8-AA76-D1EB21DDFC6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETCore.RedisKit", "src\NETCore.RedisKit\NETCore.RedisKit.csproj", "{4621B87B-0803-46E8-AA76-D1EB21DDFC6F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A6351A7A-206A-4C9D-BDF7-24DB0F532707}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{61A5401D-0307-4804-9DF1-3233E84F3107}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETCore.RedisKit.Tests", "test\NETCore.CacheKit.Tests\NETCore.RedisKit.Tests.csproj", "{C7A9070D-5252-4AB0-923B-32E38DB1BA8D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETCore.RedisKit.Tests", "test\NETCore.RedisKit.Tests\NETCore.RedisKit.Tests.csproj", "{C7A9070D-5252-4AB0-923B-32E38DB1BA8D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example", "example", "{FE12BD46-EF32-486C-9A16-F90C6DC51A58}"
 EndProject
