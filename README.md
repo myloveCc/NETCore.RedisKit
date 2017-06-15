@@ -1,5 +1,5 @@
 # NETCore.RedisKit
-Exchange.Redis extensions. Easy use redis in your asp.net core project.
+[StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) extensions. Easy use redis in your asp.net core project.
 
 # Install with nuget
 
