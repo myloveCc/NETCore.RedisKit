@@ -1,14 +1,11 @@
-using NETCore.RedisKit.Shared;
-using Newtonsoft.Json;
-using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NETCore.RedisKit.Core.Internal;
 using NETCore.RedisKit.Shared;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace NETCore.RedisKit.Core
 {
