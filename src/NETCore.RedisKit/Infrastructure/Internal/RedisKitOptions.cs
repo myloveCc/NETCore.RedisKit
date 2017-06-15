@@ -7,7 +7,7 @@ namespace NETCore.RedisKit.Infrastructure.Internal
     /// <summary>
     /// redis options
     /// </summary>
-    public class RedisKitOptions : IRedisKitOptions
+    public class RedisKitOptions 
     {
         /// <summary>
         /// ctor

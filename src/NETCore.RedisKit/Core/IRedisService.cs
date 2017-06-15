@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NETCore.RedisKit.Core.Internal
+namespace NETCore.RedisKit.Core
 {
     public interface IRedisService
     {
-
         #region Sync
 
         #region Basic
@@ -1486,7 +1485,7 @@ namespace NETCore.RedisKit.Core.Internal
         /// <param name="exclude">排除规则<see cref="Exclude"/>,默认为None</param>
         /// <returns></returns>
         Task<IEnumerable<T>> SortedSetGetPageListAsync<T>(RedisKey key, double startScore, double stopScore, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, Exclude exclude = Exclude.None);
-       
+
         /// <summary>
         /// Sorted Set Get Page List With Score 操作
         /// </summary>

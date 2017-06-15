@@ -12,19 +12,25 @@ namespace NETCore.RedisKit
         /// <summary>
         /// rediskit options
         /// </summary>
-        private readonly IRedisKitOptions _RedisKitOptions;
+        private readonly RedisKitOptions _RedisKitOptions;
 
         /// <summary>
         /// exchange redis config options
         /// </summary>
         private readonly ConfigurationOptions _ConfigurationOptions;
 
+        /// <summary>
+        /// is show redis service log
+        /// </summary>
+        public bool IsShowLog { get; private set; }
 
         #region ctor
-        public RedisProvider(IRedisKitOptions options)
+        public RedisProvider(RedisKitOptions options, bool isShowLog)
         {
             _RedisKitOptions = options;
+            IsShowLog = isShowLog;
 
+            //init exchange redis config options
             _ConfigurationOptions = InitConfigurationOptions();
         }
 
@@ -40,6 +46,8 @@ namespace NETCore.RedisKit
                 return lazyConnection().Value;
             }
         }
+
+
 
         private Lazy<ConnectionMultiplexer> lazyConnection()
         {
