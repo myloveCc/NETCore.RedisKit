@@ -12,7 +12,7 @@ namespace NETCore.RedisKit
         /// <summary>
         /// rediskit options
         /// </summary>
-        private readonly IRedisKitOptions _RedisKitOptions;
+        private readonly RedisKitOptions _RedisKitOptions;
 
         /// <summary>
         /// exchange redis config options
@@ -25,7 +25,7 @@ namespace NETCore.RedisKit
         public bool IsShowLog { get; private set; }
 
         #region ctor
-        public RedisProvider(IRedisKitOptions options, bool isShowLog)
+        public RedisProvider(RedisKitOptions options, bool isShowLog)
         {
             _RedisKitOptions = options;
             IsShowLog = isShowLog;

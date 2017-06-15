@@ -35,7 +35,7 @@ namespace NETCore.RedisKit.Infrastructure
         /// <param name="isShowLog">is show redis service log</param>
         /// <param name="lifetime"><see cref="ServiceLifetime"/></param>
         /// <returns></returns>
-        public IRedisKitOptionsBuilder UseRedis(IRedisKitOptions options, bool isShowLog = false, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+        public IRedisKitOptionsBuilder UseRedis(RedisKitOptions options, bool isShowLog = false, ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
             Guard.ArgumentNotNull(options, nameof(options));
 
@@ -51,7 +51,7 @@ namespace NETCore.RedisKit.Infrastructure
         /// </summary>
         /// <param name="options">redis options</param>
         /// <param name="isShowLog">is show redis service log</param>
-        private void AddProviderService(IRedisKitOptions options, bool isShowLog)
+        private void AddProviderService(RedisKitOptions options, bool isShowLog)
         {
             RedisProvider provider = new RedisProvider(options, isShowLog);
             serviceCollection.TryAddSingleton<IRedisProvider>(provider);

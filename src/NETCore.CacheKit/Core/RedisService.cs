@@ -327,7 +327,7 @@ namespace NETCore.RedisKit.Core
         }
 
         /// <summary>
-        /// Sting Del 操作
+        /// String Del 操作
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
@@ -343,7 +343,7 @@ namespace NETCore.RedisKit.Core
         }
 
         /// <summary>
-        /// Sting Del 操作（删除多条）
+        /// String Del 操作（删除多条）
         /// </summary>
         /// <param name="keys">键集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
@@ -2056,7 +2056,7 @@ namespace NETCore.RedisKit.Core
         }
 
         /// <summary>
-        /// Sting Del 操作
+        /// String Del 操作
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
@@ -2071,7 +2071,7 @@ namespace NETCore.RedisKit.Core
         }
 
         /// <summary>
-        /// Sting Del 操作（删除多条）
+        /// String Del 操作（删除多条）
         /// </summary>
         /// <param name="keys">键集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>

@@ -20,6 +20,6 @@ namespace NETCore.RedisKit.Infrastructure
         /// <param name="isShowLog">is show redis service log</param>
         /// <param name="lifetime"><see cref="ServiceLifetime"/></param>
         /// <returns></returns>
-        IRedisKitOptionsBuilder UseRedis(IRedisKitOptions options, bool isShowLog = false, ServiceLifetime lifetime = ServiceLifetime.Scoped);
+        IRedisKitOptionsBuilder UseRedis(RedisKitOptions options, bool isShowLog = false, ServiceLifetime lifetime = ServiceLifetime.Scoped);
     }
 }
