@@ -9,11 +9,23 @@ namespace NETCore.RedisKit.Tests
     {
         public static string Serialize<T>(T obj)
         {
+            if (typeof(T) is object)
+            {
+                if (obj == null)
+                {
+                    return string.Empty;
+                }
+            }
+
             return JsonConvert.SerializeObject(obj);
         }
 
         public static T Deserialize<T>(string value)
         {
+            if (string.IsNullOrEmpty(value))
+            {
+                return default(T);
+            }
             return JsonConvert.DeserializeObject<T>(value);
         }
     }
