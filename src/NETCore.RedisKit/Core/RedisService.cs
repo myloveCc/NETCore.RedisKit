@@ -3852,12 +3852,9 @@ namespace NETCore.RedisKit.Core
         /// <returns>序列化之后的json字符串</returns>
         private string JsonSerialize<T>(T val)
         {
-            if (typeof(T) is object)
+            if (val == null)
             {
-                if (val == null)
-                {
-                    return string.Empty;
-                }
+                return string.Empty;
             }
             return JsonConvert.SerializeObject(val);
         }
