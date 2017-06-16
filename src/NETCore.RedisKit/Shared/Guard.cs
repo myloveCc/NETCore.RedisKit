@@ -8,7 +8,7 @@ namespace NETCore.RedisKit.Shared
 {
     internal static class Guard
     {
-        public static T ArgumentNotNull<T>(T argumentValue, string argumentName) where T : class
+        public static T ArgumentNotNull<T>(T argumentValue, string argumentName) where T:class
         {
             if (null == argumentValue)
             {
@@ -63,6 +63,15 @@ namespace NETCore.RedisKit.Shared
             if (!typeof(T).GetTypeInfo().IsAssignableFrom(argumentValue))
             {
                 throw new ArgumentException(argumentName, "The specified type \"{0}\"  cannot be assigned to the type \"{1}\".".Fill(argumentValue.FullName, typeof(T).FullName));
+            }
+            return argumentValue;
+        }
+
+        public static int ArgumentMinValue(int argumentValue, int minValue, string argumentName)
+        {
+            if(argumentValue < minValue)
+            {
+                throw new ArgumentException(argumentName,$"The argument value must great than {minValue}.");
             }
             return argumentValue;
         }
