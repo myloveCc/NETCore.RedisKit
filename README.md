@@ -10,7 +10,8 @@ Install-Package NETCore.RedisKit
 ```
 ---
 
-# RedisKit Options
+# RedisKit Options 
+
 
 | Configuration string      | ConfigurationOptions    | Default           | Meaning                   |
 | :------------------------ | :---------------------- | :---------------- | :------------------------ |
@@ -36,6 +37,8 @@ Install-Package NETCore.RedisKit
 | `version={string}`       | `DefaultVersion`         |	`(3.0 in Azure, else 2.0)` | Redis version level (useful when the server does not make this available) |
 | `writeBuffer={int}`      |	`WriteBuffer`           |	`4096`             |	Size of the output buffer |
 
+
+- You can find more information about[Exchange.Redis Configration](https://stackexchange.github.io/StackExchange.Redis/Configuration)
 
 # How to use
 
