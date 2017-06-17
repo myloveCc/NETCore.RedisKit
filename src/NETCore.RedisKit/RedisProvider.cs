@@ -96,7 +96,7 @@ namespace NETCore.RedisKit
                 WriteBuffer=_RedisKitOptions.WriteBuffer
             };
 
-            //添加终结点
+            //add endpoints
             var endPoints = SplitEndPoint(_RedisKitOptions.EndPoints, ",");
             foreach (var item in endPoints)
             {
@@ -106,10 +106,10 @@ namespace NETCore.RedisKit
         }
 
         /// <summary>
-        /// Redis连接终结点集合
+        /// split endpotint
         /// </summary>
-        /// <param name="endpoints">终结点集合字符串</param>
-        /// <param name="split">分割符</param>
+        /// <param name="endpoints"> endpoint string</param>
+        /// <param name="split">split char</param>
         /// <returns></returns>
         private IEnumerable<string> SplitEndPoint(string endpoints, string split)
         {
