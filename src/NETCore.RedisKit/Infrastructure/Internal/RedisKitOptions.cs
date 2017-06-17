@@ -66,7 +66,7 @@ namespace NETCore.RedisKit.Infrastructure.Internal
 		/// Default database index, from 0 to databases - 1
 		/// </summary>
 		/// <value>The default database.</value>
-		public int DefaultDatabase { get; set; } = 0;
+        public int? DefaultDatabase { get; set; } = null;
 
 		/// <summary>
 		/// keep alive ,default is 180 miniseconds
@@ -118,13 +118,13 @@ namespace NETCore.RedisKit.Infrastructure.Internal
 		/// Ssl/Tls versions supported when using an encrypted connection. Use ‘|’ to provide multiple values.
 		/// </summary>
 		/// <value>The ssl protocols.</value>
-		public SslProtocols SslProtocols { get; set; } = SslProtocols.None;
+        public SslProtocols? SslProtocols { get; set; } = null;
 
 		/// <summary>
 		/// Key to use for selecting a server in an ambiguous master scenario
 		/// </summary>
 		/// <value>The tie breaker1.</value>
-		public string TieBreaker1 { get; set; } = "__Booksleeve_TieBreak";
+		public string TieBreaker { get; set; } = "__Booksleeve_TieBreak";
 
 		/// <summary>
 		/// redis version
