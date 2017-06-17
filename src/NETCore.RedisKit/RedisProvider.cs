@@ -74,18 +74,26 @@ namespace NETCore.RedisKit
                     "INFO", "CONFIG", "CLUSTER",
                     "PING", "ECHO", "CLIENT"
                 }, available: false),
-                //重试连接
+                AbortOnConnectFail=_RedisKitOptions.AbortOnConnectFail,
+                AllowAdmin=_RedisKitOptions.AllowAdmin,
+                ChannelPrefix=_RedisKitOptions.ChannelPrefix,
                 ConnectRetry = _RedisKitOptions.ConnectRetry,
-                //心跳间隔
-                KeepAlive = _RedisKitOptions.KeepAlive,
-                //版本号
-                DefaultVersion = new Version(_RedisKitOptions.DefaultVersion),
-                //连接超时
                 ConnectTimeout = _RedisKitOptions.ConnectTimeout,
-                //异步超时
-                SyncTimeout = _RedisKitOptions.SyncTimeout,
-                //密码
-                Password = _RedisKitOptions.Password
+                ConfigurationChannel=_RedisKitOptions.ConfigurationChannel,
+                DefaultDatabase=_RedisKitOptions.DefaultDatabase,
+                KeepAlive = _RedisKitOptions.KeepAlive,
+                ClientName=_RedisKitOptions.ClientName,
+				Password = _RedisKitOptions.Password,
+                Proxy=_RedisKitOptions.Proxy,
+                ResolveDns=_RedisKitOptions.ResolveDns,
+                ServiceName=_RedisKitOptions.ServiceName,
+                Ssl=_RedisKitOptions.Ssl,
+                SslHost=_RedisKitOptions.SslHost,
+                SslProtocols=_RedisKitOptions.SslProtocols,
+				SyncTimeout = _RedisKitOptions.SyncTimeout,
+                TieBreaker=_RedisKitOptions.TieBreaker,
+                DefaultVersion = new Version(_RedisKitOptions.DefaultVersion),
+                WriteBuffer=_RedisKitOptions.WriteBuffer
             };
 
             //添加终结点
