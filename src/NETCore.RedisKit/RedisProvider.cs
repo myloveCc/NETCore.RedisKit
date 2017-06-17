@@ -79,7 +79,7 @@ namespace NETCore.RedisKit
                 //心跳间隔
                 KeepAlive = _RedisKitOptions.KeepAlive,
                 //版本号
-                DefaultVersion = new Version(_RedisKitOptions.Version),
+                DefaultVersion = new Version(_RedisKitOptions.DefaultVersion),
                 //连接超时
                 ConnectTimeout = _RedisKitOptions.ConnectTimeout,
                 //异步超时
