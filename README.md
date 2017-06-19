@@ -97,7 +97,7 @@ public string Get()
     {
         var db = redis.GetDatabase();
 
-        return db.ListGetByIndex("redis key", 1);
+        return db.StringGet("hello");
     }
 }
 ```
