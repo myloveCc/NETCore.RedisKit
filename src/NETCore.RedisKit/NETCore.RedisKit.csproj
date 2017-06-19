@@ -13,8 +13,8 @@
     <PackageProjectUrl>https://github.com/myloveCc/NETCore.RedisKit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/myloveCc/NETCore.RedisKit</RepositoryUrl>
     <PackageTags>StackExchange.Redis ASP.NETCore</PackageTags>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
     <PackageLicenseUrl>https://github.com/myloveCc/NETCore.RedisKit/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
