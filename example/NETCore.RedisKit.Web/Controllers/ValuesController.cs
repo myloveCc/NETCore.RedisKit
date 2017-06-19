@@ -1,0 +1,58 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using NETCore.RedisKit;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace NETCore.RedisKit.Web.Controllers
+{
+    [Route("api/[controller]")]
+    public class ValuesController : Controller
+    {
+        private readonly IRedisProvider _RedisProvider;
+        public ValuesController(IRedisProvider redisProvider)
+        {
+            _RedisProvider = redisProvider;
+        }
+
+        // GET: api/values
+        [HttpGet]
+        public string Get()
+        {
+            using (var redis = _RedisProvider.Redis)
+            {
+                var db = redis.GetDatabase();
+
+                return db.ListGetByIndex("redis key", 1);
+            }
+        }
+
+        // GET api/values/5
+        [HttpGet("{id}")]
+        public string Get(int id)
+        {
+            return "value";
+        }
+
+        // POST api/values
+        [HttpPost]
+        public void Post([FromBody]string value)
+        {
+        }
+
+        // PUT api/values/5
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody]string value)
+        {
+        }
+
+        // DELETE api/values/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+        }
+    }
+}
