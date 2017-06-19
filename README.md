@@ -80,6 +80,28 @@ public IActionResult Index()
 
 ```
 
+## Use StackExchange.Redis Api
+
+```csharp
+private readonly IRedisProvider _RedisProvider;
+public ValuesController(IRedisProvider redisProvider)
+{
+    _RedisProvider = redisProvider;
+}
+
+// GET: api/values
+[HttpGet]
+public string Get()
+{
+    using (var redis = _RedisProvider.Redis)
+    {
+        var db = redis.GetDatabase();
+
+        return db.ListGetByIndex("redis key", 1);
+    }
+}
+```
+
 # LICENSE
 
 MIT
