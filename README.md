@@ -38,7 +38,7 @@ Install-Package NETCore.RedisKit -Version 2.0.0
 | `writeBuffer={int}`       | `WriteBuffer`             |  `4096`                   | Size of the output buffer |
 
 
-- You can find more information from [Exchange.Redis Configration](https://stackexchange.github.io/StackExchange.Redis/Configuration)
+- You can find more information from [StackExchange.Redis Configration](https://stackexchange.github.io/StackExchange.Redis/Configuration)
 
 # How to use
 
