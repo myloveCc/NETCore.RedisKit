@@ -28,21 +28,21 @@ namespace NETCore.RedisKit.Tests
         }
 
         [Fact(DisplayName = "设置String值")]
-        public void StringSetAsyncTest()
+        public async Task StringSetAsyncTest()
         {
             var test_key = "test_set";
-            var setResult = _RedisService.StringSetAsync(test_key, "11111").Result;
+            var setResult = await _RedisService.StringSetAsync(test_key, "11111");
 
             Assert.True(setResult);
 
             var getValue = _RedisService.StringGetAsync<string>(test_key).Result;
             Assert.NotEmpty(getValue);
             Assert.NotNull(getValue);
-            Assert.Equal(getValue, "11111");
+            Assert.Equal("11111", getValue);
 
-            _RedisService.StringSetAsync(test_key, "22222");
+            await _RedisService.StringSetAsync(test_key, "22222");
             getValue = _RedisService.StringGetAsync<string>(test_key).Result;
-            Assert.Equal(getValue, "22222");
+            Assert.Equal("22222", getValue);
 
             var delResult = _RedisService.StringRemoveAsync(test_key).Result;
             Assert.True(delResult);
@@ -110,9 +110,9 @@ namespace NETCore.RedisKit.Tests
 
             var values = _RedisService.StringGetAsync<string>(test_key).Result.ToList();
 
-            Assert.Equal(values[0], "1111");
-            Assert.Equal(values[1], "2222");
-            Assert.Equal(values[2], "3333");
+            Assert.Equal("1111", values[0]);
+            Assert.Equal("2222", values[1]);
+            Assert.Equal("3333", values[2]);
 
             _RedisService.StringRemoveAsync(test_key);
         }
@@ -125,23 +125,23 @@ namespace NETCore.RedisKit.Tests
 
             Assert.False(delResult);
 
-            _RedisService.StringSetAsync(test_key, "11111");
+            var result = _RedisService.StringSetAsync(test_key, "11111").Result;
             delResult = _RedisService.StringRemoveAsync(test_key).Result;
             Assert.True(delResult);
         }
 
-        [Fact(DisplayName ="根据Key集合移除缓存")]
-        public void StringRemoveAsyncRangeTest()
+        [Fact(DisplayName = "根据Key集合移除缓存")]
+        public async Task StringRemoveAsyncRangeTest()
         {
             var test_key = new List<RedisKey>() { "key1", "key2", "key3", "key4" };
 
-            _RedisService.StringSetAsync("key1", "1111");
-            _RedisService.StringSetAsync("key2", "2222");
-            _RedisService.StringSetAsync("key3", "3333");
+            await _RedisService.StringSetAsync("key1", "1111");
+            await _RedisService.StringSetAsync("key2", "2222");
+            await _RedisService.StringSetAsync("key3", "3333");
 
-            var delResult = _RedisService.StringRemoveAsync(test_key).Result;
+            var delResult = await _RedisService.StringRemoveAsync(test_key);
 
-            Assert.Equal(delResult, 3);
+            Assert.Equal(3, delResult);
         }
     }
 }

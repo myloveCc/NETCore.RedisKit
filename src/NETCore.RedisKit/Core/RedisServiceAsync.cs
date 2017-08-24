@@ -1,44 +1,38 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NETCore.RedisKit.Core.Internal;
 using NETCore.RedisKit.Shared;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace NETCore.RedisKit
 {
-    public partial class RedisService:IRedisService
+    public partial class RedisService:IRedisServiceAsync
     {
-        private readonly IRedisProvider _RedisProvider;
-        private readonly IRedisKitLogger _Logger;
-
-        public RedisService(IRedisProvider redisProvider, IRedisKitLogger logger)
-        {
-            _RedisProvider = redisProvider;
-            _Logger = logger;
-        }
-
-        #region Sync
+        #region Async
 
         #region Basic
-
         /// <summary>
         /// 自增（将值加1）
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/></param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>返回自增之后的值</returns>
-        public long Increment(RedisKey key, CommandFlags flags = CommandFlags.None)
+        public Task<long> IncrementAsync(RedisKey key, CommandFlags flags = CommandFlags.None, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            _Logger.LogInformation("Increment key={key} with value=1", key);
-            using (var redis = _RedisProvider.Redis)
+
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.StringIncrement(key, 1, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.StringIncrementAsync(key, 1, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -47,17 +41,20 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="value">待加值（long）</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/></param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>返回加后结果</returns>
-        public long Increment(RedisKey key, long value, CommandFlags flags = CommandFlags.None)
+        public Task<long> IncrementAsync(RedisKey key, long value, CommandFlags flags = CommandFlags.None, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
 
-            _Logger.LogInformation("Increment {key}=with long valu={value}", key, value);
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.StringIncrement(key, value, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.StringIncrementAsync(key, value, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -66,17 +63,19 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="value">待加值（double）</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/></param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public double Increment(RedisKey key, double value, CommandFlags flags = CommandFlags.None)
+        public Task<double> IncrementAsync(RedisKey key, double value, CommandFlags flags = CommandFlags.None, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            _Logger.LogInformation("Increment key={key} with double value={value}", key, value);
-
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.StringIncrement(key, value, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.StringIncrementAsync(key, value, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -84,34 +83,40 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/></param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public long Decrement(RedisKey key, CommandFlags flags = CommandFlags.None)
+        public Task<long> DecrementAsync(RedisKey key, CommandFlags flags = CommandFlags.None, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            _Logger.LogInformation("Decrement key={key} with value=1", key);
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.StringDecrement(key, 1, flags);
-            }
-        }
 
+            return Task.Run(() =>
+            {
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.StringDecrementAsync(key, 1, flags);
+                }
+            },cancellationToken);
+        }
         /// <summary>
         /// 在原有值上减操作(long)
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="value">待减值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/></param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>返回减后结果</returns>
-        public long Decrement(RedisKey key, long value, CommandFlags flags = CommandFlags.None)
+        public Task<long> DecrementAsync(RedisKey key, long value, CommandFlags flags = CommandFlags.None, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            _Logger.LogInformation("Decrement key={key} with long value={value}", key, value);
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.StringDecrement(key, value, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.StringDecrementAsync(key, value, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -120,16 +125,19 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="value">待减值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/></param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>返回减后结果</returns>
-        public double Decrement(RedisKey key, double value, CommandFlags flags = CommandFlags.None)
+        public Task<double> DecrementAsync(RedisKey key, double value, CommandFlags flags = CommandFlags.None, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            _Logger.LogInformation("Decrement key={key} with double value={value}", key, value);
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.StringDecrement(key, value, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.StringDecrementAsync(key, value, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -138,29 +146,25 @@ namespace NETCore.RedisKit
         /// <param name="oldKey">旧键</param>
         /// <param name="newKey">新键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/></param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public bool KeyRename(RedisKey oldKey, RedisKey newKey, CommandFlags flags = CommandFlags.None)
+        public Task<bool> KeyRenameAsync(RedisKey oldKey, RedisKey newKey, CommandFlags flags = CommandFlags.None, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(oldKey, nameof(oldKey));
-            Guard.ArgumentNotNullOrEmpty((newKey), nameof(newKey));
+            Guard.ArgumentNotNullOrEmpty(newKey, nameof(newKey));
 
-            _Logger.LogInformation("Rename oldKey={oldkey} to newKey={newKey}.Condition: flags={flags}", oldKey, newKey, flags);
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                if (oldKey.Equals(newKey))
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    _Logger.LogWarning("oldKey={oldKey} equals newKey={newKey}", oldKey, newKey);
-                    return false;
+                    IDatabase db = redis.GetDatabase();
+                    if (oldKey.Equals(newKey) || !db.KeyExists(oldKey, flags))
+                    {
+                        return Task<bool>.FromResult(false);
+                    }
+                    return db.KeyRenameAsync(oldKey, newKey, When.Always, flags);
                 }
-
-                if (!db.KeyExists(oldKey, flags))
-                {
-                    _Logger.LogWarning("oldKey={oldKey} don't exist. Condition:flags={flags}", oldKey, flags);
-                    return false;
-                }
-                return db.KeyRename(oldKey, newKey, When.Always, flags);
-            }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -168,16 +172,19 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/></param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public RedisType KeyType(RedisKey key, CommandFlags flags = CommandFlags.None)
+        public Task<RedisType> KeyTypeAsync(RedisKey key, CommandFlags flags = CommandFlags.None, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            _Logger.LogInformation("Get reids key type with key={key}.Condition:flags={flags}", key, flags);
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyType(key, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyTypeAsync(key, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -185,16 +192,20 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/></param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public bool KeyExists(RedisKey key, CommandFlags flags = CommandFlags.None)
+        public Task<bool> KeyExistsAsync(RedisKey key, CommandFlags flags = CommandFlags.None, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            _Logger.LogInformation("Check reids key exist with key={key}.Condition:flags={flags}", key, flags);
-            using (var redis = _RedisProvider.Redis)
+
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyExists(key, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyExistsAsync(key, flags);
+                }
+            }, cancellationToken);
         }
 
         #endregion
@@ -210,43 +221,19 @@ namespace NETCore.RedisKit
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>true 成功 false 失败</returns>
-        public bool StringSet<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> StringSetAsync<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            RedisValue value = JsonSerialize(val);
+
+            return Task.Run(() =>
             {
-                RedisValue value = JsonSerialize(val);
-
-                _Logger.LogInformation("StringSet Key={key} with value={value}. Condition: When={when},Flags={flags} ", key, value, when, flags);
-
-                var db = redis.GetDatabase();
-
-                return db.StringSet(key, value, null, when, flags);
-            }
-        }
-
-        /// <summary>
-        /// String Set操作（包括新增/更新）,同时可以设置过期时间点
-        /// </summary>
-        /// <typeparam name="T">泛型</typeparam>
-        /// <param name="key">键</param>
-        /// <param name="val">值</param>
-        /// <param name="expiresAt">过期时间点</param>
-        /// <param name="when">操作前置条件<see cref="When"/></param>
-        /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
-        /// <returns>true 成功 false 失败</returns>
-        public bool StringSet<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
-        {
-            Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
-            using (var redis = _RedisProvider.Redis)
-            {
-                RedisValue value = JsonSerialize(val);
-                _Logger.LogInformation("StringSet Key={key} with value={value} expiresAt={expiresAt}. Condition: When={when},Flags={flags} ", key, value, expiresAt, when, flags);
-                var db = redis.GetDatabase();
-                var timeSpan = expiresAt.Subtract(DateTime.Now);
-                return db.StringSet(key, value, timeSpan, when, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.StringSetAsync(key, value, null, when, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -255,22 +242,48 @@ namespace NETCore.RedisKit
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="val">值</param>
-        /// <param name="expiresIn">过期时间段</param>
+        /// <param name="expiresAt">过期时间段</param>
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>true 成功 false 失败</returns>
-        public bool StringSet<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> StringSetAsync<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
-            using (var redis = _RedisProvider.Redis)
+            RedisValue value = JsonSerialize(val);
+            return Task.Run(() =>
             {
-                RedisValue value = JsonSerialize(val);
-                _Logger.LogInformation("StringSet Key={key} with value={value} expiresAt={expiresIn}. Condition: When={when},Flags={flags} ", key, value, expiresIn, when, flags);
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    var timeSpan = expiresAt.Subtract(DateTime.Now);
+                    return db.StringSetAsync(key, value, timeSpan, when, flags);
+                }
+            }, cancellationToken);
+        }
 
-                var db = redis.GetDatabase();
-                return db.StringSet(key, value, expiresIn, when, flags);
-            }
+        /// <summary>
+        /// String Set操作（包括新增/更新）,同时可以设置过期时间点
+        /// </summary>
+        /// <typeparam name="T">泛型</typeparam>
+        /// <param name="key">键</param>
+        /// <param name="val">值</param>
+        /// <param name="expiresIn">过期时间点</param>
+        /// <param name="when">操作前置条件<see cref="When"/></param>
+        /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <returns>true 成功 false 失败</returns>
+        public Task<bool> StringSetAsync<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Guard.ArgumentNotNullOrEmpty(key, nameof(key));
+            RedisValue value = JsonSerialize(val);
+
+            return Task.Run(() =>
+            {
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.StringSetAsync(key, value, expiresIn, when, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -280,25 +293,23 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns>如果key存在，找到对应Value,如果不存在，返回默认值.</returns>
-        public T StringGet<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<T> StringGetAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = db.StringGet(key, flags);
-
-                _Logger.LogInformation("StringGet value={value} by key={key}. Condition:Flags={flags} ", value, key, flags);
-
-                if (value.IsNullOrEmpty)
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    var result = default(T);
-                    _Logger.LogWarning("StringGet default value={value} by key={key}. Condition:Flags={flags} ", result, key, flags);
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = db.StringGet(key, flags);
 
-                    return result;
+                    if (value.IsNullOrEmpty)
+                    {
+                        return default(T);
+                    }
+                    return JsonDserialize<T>(value);
                 }
-                return JsonDserialize<T>(value);
-            }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -308,39 +319,32 @@ namespace NETCore.RedisKit
         /// <param name="keys">键集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public IEnumerable<T> StringGet<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> StringGetAsync<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(keys, nameof(keys));
-            using (var redis = _RedisProvider.Redis)
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
                 var result = new List<T>();
                 if (keys != null && keys.Any())
                 {
-                    var db = redis.GetDatabase();
-                    RedisValue[] values = db.StringGet(keys.ToArray(), flags);
-                    if (values != null && values.Length > 0)
+                    using (var redis = _RedisProvider.Redis)
                     {
-                        values.ForEach(x =>
+                        var db = redis.GetDatabase();
+                        RedisValue[] values = db.StringGet(keys.ToArray(), flags);
+                        if (values != null && values.Length > 0)
                         {
-                            if (!x.IsNullOrEmpty)
+                            values.ForEach(x =>
                             {
-                                result.Add(JsonDserialize<T>(x));
-                            }
-                        });
-
-                        _Logger.LogInformation("StringGet keys={keys} values={values}.Conditions: flags={flags}", keys, JsonSerialize(values), flags);
+                                if (!x.IsNullOrEmpty)
+                                {
+                                    result.Add(JsonDserialize<T>(x));
+                                }
+                            });
+                        }
                     }
-                    else
-                    {
-                        _Logger.LogWarning("StringGet keys={keys} values is null or empty.Conditions: flags={flags}", keys, flags);
-                    }
-                }
-                else
-                {
-                    _Logger.LogWarning("StringGet with keys={keys} is null or empty.Conditions: flags={flags}", keys, flags);
                 }
                 return result;
-            }
+            },cancellationToken);
         }
 
         /// <summary>
@@ -349,15 +353,17 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>True if the key was removed. else false</returns>
-        public bool StringRemove(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> StringRemoveAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            _Logger.LogInformation("StringRemove value with key={key},Coditions: flags={flags}", key, flags);
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyDelete(key, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyDeleteAsync(key, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -366,16 +372,18 @@ namespace NETCore.RedisKit
         /// <param name="keys">键集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long StringRemove(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> StringRemoveAsync(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(keys, nameof(keys));
-            _Logger.LogInformation("StringRemove multi values with keys={keys},Coditions: flags={flags}", keys, flags);
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                var keyArray = keys.ToArray();
-                return db.KeyDelete(keyArray, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    var keyArray = keys.ToArray();
+                    return db.KeyDeleteAsync(keyArray, flags);
+                }
+            }, cancellationToken);
         }
 
         #endregion
@@ -391,15 +399,16 @@ namespace NETCore.RedisKit
         /// <param name="pivot">参考值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>返回插入左侧成功后List的长度 或 -1 表示pivot未找到.</returns>
-        public long ListInsertLeft<T>(RedisKey key, T val, T pivot, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListInsertLeftAsync<T>(RedisKey key, T val, T pivot, CommandFlags flags = CommandFlags.DemandMaster)
         {
+            Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
                 RedisValue pivotValue = JsonSerialize(pivot);
 
-                return db.ListInsertBefore(key, pivotValue, value, flags);
+                return db.ListInsertBeforeAsync(key, pivotValue, value, flags);
             }
         }
 
@@ -412,7 +421,7 @@ namespace NETCore.RedisKit
         /// <param name="pivot">参考值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns> 返回插入右侧成功后List的长度 或 -1 表示pivot未找到.</returns>
-        public long ListInsertRight<T>(RedisKey key, T val, T pivot, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListInsertRightAsync<T>(RedisKey key, T val, T pivot, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
@@ -421,7 +430,7 @@ namespace NETCore.RedisKit
                 RedisValue value = JsonSerialize(val);
                 RedisValue pivotValue = JsonSerialize(pivot);
 
-                return db.ListInsertAfter(key, pivotValue, value, flags);
+                return db.ListInsertAfterAsync(key, pivotValue, value, flags);
             }
         }
 
@@ -434,14 +443,14 @@ namespace NETCore.RedisKit
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>Push操作之后，List的长度</returns>
-        public long ListLeftPush<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListLeftPushAsync<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
-                return db.ListLeftPush(key, value, when, flags);
+                return db.ListLeftPushAsync(key, value, when, flags);
             }
         }
 
@@ -453,15 +462,15 @@ namespace NETCore.RedisKit
         /// <param name="vals">值集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long ListLeftPushRanage<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListLeftPushRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
+            if (vals == null || !vals.Any())
+            {
+                return Task.FromResult<long>(0);
+            }
             using (var redis = _RedisProvider.Redis)
             {
-                if (vals == null || !vals.Any())
-                {
-                    return 0;
-                }
                 var db = redis.GetDatabase();
                 RedisValue[] values = new RedisValue[vals.Count()];
                 var i = 0;
@@ -471,7 +480,7 @@ namespace NETCore.RedisKit
                     i++;
                 });
 
-                return db.ListLeftPush(key, values, flags);
+                return db.ListLeftPushAsync(key, values, flags);
             }
         }
 
@@ -484,14 +493,14 @@ namespace NETCore.RedisKit
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long ListRightPush<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListRightPushAsync<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
-                return db.ListRightPush(key, value, when, flags);
+                return db.ListRightPushAsync(key, value, when, flags);
             }
         }
 
@@ -503,16 +512,15 @@ namespace NETCore.RedisKit
         /// <param name="vals">值集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long ListRightPushRanage<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListRightPushRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            Guard.ArgumentNotNull(vals, nameof(vals));
+            if (vals == null || !vals.Any())
+            {
+                return Task.FromResult<long>(0);
+            }
             using (var redis = _RedisProvider.Redis)
             {
-                if (vals == null || !vals.Any())
-                {
-                    return 0;
-                }
                 var db = redis.GetDatabase();
                 RedisValue[] values = new RedisValue[vals.Count()];
                 var i = 0;
@@ -521,7 +529,7 @@ namespace NETCore.RedisKit
                     values[i] = JsonSerialize(x);
                     i++;
                 });
-                return db.ListRightPush(key, values, flags);
+                return db.ListRightPushAsync(key, values, flags);
             }
         }
 
@@ -532,19 +540,22 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public T ListLeftPop<T>(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<T> ListLeftPopAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task<T>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = db.ListLeftPop(key, flags);
-                if (!value.IsNullOrEmpty)
+                using (var redis = _RedisProvider.Redis)
                 {
-                    return JsonDserialize<T>(value);
+                    var db = redis.GetDatabase();
+                    RedisValue value = db.ListLeftPopAsync(key, flags).Result;
+                    if (!value.IsNullOrEmpty)
+                    {
+                        return JsonDserialize<T>(value);
+                    }
+                    return default(T);
                 }
-                return default(T);
-            }
+            });
         }
 
         /// <summary>
@@ -554,19 +565,22 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public T ListRightPop<T>(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<T> ListRightPopAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task<T>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = db.ListRightPop(key, flags);
-                if (!value.IsNullOrEmpty)
+                using (var redis = _RedisProvider.Redis)
                 {
-                    return JsonDserialize<T>(value);
+                    var db = redis.GetDatabase();
+                    RedisValue value = db.ListRightPopAsync(key, flags).Result;
+                    if (!value.IsNullOrEmpty)
+                    {
+                        return JsonDserialize<T>(value);
+                    }
+                    return default(T);
                 }
-                return default(T);
-            }
+            });
         }
 
         /// <summary>
@@ -577,14 +591,15 @@ namespace NETCore.RedisKit
         /// <param name="vals">值集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>the number of removed elements</returns>
-        public long ListRemove<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListRemoveAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
-                return db.ListRemove(key, value, 0, flags);
+
+                return db.ListRemoveAsync(key, value, 0, flags);
             }
         }
 
@@ -594,13 +609,13 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool ListRemoveAll(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> ListRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyDelete(key, flags);
+                return db.KeyDeleteAsync(key, flags);
             }
         }
 
@@ -610,13 +625,13 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public long ListCount(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<long> ListCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.ListLength(key, flags);
+                return db.ListLengthAsync(key, flags);
             }
         }
 
@@ -628,19 +643,23 @@ namespace NETCore.RedisKit
         /// <param name="index">索引</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public T ListGetByIndex<T>(RedisKey key, long index, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<T> ListGetByIndexAsync<T>(RedisKey key, long index, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task<T>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = db.ListGetByIndex(key, index, flags);
-                if (!value.IsNullOrEmpty)
+                using (var redis = _RedisProvider.Redis)
                 {
-                    return JsonDserialize<T>(value);
+                    var db = redis.GetDatabase();
+                    RedisValue value = db.ListGetByIndexAsync(key, index, flags).Result;
+                    if (!value.IsNullOrEmpty)
+                    {
+                        return JsonDserialize<T>(value);
+                    }
+                    return default(T);
                 }
-                return default(T);
-            }
+            });
+
         }
 
         /// <summary>
@@ -650,26 +669,29 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public IEnumerable<T> ListGetAll<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> ListGetAllAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                var values = db.ListRange(key, 0, -1, flags);
-                var result = new List<T>();
-                if (values.Any())
+                using (var redis = _RedisProvider.Redis)
                 {
-                    values.ToList().ForEach(x =>
+                    var db = redis.GetDatabase();
+                    var values = db.ListRangeAsync(key, 0, -1, flags).Result;
+                    var result = new List<T>();
+                    if (values.Any())
                     {
-                        if (!x.IsNullOrEmpty)
+                        values.ToList().ForEach(x =>
                         {
-                            result.Add(JsonDserialize<T>(x));
-                        }
-                    });
+                            if (!x.IsNullOrEmpty)
+                            {
+                                result.Add(JsonDserialize<T>(x));
+                            }
+                        });
+                    }
+                    return result;
                 }
-                return result;
-            }
+            });
         }
 
         /// <summary>
@@ -681,26 +703,29 @@ namespace NETCore.RedisKit
         /// <param name="stopIndex">结束索引 -1表示结尾</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public IEnumerable<T> ListGetRange<T>(RedisKey key, long startIndex, long stopIndex, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> ListGetRangeAsync<T>(RedisKey key, long startIndex, long stopIndex, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                var values = db.ListRangeAsync(key, startIndex, stopIndex, flags).Result;
-                var result = new List<T>();
-                if (values.Any())
+                using (var redis = _RedisProvider.Redis)
                 {
-                    values.ToList().ForEach(x =>
+                    var db = redis.GetDatabase();
+                    var values = db.ListRangeAsync(key, startIndex, stopIndex, flags).Result;
+                    var result = new List<T>();
+                    if (values.Any())
                     {
-                        if (!x.IsNullOrEmpty)
+                        values.ToList().ForEach(x =>
                         {
-                            result.Add(JsonDserialize<T>(x));
-                        }
-                    });
+                            if (!x.IsNullOrEmpty)
+                            {
+                                result.Add(JsonDserialize<T>(x));
+                            }
+                        });
+                    }
+                    return result;
                 }
-                return result;
-            }
+            });
         }
 
         /// <summary>
@@ -710,17 +735,15 @@ namespace NETCore.RedisKit
         /// <param name="expireAt">DateTime失效点：到达该时间点，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool ListExpireAt(RedisKey key, DateTime expireAt, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> ListExpireAtAsync(RedisKey key, DateTime expireAt, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyExpire(key, expireAt, flags);
+                return db.KeyExpireAsync(key, expireAt, flags);
             }
         }
-
         /// <summary>
         /// 设置List缓存过期
         /// </summary>
@@ -728,17 +751,15 @@ namespace NETCore.RedisKit
         /// <param name="expiresIn">TimeSpan失效点：经过该时间段，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool ListExpireIn(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> ListExpireInAsync(RedisKey key, TimeSpan expireIn, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyExpire(key, expiresIn, flags);
+                return db.KeyExpireAsync(key, expireIn, flags);
             }
         }
-
         #endregion
 
         #region Set
@@ -751,14 +772,14 @@ namespace NETCore.RedisKit
         /// <param name="val">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>如果值不存在，则添加到集合，返回True否则返回False</returns>
-        public bool SetAdd<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetAddAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
-                return db.SetAdd(key, value, flags);
+                return db.SetAddAsync(key, value, flags);
             }
         }
 
@@ -770,12 +791,12 @@ namespace NETCore.RedisKit
         /// <param name="vals">值集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>添加值到集合，如果存在重复值，则不添加，返回添加的总数</returns>
-        public long SetAddRanage<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SetAddRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             if (vals == null || !vals.Any())
             {
-                return 0;
+                return Task.FromResult<long>(0);
             }
             using (var redis = _RedisProvider.Redis)
             {
@@ -788,7 +809,7 @@ namespace NETCore.RedisKit
                     i++;
                 });
 
-                return db.SetAdd(key, values, flags);
+                return db.SetAddAsync(key, values, flags);
             }
         }
 
@@ -800,14 +821,14 @@ namespace NETCore.RedisKit
         /// <param name="val">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>如果值从Set集合中移除返回True，否则返回False</returns>
-        public bool SetRemove<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetRemoveAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
-                return db.SetRemove(key, value, flags);
+                return db.SetRemoveAsync(key, value, flags);
             }
         }
 
@@ -819,12 +840,12 @@ namespace NETCore.RedisKit
         /// <param name="vals">值集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long SetRemoveRange<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SetRemoveRangeAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             if (vals == null || !vals.Any())
             {
-                return 0;
+                return Task.FromResult<long>(0);
             }
             using (var redis = _RedisProvider.Redis)
             {
@@ -836,7 +857,8 @@ namespace NETCore.RedisKit
                     values[i] = JsonSerialize(x);
                     i++;
                 });
-                return db.SetRemove(key, values, flags);
+
+                return db.SetRemoveAsync(key, values, flags);
             }
         }
 
@@ -846,13 +868,13 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns> True if the key was removed.</returns>
-        public bool SetRemoveAll(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyDelete(key, flags);
+                return db.KeyDeleteAsync(key, flags);
             }
         }
 
@@ -864,32 +886,35 @@ namespace NETCore.RedisKit
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public IEnumerable<T> SetCombine<T>(IEnumerable<RedisKey> keys, SetOperation operation, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> SetCombineAsync<T>(IEnumerable<RedisKey> keys, SetOperation operation, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(keys, nameof(keys));
-            var result = new List<T>();
-            if (keys == null || !keys.Any())
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                return result;
-            }
-
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                var values = db.SetCombine(operation, keys.ToArray(), flags);
-
-                if (values != null && values.Any())
+                var result = new List<T>();
+                if (keys == null || !keys.Any())
                 {
-                    values.ToList().ForEach(x =>
-                    {
-                        if (!x.IsNullOrEmpty)
-                        {
-                            result.Add(JsonDserialize<T>(x));
-                        }
-                    });
+                    return result;
                 }
-                return result;
-            }
+
+                using (var redis = _RedisProvider.Redis)
+                {
+                    var db = redis.GetDatabase();
+                    var values = db.SetCombineAsync(operation, keys.ToArray(), flags).Result;
+
+                    if (values != null && values.Any())
+                    {
+                        values.ToList().ForEach(x =>
+                        {
+                            if (!x.IsNullOrEmpty)
+                            {
+                                result.Add(JsonDserialize<T>(x));
+                            }
+                        });
+                    }
+                    return result;
+                }
+            });
         }
 
         /// <summary>
@@ -901,29 +926,32 @@ namespace NETCore.RedisKit
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>list with members of the resulting set.</returns>
-        public IEnumerable<T> SetCombine<T>(RedisKey firstKey, RedisKey sencondKey, SetOperation operation, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> SetCombineAsync<T>(RedisKey firstKey, RedisKey sencondKey, SetOperation operation, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(firstKey, nameof(firstKey));
             Guard.ArgumentNotNullOrEmpty(sencondKey, nameof(sencondKey));
-            using (var redis = _RedisProvider.Redis)
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                var values = db.SetCombine(operation, firstKey, sencondKey, flags);
-
-                var result = new List<T>();
-
-                if (values != null && values.Any())
+                using (var redis = _RedisProvider.Redis)
                 {
-                    values.ToList().ForEach(x =>
+                    var db = redis.GetDatabase();
+                    var values = db.SetCombineAsync(operation, firstKey, sencondKey, flags).Result;
+
+                    var result = new List<T>();
+
+                    if (values != null && values.Any())
                     {
-                        if (!x.IsNullOrEmpty)
+                        values.ToList().ForEach(x =>
                         {
-                            result.Add(JsonDserialize<T>(x));
-                        }
-                    });
+                            if (!x.IsNullOrEmpty)
+                            {
+                                result.Add(JsonDserialize<T>(x));
+                            }
+                        });
+                    }
+                    return result;
                 }
-                return result;
-            }
+            });
         }
 
         /// <summary>
@@ -935,21 +963,21 @@ namespace NETCore.RedisKit
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long SetCombineStore<T>(RedisKey storeKey, IEnumerable<RedisKey> soureKeys, SetOperation operation, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SetCombineStoreAsync<T>(RedisKey storeKey, IEnumerable<RedisKey> soureKeys, SetOperation operation, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(storeKey, nameof(storeKey));
             if (soureKeys == null || !soureKeys.Any())
             {
-                return 0;
+                return Task.FromResult<long>(0);
             }
 
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.SetCombineAndStore(operation, storeKey, soureKeys.ToArray(), flags);
+                return db.SetCombineAndStoreAsync(operation, storeKey, soureKeys.ToArray(), flags);
             }
-        }
 
+        }
         /// <summary>
         /// Set Combine And Store In StoreKey Set 操作
         /// </summary>
@@ -960,7 +988,7 @@ namespace NETCore.RedisKit
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long SetCombineStore<T>(RedisKey storeKey, RedisKey firstKey, RedisKey secondKey, SetOperation operation, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SetCombineStoreAsync<T>(RedisKey storeKey, RedisKey firstKey, RedisKey secondKey, SetOperation operation, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(storeKey, nameof(storeKey));
             Guard.ArgumentNotNullOrEmpty(firstKey, nameof(firstKey));
@@ -968,7 +996,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.SetCombineAndStore(operation, storeKey, firstKey, secondKey, flags);
+                return db.SetCombineAndStoreAsync(operation, storeKey, firstKey, secondKey, flags);
             }
         }
 
@@ -981,7 +1009,7 @@ namespace NETCore.RedisKit
         /// <param name="val">待移动元素</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool SetMove<T>(RedisKey sourceKey, RedisKey destinationKey, T val, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetMoveAsync<T>(RedisKey sourceKey, RedisKey destinationKey, T val, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(sourceKey, nameof(sourceKey));
             Guard.ArgumentNotNullOrEmpty(destinationKey, nameof(destinationKey));
@@ -989,9 +1017,10 @@ namespace NETCore.RedisKit
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
-                return db.SetMove(sourceKey, destinationKey, value, flags);
+                return db.SetMoveAsync(sourceKey, destinationKey, value, flags);
             }
         }
+
         /// <summary>
         /// Set Exists 操作
         /// </summary>
@@ -1000,14 +1029,14 @@ namespace NETCore.RedisKit
         /// <param name="val">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public bool SetExists<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<bool> SetExistsAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
-                return db.SetContains(key, value, flags);
+                return db.SetContainsAsync(key, value, flags);
             }
         }
 
@@ -1017,13 +1046,13 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public long SetCount(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<long> SetCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.SetLength(key, flags);
+                return db.SetLengthAsync(key, flags);
             }
         }
 
@@ -1034,27 +1063,30 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public IEnumerable<T> SetGetAll<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> SetGetAllAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue[] values = db.SetMembers(key);
-                var result = new List<T>();
-
-                if (values != null && values.Any())
+                using (var redis = _RedisProvider.Redis)
                 {
-                    values.ToList().ForEach(x =>
+                    var db = redis.GetDatabase();
+                    RedisValue[] values = db.SetMembersAsync(key).Result;
+                    var result = new List<T>();
+
+                    if (values != null && values.Any())
                     {
-                        if (!x.IsNullOrEmpty)
+                        values.ToList().ForEach(x =>
                         {
-                            result.Add(JsonDserialize<T>(x));
-                        }
-                    });
+                            if (!x.IsNullOrEmpty)
+                            {
+                                result.Add(JsonDserialize<T>(x));
+                            }
+                        });
+                    }
+                    return result;
                 }
-                return result;
-            }
+            });
         }
 
         /// <summary>
@@ -1064,15 +1096,15 @@ namespace NETCore.RedisKit
         /// <param name="expireAt">DateTime失效点：到达该时间点，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool SetExpireAt(RedisKey key, DateTime expireAt, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetExpireAtAsync(RedisKey key, DateTime expireAt, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyExpire(key, expireAt, flags);
+                return db.KeyExpireAsync(key, expireAt, flags);
             }
+
         }
         /// <summary>
         /// Set Expire In 操作
@@ -1081,15 +1113,16 @@ namespace NETCore.RedisKit
         /// <param name="expireIn">TimeSpan失效点：经过该时间段，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool SetExpireIn(RedisKey key, TimeSpan expireIn, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetExpireInAsync(RedisKey key, TimeSpan expireIn, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyExpire(key, expireIn, flags);
+                return db.KeyExpireAsync(key, expireIn, flags);
             }
         }
+
         #endregion
 
         #region SortedSet
@@ -1103,16 +1136,17 @@ namespace NETCore.RedisKit
         /// <param name="score">优先级</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool SortedSetAdd<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SortedSetAddAsync<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
-                return db.SortedSetAdd(key, value, score, flags);
+                return db.SortedSetAddAsync(key, value, score, flags);
             }
         }
+
         /// <summary>
         /// SortedSet Add 操作（多条）
         /// </summary>
@@ -1121,20 +1155,22 @@ namespace NETCore.RedisKit
         /// <param name="vals">待添加值集合<see cref="SortedSetEntry"/></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public long SortedSetAdd(RedisKey key, IEnumerable<SortedSetEntry> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetAddAsync(RedisKey key, IEnumerable<SortedSetEntry> vals, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
+
             if (vals == null || !vals.Any())
             {
-                return 0;
+                return Task.FromResult<long>(0);
             }
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 SortedSetEntry[] values = vals.ToArray();
-                return db.SortedSetAdd(key, values, flags);
+                return db.SortedSetAddAsync(key, values, flags);
             }
         }
+
         /// <summary>
         /// SortedSet Increment Score 操作
         /// </summary>
@@ -1144,14 +1180,14 @@ namespace NETCore.RedisKit
         /// <param name="score">优先级</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>Incremented score</returns>
-        public double SortedSetIncrementScore<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<double> SortedSetIncrementScoreAsync<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
-                return db.SortedSetIncrement(key, value, score, flags);
+                return db.SortedSetIncrementAsync(key, value, score, flags);
             }
         }
 
@@ -1164,14 +1200,14 @@ namespace NETCore.RedisKit
         /// <param name="score">优先级</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>Decremented score</returns>
-        public double SortedSetDecrementScore<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<double> SortedSetDecrementScoreAsync<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
-                return db.SortedSetDecrement(key, value, score, flags);
+                return db.SortedSetDecrementAsync(key, value, score, flags);
             }
         }
 
@@ -1183,16 +1219,17 @@ namespace NETCore.RedisKit
         /// <param name="val">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool SortedSetRemove<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SortedSetRemoveAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 RedisValue value = JsonSerialize(val);
-                return db.SortedSetRemove(key, value, flags);
+                return db.SortedSetRemoveAsync(key, value, flags);
             }
         }
+
         /// <summary>
         /// Sorted Remove 操作(删除多条)
         /// </summary>
@@ -1201,12 +1238,12 @@ namespace NETCore.RedisKit
         /// <param name="vals">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long SortedSetRemoveRanage<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetRemoveRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             if (vals == null || !vals.Any())
             {
-                return 0;
+                return Task.FromResult<long>(0);
             }
             using (var redis = _RedisProvider.Redis)
             {
@@ -1219,9 +1256,10 @@ namespace NETCore.RedisKit
                     i++;
                 });
 
-                return db.SortedSetRemove(key, values, flags);
+                return db.SortedSetRemoveAsync(key, values, flags);
             }
         }
+
         /// <summary>
         /// Sorted Remove 操作(根据索引区间删除,索引值按Score由小到大排序)
         /// </summary>
@@ -1230,13 +1268,13 @@ namespace NETCore.RedisKit
         /// <param name="stopIndex">结束索引，-1标识倒数第一项</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long SortedSetRemove(RedisKey key, long startIndex, long stopIndex, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetRemoveAsync(RedisKey key, long startIndex, long stopIndex, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.SortedSetRemoveRangeByRank(key, startIndex, stopIndex, flags);
+                return db.SortedSetRemoveRangeByRankAsync(key, startIndex, stopIndex, flags);
             }
         }
         /// <summary>
@@ -1248,13 +1286,13 @@ namespace NETCore.RedisKit
         /// <param name="exclue">排除项<see cref="Exclude"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>the number of elements removed.</returns>
-        public long SortedSetRemove(RedisKey key, double startScore, double stopScore, Exclude exclue, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetRemoveAsync(RedisKey key, double startScore, double stopScore, Exclude exclue, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.SortedSetRemoveRangeByScore(key, startScore, stopScore, exclue, flags);
+                return db.SortedSetRemoveRangeByScoreAsync(key, startScore, stopScore, exclue, flags);
             }
         }
 
@@ -1264,13 +1302,13 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>thre reuslt of all sorted set removed</returns>
-        public bool SortedSetRemoveAll(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SortedSetRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyDelete(key, flags);
+                return db.KeyDeleteAsync(key, flags);
             }
         }
 
@@ -1282,7 +1320,7 @@ namespace NETCore.RedisKit
         /// <param name="order">根据order<see cref="Order"/>来保留指定区间，如保留前100名，保留后100名</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>移除元素数量</returns>
-        public long SortedSetTrim(RedisKey key, long size, Order order = Order.Descending, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetTrimAsync(RedisKey key, long size, Order order = Order.Descending, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
@@ -1291,11 +1329,11 @@ namespace NETCore.RedisKit
 
                 if (order == Order.Ascending)
                 {
-                    return db.SortedSetRemoveRangeByRank(key, size, -1, flags);
+                    return db.SortedSetRemoveRangeByRankAsync(key, size, -1, flags);
                 }
                 else
                 {
-                    return db.SortedSetRemoveRangeByRank(key, 0, -size - 1, flags);
+                    return db.SortedSetRemoveRangeByRankAsync(key, 0, -size - 1, flags);
                 }
             }
         }
@@ -1306,13 +1344,14 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long SortedSetCount(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<long> SortedSetCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.SortedSetLength(key, double.NegativeInfinity, double.PositiveInfinity, Exclude.None, flags);
+
+                return db.SortedSetLengthAsync(key, double.NegativeInfinity, double.PositiveInfinity, Exclude.None, flags);
             }
         }
 
@@ -1324,15 +1363,18 @@ namespace NETCore.RedisKit
         /// <param name="val">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public bool SortedSetExists<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<bool> SortedSetExistsAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task<bool>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                return db.SortedSetScore(key, value, flags) != null;
-            }
+                using (var redis = _RedisProvider.Redis)
+                {
+                    var db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.SortedSetScore(key, value, flags) != null;
+                }
+            });
         }
 
         /// <summary>
@@ -1342,20 +1384,23 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public T SortedSetGetMinByScore<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<T> SortedSetGetMinByScoreAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task<T>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                var values = db.SortedSetRangeByRank(key, 0, 1, Order.Ascending, flags);
-
-                if (values != null && values.Any())
+                using (var redis = _RedisProvider.Redis)
                 {
-                    return JsonDserialize<T>(values.First());
+                    var db = redis.GetDatabase();
+                    var values = db.SortedSetRangeByRank(key, 0, 1, Order.Ascending, flags);
+
+                    if (values != null && values.Any())
+                    {
+                        return JsonDserialize<T>(values.First());
+                    }
+                    return default(T);
                 }
-                return default(T);
-            }
+            });
         }
 
         /// <summary>
@@ -1365,20 +1410,23 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public T SortedSetGetMaxByScore<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<T> SortedSetGetMaxByScoreAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task<T>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                var values = db.SortedSetRangeByRank(key, 0, 1, Order.Descending, flags);
-
-                if (values != null && values.Any())
+                using (var redis = _RedisProvider.Redis)
                 {
-                    return JsonDserialize<T>(values.First());
+                    var db = redis.GetDatabase();
+                    var values = db.SortedSetRangeByRank(key, 0, 1, Order.Descending, flags);
+
+                    if (values != null && values.Any())
+                    {
+                        return JsonDserialize<T>(values.First());
+                    }
+                    return default(T);
                 }
-                return default(T);
-            }
+            });
         }
 
         /// <summary>
@@ -1391,29 +1439,32 @@ namespace NETCore.RedisKit
         /// <param name="order">排序规则<see cref="Order"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public IEnumerable<T> SortedSetGetPageList<T>(RedisKey key, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> SortedSetGetPageListAsync<T>(RedisKey key, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentMinValue(page, 1, nameof(page));
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
-            using (var redis = _RedisProvider.Redis)
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                var values = db.SortedSetRangeByRank(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
-                var result = new List<T>();
-                if (values != null && values.Length > 0)
+                using (var redis = _RedisProvider.Redis)
                 {
-                    foreach (var value in values)
+                    var db = redis.GetDatabase();
+                    var values = db.SortedSetRangeByRank(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
+                    var result = new List<T>();
+                    if (values != null && values.Length > 0)
                     {
-                        if (!value.IsNullOrEmpty)
+                        foreach (var value in values)
                         {
-                            var data = JsonDserialize<T>(value);
-                            result.Add(data);
+                            if (!value.IsNullOrEmpty)
+                            {
+                                var data = JsonDserialize<T>(value);
+                                result.Add(data);
+                            }
                         }
                     }
+                    return result;
                 }
-                return result;
-            }
+            });
         }
 
         /// <summary>
@@ -1429,30 +1480,32 @@ namespace NETCore.RedisKit
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <param name="exclude">排除规则<see cref="Exclude"/>,默认为None</param>
         /// <returns></returns>
-        public IEnumerable<T> SortedSetGetPageList<T>(RedisKey key, double startScore, double stopScore, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, Exclude exclude = Exclude.None)
+        public Task<IEnumerable<T>> SortedSetGetPageListAsync<T>(RedisKey key, double startScore, double stopScore, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, Exclude exclude = Exclude.None)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentMinValue(page, 1, nameof(page));
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
-
-            using (var redis = _RedisProvider.Redis)
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                var values = db.SortedSetRangeByScore(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
-                var result = new List<T>();
-                if (values != null && values.Length > 0)
+                using (var redis = _RedisProvider.Redis)
                 {
-                    foreach (var value in values)
+                    var db = redis.GetDatabase();
+                    var values = db.SortedSetRangeByScore(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
+                    var result = new List<T>();
+                    if (values != null && values.Length > 0)
                     {
-                        if (!value.IsNullOrEmpty)
+                        foreach (var value in values)
                         {
-                            var data = JsonDserialize<T>(value);
-                            result.Add(data);
+                            if (!value.IsNullOrEmpty)
+                            {
+                                var data = JsonDserialize<T>(value);
+                                result.Add(data);
+                            }
                         }
                     }
+                    return result;
                 }
-                return result;
-            }
+            });
         }
 
         /// <summary>
@@ -1464,7 +1517,7 @@ namespace NETCore.RedisKit
         /// <param name="order">排序规则<see cref="Order"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public SortedSetEntry[] SortedSetGetPageListWithScore(RedisKey key, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<SortedSetEntry[]> SortedSetGetPageListWithScoreAsync(RedisKey key, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentMinValue(page, 1, nameof(page));
@@ -1472,9 +1525,10 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.SortedSetRangeByRankWithScores(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
+                return db.SortedSetRangeByRankWithScoresAsync(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
             }
         }
+
         /// <summary>
         /// Sorted Set Get Page List With Score 操作(根据分数区间)
         /// </summary>
@@ -1488,7 +1542,7 @@ namespace NETCore.RedisKit
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <param name="exclude">排除规则<see cref="Exclude"/>,默认为None</param>
         /// <returns></returns>
-        public SortedSetEntry[] SortedSetGetPageListWithScore(RedisKey key, double startScore, double stopScore, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, Exclude exclude = Exclude.None)
+        public Task<SortedSetEntry[]> SortedSetGetPageListWithScoreAsync(RedisKey key, double startScore, double stopScore, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, Exclude exclude = Exclude.None)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentMinValue(page, 1, nameof(page));
@@ -1496,7 +1550,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.SortedSetRangeByScoreWithScores(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
+                return db.SortedSetRangeByScoreWithScoresAsync(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
             }
         }
 
@@ -1508,24 +1562,28 @@ namespace NETCore.RedisKit
         /// <param name="order">排序规则<see cref="Order"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public IEnumerable<T> SortedSetGetAll<T>(RedisKey key, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> SortedSetGetAllAsync<T>(RedisKey key, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                var values = db.SortedSetRangeByRank(key, 0, -1, order, flags);
-                var result = new List<T>();
-                foreach (var value in values)
+                using (var redis = _RedisProvider.Redis)
                 {
-                    if (!value.IsNullOrEmpty)
+                    var db = redis.GetDatabase();
+                    var values = db.SortedSetRangeByRank(key, 0, -1, order, flags);
+                    var result = new List<T>();
+                    foreach (var value in values)
                     {
-                        var data = JsonDserialize<T>(value);
-                        result.Add(data);
+                        if (!value.IsNullOrEmpty)
+                        {
+                            var data = JsonDserialize<T>(value);
+                            result.Add(data);
+                        }
                     }
+                    return result;
                 }
-                return result;
-            }
+            });
         }
 
         /// <summary>
@@ -1536,20 +1594,20 @@ namespace NETCore.RedisKit
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long SortedSetCombineAndStore(RedisKey storeKey, RedisKey[] combineKeys, SetOperation setOperation, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetCombineAndStoreAsync(RedisKey storeKey, RedisKey[] combineKeys, SetOperation setOperation, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(storeKey, nameof(storeKey));
             if (combineKeys == null || !combineKeys.Any())
             {
-                return 0;
+                return Task.FromResult<long>(0);
             }
-
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.SortedSetCombineAndStore(setOperation, storeKey, combineKeys, null, Aggregate.Sum, flags);
+                return db.SortedSetCombineAndStoreAsync(setOperation, storeKey, combineKeys, null, Aggregate.Sum, flags);
             }
         }
+
         /// <summary>
         /// Sorted Set Combine And Store 操作
         /// </summary>
@@ -1558,20 +1616,22 @@ namespace NETCore.RedisKit
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public long SortedSetCombineAndStore(RedisKey storeKey, IEnumerable<RedisKey> combineKeys, SetOperation setOperation, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetCombineAndStoreAsync(RedisKey storeKey, IEnumerable<RedisKey> combineKeys, SetOperation setOperation, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(storeKey, nameof(storeKey));
             if (combineKeys == null || !combineKeys.Any())
             {
-                return 0;
+                return Task.FromResult<long>(0);
             }
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
                 var keys = combineKeys.ToArray();
-                return db.SortedSetCombineAndStore(setOperation, storeKey, keys, null, Aggregate.Sum, flags);
+                return db.SortedSetCombineAndStoreAsync(setOperation, storeKey, keys, null, Aggregate.Sum, flags);
             }
         }
+
+
         /// <summary>
         ///  Sorted Set Expire At DeteTime 操作
         /// </summary>
@@ -1579,13 +1639,14 @@ namespace NETCore.RedisKit
         /// <param name="expiresAt">DateTime失效点：到达该时间点，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool SortedSetExpireAt(RedisKey key, DateTime expiresAt, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SortedSetExpireAtAsync(RedisKey key, DateTime expiresAt, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
+
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyExpire(key, expiresAt, flags);
+                return db.KeyExpireAsync(key, expiresAt, flags);
             }
         }
 
@@ -1596,13 +1657,13 @@ namespace NETCore.RedisKit
         /// <param name="expiresIn">TimeSpan失效点：经过该时间段，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool SortedSetExpireIn(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SortedSetExpireInAsync(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyExpire(key, expiresIn, flags);
+                return db.KeyExpireAsync(key, expiresIn, flags);
             }
         }
         #endregion
@@ -1619,7 +1680,7 @@ namespace NETCore.RedisKit
         /// <param name="when">依据value的执行条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool HashSet<T>(RedisKey key, RedisValue hashField, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> HashSetAsync<T>(RedisKey key, RedisValue hashField, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
@@ -1627,7 +1688,7 @@ namespace NETCore.RedisKit
             {
                 var db = redis.GetDatabase();
                 var value = JsonSerialize(val);
-                return db.HashSet(key, hashField, value, when, flags);
+                return db.HashSetAsync(key, hashField, value, when, flags);
             }
         }
 
@@ -1638,18 +1699,17 @@ namespace NETCore.RedisKit
         /// <param name="values">值集合<see cref="HashEntry"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public void HashSetRange(RedisKey key, IEnumerable<HashEntry> hashFields, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task HashSetRangeAsync(RedisKey key, IEnumerable<HashEntry> hashFields, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            Guard.ArgumentNotNullOrEmpty(hashFields, nameof(hashFields));
             if (hashFields == null || !hashFields.Any())
             {
-                return;
+                return Task.FromResult(0);
             }
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                db.HashSet(key, hashFields.ToArray(), flags);
+                return db.HashSetAsync(key, hashFields.ToArray(), flags);
             }
         }
 
@@ -1660,34 +1720,14 @@ namespace NETCore.RedisKit
         /// <param name="hashField">hash项</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public bool HashRemove(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> HashRemoveAsync(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.HashDelete(key, hashField, flags);
-            }
-        }
-        /// <summary>
-        /// Hash Remove 操作(删除多条)
-        /// </summary>
-        /// <param name="key">键</param>
-        /// <param name="hashField">hash项集合<see cref="Array"/></param>
-        /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
-        /// <returns></returns>
-        public long HashRemove(RedisKey key, RedisValue[] hashFields, CommandFlags flags = CommandFlags.DemandMaster)
-        {
-            Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            if (hashFields == null || !hashFields.Any())
-            {
-                return 0;
-            }
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.HashDelete(key, hashFields, flags);
+                return db.HashDeleteAsync(key, hashField, flags);
             }
         }
 
@@ -1695,20 +1735,42 @@ namespace NETCore.RedisKit
         /// Hash Remove 操作(删除多条)
         /// </summary>
         /// <param name="key">键</param>
-        /// <param name="hashField">hash项集合<see cref="IEnumerable{T}"/></param>
+        /// <param name="hashField">hash项集合<see cref="Array"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public long HashRemove(RedisKey key, IEnumerable<RedisValue> hashFields, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> HashRemoveAsync(RedisKey key, RedisValue[] hashFields, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             if (hashFields == null || !hashFields.Any())
             {
-                return 0;
+                return Task.FromResult<long>(0);
             }
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.HashDelete(key, hashFields.ToArray(), flags);
+                return db.HashDeleteAsync(key, hashFields, flags);
+            }
+        }
+
+        /// <summary>
+        /// Hash Remove 操作(删除多条)
+        /// </summary>
+        /// <param name="key">键</param>
+        /// <param name="hashFields">hash项集合<see cref="IEnumerable{T}"/></param>
+        /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <returns></returns>
+        public Task<long> HashRemoveAsync(RedisKey key, IEnumerable<RedisValue> hashFields, CommandFlags flags = CommandFlags.DemandMaster)
+        {
+            Guard.ArgumentNotNullOrEmpty(key, nameof(key));
+
+            if (hashFields == null || !hashFields.Any())
+            {
+                return Task.FromResult<long>(0);
+            }
+            using (var redis = _RedisProvider.Redis)
+            {
+                var db = redis.GetDatabase();
+                return db.HashDeleteAsync(key, hashFields.ToArray(), flags);
             }
         }
 
@@ -1718,13 +1780,13 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public bool HashRemoveAll(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> HashRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyDelete(key, flags);
+                return db.KeyDeleteAsync(key, flags);
             }
         }
 
@@ -1735,30 +1797,31 @@ namespace NETCore.RedisKit
         /// <param name="hashField">hash项</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public bool HashExists(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<bool> HashExistsAsync(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.HashExists(key, hashField, flags);
+                return db.HashExistsAsync(key, hashField, flags);
             }
-
         }
+
         /// <summary>
         /// Hash Count 操作
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public long HashCount(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<long> HashCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
+
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.HashLength(key, flags);
+                return db.HashLengthAsync(key, flags);
             }
         }
 
@@ -1770,21 +1833,25 @@ namespace NETCore.RedisKit
         /// <param name="hashField">hash项</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public T HashGet<T>(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<T> HashGetAsync<T>(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
-            using (var redis = _RedisProvider.Redis)
+            return Task<T>.Factory.StartNew(() =>
             {
-                var db = redis.GetDatabase();
-                var value = db.HashGet(key, hashField, flags);
-                if (!value.IsNullOrEmpty)
+                using (var redis = _RedisProvider.Redis)
                 {
-                    return JsonDserialize<T>(value);
+                    var db = redis.GetDatabase();
+                    var value = db.HashGet(key, hashField, flags);
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        return JsonDserialize<T>(value);
+                    }
+                    return default(T);
                 }
-                return default(T);
-            }
+            });
         }
+
 
         /// <summary>
         /// Hash Get 操作
@@ -1794,17 +1861,56 @@ namespace NETCore.RedisKit
         /// <param name="hashFields">hash项集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public IEnumerable<T> HashGet<T>(RedisKey key, IEnumerable<RedisValue> hashFields, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> HashGetAsync<T>(RedisKey key, IEnumerable<RedisValue> hashFields, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            Guard.ArgumentNotNullOrEmpty(hashFields, nameof(hashFields));
-            var result = new List<T>();
-            if (hashFields != null && hashFields.Any())
+
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
+                var result = new List<T>();
+
+                if (hashFields != null && hashFields.Any())
+                {
+                    using (var redis = _RedisProvider.Redis)
+                    {
+                        var db = redis.GetDatabase();
+                        var values = db.HashGet(key, hashFields.ToArray(), flags);
+
+                        if (values != null && values.Length > 0)
+                        {
+                            values.ForEach(x =>
+                            {
+                                if (!x.IsNullOrEmpty)
+                                {
+                                    result.Add(JsonDserialize<T>(x));
+                                }
+                            });
+                        }
+                    }
+                }
+                return result;
+            });
+        }
+
+        /// <summary>
+        /// Hash Get All 操作
+        /// </summary>
+        /// <typeparam name="T">泛型</typeparam>
+        /// <param name="key">键</param>
+        /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <returns></returns>
+        public Task<IEnumerable<T>> HashGetAllAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        {
+            Guard.ArgumentNotNullOrEmpty(key, nameof(key));
+
+            return Task<IEnumerable<T>>.Factory.StartNew(() =>
+            {
+                var result = new List<T>();
+
                 using (var redis = _RedisProvider.Redis)
                 {
                     var db = redis.GetDatabase();
-                    var values = db.HashGet(key, hashFields.ToArray(), flags);
+                    var values = db.HashValues(key, flags);
 
                     if (values != null && values.Length > 0)
                     {
@@ -1816,39 +1922,9 @@ namespace NETCore.RedisKit
                             }
                         });
                     }
+                    return result;
                 }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Hash Get All 操作
-        /// </summary>
-        /// <typeparam name="T">泛型</typeparam>
-        /// <param name="key">键</param>
-        /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
-        /// <returns></returns>
-        public IEnumerable<T> HashGetAll<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
-        {
-            Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            var result = new List<T>();
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                var values = db.HashValues(key, flags);
-
-                if (values != null && values.Length > 0)
-                {
-                    values.ForEach(x =>
-                    {
-                        if (!x.IsNullOrEmpty)
-                        {
-                            result.Add(JsonDserialize<T>(x));
-                        }
-                    });
-                }
-                return result;
-            }
+            });
         }
 
         /// <summary>
@@ -1857,13 +1933,14 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        public HashEntry[] HashGetAll(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<HashEntry[]> HashGetAllAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
+
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.HashGetAll(key, flags);
+                return db.HashGetAllAsync(key, flags);
             }
         }
 
@@ -1874,13 +1951,13 @@ namespace NETCore.RedisKit
         /// <param name="expiresAt">DateTime失效点：到达该时间点，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool HashExpireAt(RedisKey key, DateTime expiresAt, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> HashExpireAtAsync(RedisKey key, DateTime expiresAt, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyExpire(key, expiresAt, flags);
+                return db.KeyExpireAsync(key, expiresAt, flags);
             }
         }
 
@@ -1891,50 +1968,40 @@ namespace NETCore.RedisKit
         /// <param name="expiresIn">TimeSpan失效点：经过该时间段，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        public bool HashExpireIn(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> HashExpireInAsync(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                return db.KeyExpire(key, expiresIn, flags);
+                return db.KeyExpireAsync(key, expiresIn, flags);
             }
         }
         #endregion
 
-        #endregion
-
-        #region private
-        /// <summary>
-        /// JSON序列化
-        /// </summary>
-        /// <typeparam name="T">泛型类</typeparam>
-        /// <param name="value">序列化对象</param>
-        /// <returns>序列化之后的json字符串</returns>
-        private string JsonSerialize<T>(T val)
-        {
-            if (val == null)
-            {
-                return string.Empty;
-            }
-            return JsonConvert.SerializeObject(val);
-        }
+        #region Transition
 
         /// <summary>
-        /// JSON反序列化
+        /// Redis 事务操作
         /// </summary>
-        /// <typeparam name="T">泛型类</typeparam>
-        /// <param name="value">json字符串</param>
-        /// <returns>反序列化之后的对象</returns>
-        private T JsonDserialize<T>(string val)
+        /// <param name="action">执行命令</param>
+        /// <param name="asyncObjec">同步对象</param>
+        /// <returns></returns>
+        public Task<bool> TransactionAsync(Action<ITransaction> action, object asyncObjec = null)
         {
-            if (string.IsNullOrEmpty(val))
+            using (var redis = _RedisProvider.Redis)
             {
-                return default(T);
+                var db = redis.GetDatabase();
+                //创建事务
+                var transition = db.CreateTransaction(asyncObjec);
+                //执行Action
+                action(transition);
+                //执行事务
+                return transition.ExecuteAsync();
             }
-            return JsonConvert.DeserializeObject<T>(val);
         }
         #endregion
 
+        #endregion
     }
 }
