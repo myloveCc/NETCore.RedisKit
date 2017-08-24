@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Xunit;
 using NETCore.RedisKit.Infrastructure.Internal;
 using StackExchange.Redis;
-using NETCore.RedisKit.Core;
+using System.Threading.Tasks;
 
 namespace NETCore.RedisKit.Tests
 {
@@ -92,20 +92,20 @@ namespace NETCore.RedisKit.Tests
         }
 
         [Fact(DisplayName = "减去指定值(long)")]
-        public void DecrementAsyncWithLongTest()
+        public async Task DecrementAsyncWithLongTest()
         {
             var test_key = "test_decrement_long";
-            _RedisService.StringRemoveAsync(test_key);
+            await _RedisService.StringRemoveAsync(test_key);
             var incReuslt = _RedisService.IncrementAsync(test_key, 5).Result;
-            Assert.Equal(incReuslt, 5);
+            Assert.Equal(5, incReuslt);
 
             var decResult = _RedisService.DecrementAsync(test_key, 2).Result;
 
-            Assert.NotEqual(decResult, 0);
-            Assert.Equal(decResult, 3);
+            Assert.NotEqual(0, decResult);
+            Assert.Equal(3, decResult);
 
             decResult = _RedisService.DecrementAsync(test_key, 3).Result;
-            Assert.Equal(decResult, 0);
+            Assert.Equal(0, decResult);
             var delResult = _RedisService.StringRemoveAsync(test_key).Result;
             Assert.True(delResult);
         }
@@ -117,15 +117,15 @@ namespace NETCore.RedisKit.Tests
             var test_key = "test_decrement_long";
             _RedisService.StringRemoveAsync(test_key);
             var incReuslt = _RedisService.IncrementAsync(test_key, 5.0).Result;
-            Assert.Equal(incReuslt, 5.0);
+            Assert.Equal(5.0, incReuslt);
 
             var decResult = _RedisService.DecrementAsync(test_key, 2.0).Result;
 
-            Assert.NotEqual(decResult, 0);
-            Assert.Equal(decResult, 3.0);
+            Assert.NotEqual(0, decResult);
+            Assert.Equal(3.0, decResult);
 
             decResult = _RedisService.DecrementAsync(test_key, 3).Result;
-            Assert.Equal(decResult, 0);
+            Assert.Equal(0, decResult);
             var delResult = _RedisService.StringRemoveAsync(test_key).Result;
             Assert.True(delResult);
         }
@@ -165,7 +165,7 @@ namespace NETCore.RedisKit.Tests
         }
 
         [Fact(DisplayName = "获取Key对应缓存类型")]
-        public void KeyTypeAsyncTest()
+        public async Task KeyTypeAsyncTest()
         {
             var test_key_string = "test_key_string";
             var test_key_list = "test_key_list";
@@ -173,7 +173,7 @@ namespace NETCore.RedisKit.Tests
             var test_key_zset = "test_key_zset";
             var test_key_hash = "test_key_hash";
 
-            _RedisService.StringRemoveAsync(test_key_string);
+            await _RedisService.StringRemoveAsync(test_key_string);
             var addResult = _RedisService.StringSetAsync(test_key_string, "111").Result;
             Assert.True(addResult);
             var keyType = _RedisService.KeyTypeAsync(test_key_string).Result;

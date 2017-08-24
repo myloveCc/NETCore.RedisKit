@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Lvcc</Authors>
     <Company />
@@ -9,14 +9,15 @@
     <Copyright>Copyright 2017 (c) Lvcc. All rights reserved</Copyright>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Description>StackExchange.Redis extensions tool. Easy use redis in asp.net core.</Description>
-    <PackageReleaseNotes>support .net core 2.0 rtm</PackageReleaseNotes>
+    <PackageReleaseNotes>Update targetFramework to netstandard2.0
+Refactoring project</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/myloveCc/NETCore.RedisKit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/myloveCc/NETCore.RedisKit</RepositoryUrl>
     <PackageTags>StackExchange.Redis ASP.NETCore</PackageTags>
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <FileVersion>2.0.0.0</FileVersion>
+    <AssemblyVersion>2.0.1.0</AssemblyVersion>
+    <FileVersion>2.0.1.0</FileVersion>
     <PackageLicenseUrl>https://github.com/myloveCc/NETCore.RedisKit/blob/master/LICENSE</PackageLicenseUrl>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
