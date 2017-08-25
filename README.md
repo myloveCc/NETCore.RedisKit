@@ -6,7 +6,7 @@
 To install NETCore.RedisKit, run the following command in the [Package Manager Console](https://docs.microsoft.com/zh-cn/nuget/tools/package-manager-console)
 
 ```
-Install-Package NETCore.RedisKit -Version 2.0.1 
+Install-Package NETCore.RedisKit -Version 2.0.1-beta1
 ```
 ---
 
