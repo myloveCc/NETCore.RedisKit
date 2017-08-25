@@ -4,6 +4,9 @@ using System.Text;
 
 namespace NETCore.RedisKit.Exceptions
 {
+    /// <summary>
+    /// 序列化异常
+    /// </summary>
     public class SerializeException:Exception
     {
         private string errorMsg;

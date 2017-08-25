@@ -96,7 +96,7 @@ namespace NETCore.RedisKit
                     IDatabase db = redis.GetDatabase();
                     return db.StringDecrementAsync(key, 1, flags);
                 }
-            },cancellationToken);
+            }, cancellationToken);
         }
         /// <summary>
         /// 在原有值上减操作(long)
@@ -344,7 +344,7 @@ namespace NETCore.RedisKit
                     }
                 }
                 return result;
-            },cancellationToken);
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -398,18 +398,22 @@ namespace NETCore.RedisKit
         /// <param name="val">待插入值</param>
         /// <param name="pivot">参考值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>返回插入左侧成功后List的长度 或 -1 表示pivot未找到.</returns>
-        public Task<long> ListInsertLeftAsync<T>(RedisKey key, T val, T pivot, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListInsertLeftAsync<T>(RedisKey key, T val, T pivot, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                RedisValue pivotValue = JsonSerialize(pivot);
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    RedisValue pivotValue = JsonSerialize(pivot);
 
-                return db.ListInsertBeforeAsync(key, pivotValue, value, flags);
-            }
+                    return db.ListInsertBeforeAsync(key, pivotValue, value, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -420,18 +424,22 @@ namespace NETCore.RedisKit
         /// <param name="val">待插入值</param>
         /// <param name="pivot">参考值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns> 返回插入右侧成功后List的长度 或 -1 表示pivot未找到.</returns>
-        public Task<long> ListInsertRightAsync<T>(RedisKey key, T val, T pivot, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListInsertRightAsync<T>(RedisKey key, T val, T pivot, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                RedisValue pivotValue = JsonSerialize(pivot);
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    RedisValue pivotValue = JsonSerialize(pivot);
 
-                return db.ListInsertAfterAsync(key, pivotValue, value, flags);
-            }
+                    return db.ListInsertAfterAsync(key, pivotValue, value, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -442,16 +450,20 @@ namespace NETCore.RedisKit
         /// <param name="val">值</param>
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>Push操作之后，List的长度</returns>
-        public Task<long> ListLeftPushAsync<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListLeftPushAsync<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                return db.ListLeftPushAsync(key, value, when, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.ListLeftPushAsync(key, value, when, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -461,27 +473,31 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="vals">值集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> ListLeftPushRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListLeftPushRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             if (vals == null || !vals.Any())
             {
                 return Task.FromResult<long>(0);
             }
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue[] values = new RedisValue[vals.Count()];
-                var i = 0;
-                vals.ForEach(x =>
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    values[i] = JsonSerialize(x);
-                    i++;
-                });
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = new RedisValue[vals.Count()];
+                    var i = 0;
+                    vals.ForEach(x =>
+                    {
+                        values[i] = JsonSerialize(x);
+                        i++;
+                    });
 
-                return db.ListLeftPushAsync(key, values, flags);
-            }
+                    return db.ListLeftPushAsync(key, values, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -492,16 +508,21 @@ namespace NETCore.RedisKit
         /// <param name="val">值</param>
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> ListRightPushAsync<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListRightPushAsync<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                return db.ListRightPushAsync(key, value, when, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.ListRightPushAsync(key, value, when, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -511,26 +532,31 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="vals">值集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> ListRightPushRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListRightPushRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             if (vals == null || !vals.Any())
             {
                 return Task.FromResult<long>(0);
             }
-            using (var redis = _RedisProvider.Redis)
+
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue[] values = new RedisValue[vals.Count()];
-                var i = 0;
-                vals.ForEach(x =>
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    values[i] = JsonSerialize(x);
-                    i++;
-                });
-                return db.ListRightPushAsync(key, values, flags);
-            }
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = new RedisValue[vals.Count()];
+                    var i = 0;
+                    vals.ForEach(x =>
+                    {
+                        values[i] = JsonSerialize(x);
+                        i++;
+                    });
+                    return db.ListRightPushAsync(key, values, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -539,8 +565,9 @@ namespace NETCore.RedisKit
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<T> ListLeftPopAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<T> ListLeftPopAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<T>.Factory.StartNew(() =>
@@ -555,7 +582,7 @@ namespace NETCore.RedisKit
                     }
                     return default(T);
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -564,8 +591,9 @@ namespace NETCore.RedisKit
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<T> ListRightPopAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<T> ListRightPopAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<T>.Factory.StartNew(() =>
@@ -580,7 +608,7 @@ namespace NETCore.RedisKit
                     }
                     return default(T);
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -590,17 +618,20 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="vals">值集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>the number of removed elements</returns>
-        public Task<long> ListRemoveAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> ListRemoveAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-
-                return db.ListRemoveAsync(key, value, 0, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.ListRemoveAsync(key, value, 0, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -608,15 +639,19 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> ListRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> ListRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyDeleteAsync(key, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyDeleteAsync(key, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -624,15 +659,19 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> ListCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<long> ListCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.ListLengthAsync(key, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.ListLengthAsync(key, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -642,15 +681,16 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="index">索引</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<T> ListGetByIndexAsync<T>(RedisKey key, long index, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<T> ListGetByIndexAsync<T>(RedisKey key, long index, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            return Task<T>.Factory.StartNew(() =>
+            return Task.Run(() =>
             {
-                using (var redis = _RedisProvider.Redis)
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    var db = redis.GetDatabase();
+                    IDatabase db = redis.GetDatabase();
                     RedisValue value = db.ListGetByIndexAsync(key, index, flags).Result;
                     if (!value.IsNullOrEmpty)
                     {
@@ -658,8 +698,7 @@ namespace NETCore.RedisKit
                     }
                     return default(T);
                 }
-            });
-
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -668,17 +707,18 @@ namespace NETCore.RedisKit
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<IEnumerable<T>> ListGetAllAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> ListGetAllAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            return Task<IEnumerable<T>>.Factory.StartNew(() =>
+            return Task.Run<IEnumerable<T>>(() =>
             {
-                using (var redis = _RedisProvider.Redis)
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    var db = redis.GetDatabase();
-                    var values = db.ListRangeAsync(key, 0, -1, flags).Result;
-                    var result = new List<T>();
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = db.ListRangeAsync(key, 0, -1, flags).Result;
+                    List<T> result = new List<T>();
                     if (values.Any())
                     {
                         values.ToList().ForEach(x =>
@@ -691,7 +731,7 @@ namespace NETCore.RedisKit
                     }
                     return result;
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -702,17 +742,18 @@ namespace NETCore.RedisKit
         /// <param name="startIndex">开始索引 从0开始</param>
         /// <param name="stopIndex">结束索引 -1表示结尾</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<IEnumerable<T>> ListGetRangeAsync<T>(RedisKey key, long startIndex, long stopIndex, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> ListGetRangeAsync<T>(RedisKey key, long startIndex, long stopIndex, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            return Task<IEnumerable<T>>.Factory.StartNew(() =>
+            return Task.Run<IEnumerable<T>>(() =>
             {
-                using (var redis = _RedisProvider.Redis)
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    var db = redis.GetDatabase();
-                    var values = db.ListRangeAsync(key, startIndex, stopIndex, flags).Result;
-                    var result = new List<T>();
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = db.ListRangeAsync(key, startIndex, stopIndex, flags).Result;
+                    List<T> result = new List<T>();
                     if (values.Any())
                     {
                         values.ToList().ForEach(x =>
@@ -725,7 +766,7 @@ namespace NETCore.RedisKit
                     }
                     return result;
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -734,15 +775,19 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="expireAt">DateTime失效点：到达该时间点，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> ListExpireAtAsync(RedisKey key, DateTime expireAt, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> ListExpireAtAsync(RedisKey key, DateTime expireAt, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyExpireAsync(key, expireAt, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyExpireAsync(key, expireAt, flags);
+                }
+            }, cancellationToken);
         }
         /// <summary>
         /// 设置List缓存过期
@@ -750,15 +795,19 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="expiresIn">TimeSpan失效点：经过该时间段，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> ListExpireInAsync(RedisKey key, TimeSpan expireIn, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> ListExpireInAsync(RedisKey key, TimeSpan expireIn, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyExpireAsync(key, expireIn, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyExpireAsync(key, expireIn, flags);
+                }
+            }, cancellationToken);
         }
         #endregion
 
@@ -771,16 +820,20 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="val">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>如果值不存在，则添加到集合，返回True否则返回False</returns>
-        public Task<bool> SetAddAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetAddAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                return db.SetAddAsync(key, value, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.SetAddAsync(key, value, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -790,27 +843,31 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="vals">值集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>添加值到集合，如果存在重复值，则不添加，返回添加的总数</returns>
-        public Task<long> SetAddRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SetAddRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             if (vals == null || !vals.Any())
             {
                 return Task.FromResult<long>(0);
             }
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue[] values = new RedisValue[vals.Count()];
-                var i = 0;
-                vals.ForEach(x =>
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    values[i] = JsonSerialize(x);
-                    i++;
-                });
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = new RedisValue[vals.Count()];
+                    int i = 0;
+                    vals.ForEach(x =>
+                    {
+                        values[i] = JsonSerialize(x);
+                        i++;
+                    });
 
-                return db.SetAddAsync(key, values, flags);
-            }
+                    return db.SetAddAsync(key, values, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -820,16 +877,20 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="val">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>如果值从Set集合中移除返回True，否则返回False</returns>
-        public Task<bool> SetRemoveAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetRemoveAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                return db.SetRemoveAsync(key, value, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.SetRemoveAsync(key, value, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -839,27 +900,31 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="vals">值集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> SetRemoveRangeAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SetRemoveRangeAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             if (vals == null || !vals.Any())
             {
                 return Task.FromResult<long>(0);
             }
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue[] values = new RedisValue[vals.Count()];
-                var i = 0;
-                vals.ForEach(x =>
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    values[i] = JsonSerialize(x);
-                    i++;
-                });
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = new RedisValue[vals.Count()];
+                    int i = 0;
+                    vals.ForEach(x =>
+                    {
+                        values[i] = JsonSerialize(x);
+                        i++;
+                    });
 
-                return db.SetRemoveAsync(key, values, flags);
-            }
+                    return db.SetRemoveAsync(key, values, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -867,15 +932,19 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns> True if the key was removed.</returns>
-        public Task<bool> SetRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyDeleteAsync(key, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyDeleteAsync(key, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -885,8 +954,9 @@ namespace NETCore.RedisKit
         /// <param name="keys">多个集合的key<see cref="IEnumerable{T}"/></param>
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<IEnumerable<T>> SetCombineAsync<T>(IEnumerable<RedisKey> keys, SetOperation operation, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> SetCombineAsync<T>(IEnumerable<RedisKey> keys, SetOperation operation, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(keys, nameof(keys));
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
@@ -914,7 +984,7 @@ namespace NETCore.RedisKit
                     }
                     return result;
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -925,8 +995,9 @@ namespace NETCore.RedisKit
         /// <param name="sencondKey">第二个Set的Key</param>
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>list with members of the resulting set.</returns>
-        public Task<IEnumerable<T>> SetCombineAsync<T>(RedisKey firstKey, RedisKey sencondKey, SetOperation operation, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> SetCombineAsync<T>(RedisKey firstKey, RedisKey sencondKey, SetOperation operation, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(firstKey, nameof(firstKey));
             Guard.ArgumentNotNullOrEmpty(sencondKey, nameof(sencondKey));
@@ -951,7 +1022,7 @@ namespace NETCore.RedisKit
                     }
                     return result;
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -962,8 +1033,9 @@ namespace NETCore.RedisKit
         /// <param name="soureKeys">多个集合的key</param>
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> SetCombineStoreAsync<T>(RedisKey storeKey, IEnumerable<RedisKey> soureKeys, SetOperation operation, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SetCombineStoreAsync<T>(RedisKey storeKey, IEnumerable<RedisKey> soureKeys, SetOperation operation, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(storeKey, nameof(storeKey));
             if (soureKeys == null || !soureKeys.Any())
@@ -971,11 +1043,14 @@ namespace NETCore.RedisKit
                 return Task.FromResult<long>(0);
             }
 
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.SetCombineAndStoreAsync(operation, storeKey, soureKeys.ToArray(), flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.SetCombineAndStoreAsync(operation, storeKey, soureKeys.ToArray(), flags);
+                }
+            }, cancellationToken);
 
         }
         /// <summary>
@@ -987,17 +1062,21 @@ namespace NETCore.RedisKit
         /// <param name="secondKey">第二个集合Key</param>
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> SetCombineStoreAsync<T>(RedisKey storeKey, RedisKey firstKey, RedisKey secondKey, SetOperation operation, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SetCombineStoreAsync<T>(RedisKey storeKey, RedisKey firstKey, RedisKey secondKey, SetOperation operation, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(storeKey, nameof(storeKey));
             Guard.ArgumentNotNullOrEmpty(firstKey, nameof(firstKey));
             Guard.ArgumentNotNullOrEmpty(secondKey, nameof(secondKey));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.SetCombineAndStoreAsync(operation, storeKey, firstKey, secondKey, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.SetCombineAndStoreAsync(operation, storeKey, firstKey, secondKey, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1008,17 +1087,22 @@ namespace NETCore.RedisKit
         /// <param name="destinationKey">待添加集合</param>
         /// <param name="val">待移动元素</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> SetMoveAsync<T>(RedisKey sourceKey, RedisKey destinationKey, T val, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetMoveAsync<T>(RedisKey sourceKey, RedisKey destinationKey, T val, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(sourceKey, nameof(sourceKey));
             Guard.ArgumentNotNullOrEmpty(destinationKey, nameof(destinationKey));
-            using (var redis = _RedisProvider.Redis)
+
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                return db.SetMoveAsync(sourceKey, destinationKey, value, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.SetMoveAsync(sourceKey, destinationKey, value, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1028,16 +1112,20 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="val">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> SetExistsAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<bool> SetExistsAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                return db.SetContainsAsync(key, value, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.SetContainsAsync(key, value, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1045,15 +1133,19 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> SetCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<long> SetCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.SetLengthAsync(key, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.SetLengthAsync(key, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1062,8 +1154,9 @@ namespace NETCore.RedisKit
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<IEnumerable<T>> SetGetAllAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> SetGetAllAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
@@ -1086,7 +1179,7 @@ namespace NETCore.RedisKit
                     }
                     return result;
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1095,16 +1188,19 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="expireAt">DateTime失效点：到达该时间点，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> SetExpireAtAsync(RedisKey key, DateTime expireAt, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetExpireAtAsync(RedisKey key, DateTime expireAt, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyExpireAsync(key, expireAt, flags);
-            }
-
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyExpireAsync(key, expireAt, flags);
+                }
+            }, cancellationToken);
         }
         /// <summary>
         /// Set Expire In 操作
@@ -1112,15 +1208,19 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="expireIn">TimeSpan失效点：经过该时间段，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> SetExpireInAsync(RedisKey key, TimeSpan expireIn, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SetExpireInAsync(RedisKey key, TimeSpan expireIn, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyExpireAsync(key, expireIn, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyExpireAsync(key, expireIn, flags);
+                }
+            }, cancellationToken);
         }
 
         #endregion
@@ -1135,16 +1235,20 @@ namespace NETCore.RedisKit
         /// <param name="val">值</param>
         /// <param name="score">优先级</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> SortedSetAddAsync<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SortedSetAddAsync<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                return db.SortedSetAddAsync(key, value, score, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.SortedSetAddAsync(key, value, score, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1153,9 +1257,10 @@ namespace NETCore.RedisKit
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="vals">待添加值集合<see cref="SortedSetEntry"/></param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public Task<long> SortedSetAddAsync(RedisKey key, IEnumerable<SortedSetEntry> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetAddAsync(RedisKey key, IEnumerable<SortedSetEntry> vals, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
 
@@ -1163,12 +1268,15 @@ namespace NETCore.RedisKit
             {
                 return Task.FromResult<long>(0);
             }
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                SortedSetEntry[] values = vals.ToArray();
-                return db.SortedSetAddAsync(key, values, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    SortedSetEntry[] values = vals.ToArray();
+                    return db.SortedSetAddAsync(key, values, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1179,16 +1287,20 @@ namespace NETCore.RedisKit
         /// <param name="val">值</param>
         /// <param name="score">优先级</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>Incremented score</returns>
-        public Task<double> SortedSetIncrementScoreAsync<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<double> SortedSetIncrementScoreAsync<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                return db.SortedSetIncrementAsync(key, value, score, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.SortedSetIncrementAsync(key, value, score, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1199,16 +1311,20 @@ namespace NETCore.RedisKit
         /// <param name="val">值</param>
         /// <param name="score">优先级</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>Decremented score</returns>
-        public Task<double> SortedSetDecrementScoreAsync<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<double> SortedSetDecrementScoreAsync<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                return db.SortedSetDecrementAsync(key, value, score, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.SortedSetDecrementAsync(key, value, score, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1218,16 +1334,20 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="val">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> SortedSetRemoveAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SortedSetRemoveAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                return db.SortedSetRemoveAsync(key, value, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = JsonSerialize(val);
+                    return db.SortedSetRemoveAsync(key, value, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1237,27 +1357,31 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="vals">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> SortedSetRemoveRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetRemoveRanageAsync<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             if (vals == null || !vals.Any())
             {
                 return Task.FromResult<long>(0);
             }
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                RedisValue[] values = new RedisValue[vals.Count()];
-                var i = 0;
-                vals.ForEach(x =>
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    values[i] = JsonSerialize(x);
-                    i++;
-                });
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = new RedisValue[vals.Count()];
+                    int i = 0;
+                    vals.ForEach(x =>
+                    {
+                        values[i] = JsonSerialize(x);
+                        i++;
+                    });
 
-                return db.SortedSetRemoveAsync(key, values, flags);
-            }
+                    return db.SortedSetRemoveAsync(key, values, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1267,15 +1391,19 @@ namespace NETCore.RedisKit
         /// <param name="startIndex">开始索引，0表示第一项</param>
         /// <param name="stopIndex">结束索引，-1标识倒数第一项</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> SortedSetRemoveAsync(RedisKey key, long startIndex, long stopIndex, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetRemoveAsync(RedisKey key, long startIndex, long stopIndex, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.SortedSetRemoveRangeByRankAsync(key, startIndex, stopIndex, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.SortedSetRemoveRangeByRankAsync(key, startIndex, stopIndex, flags);
+                }
+            }, cancellationToken);
         }
         /// <summary>
         /// Sorted Remove 操作(根据Score区间删除，同时根据exclue<see cref="Exclude"/>排除删除项)
@@ -1285,15 +1413,19 @@ namespace NETCore.RedisKit
         /// <param name="stopScore">结束Score</param>
         /// <param name="exclue">排除项<see cref="Exclude"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>the number of elements removed.</returns>
-        public Task<long> SortedSetRemoveAsync(RedisKey key, double startScore, double stopScore, Exclude exclue, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetRemoveAsync(RedisKey key, double startScore, double stopScore, Exclude exclue, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.SortedSetRemoveRangeByScoreAsync(key, startScore, stopScore, exclue, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.SortedSetRemoveRangeByScoreAsync(key, startScore, stopScore, exclue, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1301,15 +1433,19 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>thre reuslt of all sorted set removed</returns>
-        public Task<bool> SortedSetRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SortedSetRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyDeleteAsync(key, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyDeleteAsync(key, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1319,23 +1455,26 @@ namespace NETCore.RedisKit
         /// <param name="size">保留条数</param>
         /// <param name="order">根据order<see cref="Order"/>来保留指定区间，如保留前100名，保留后100名</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>移除元素数量</returns>
-        public Task<long> SortedSetTrimAsync(RedisKey key, long size, Order order = Order.Descending, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetTrimAsync(RedisKey key, long size, Order order = Order.Descending, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-
-                if (order == Order.Ascending)
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    return db.SortedSetRemoveRangeByRankAsync(key, size, -1, flags);
+                    IDatabase db = redis.GetDatabase();
+                    if (order == Order.Ascending)
+                    {
+                        return db.SortedSetRemoveRangeByRankAsync(key, size, -1, flags);
+                    }
+                    else
+                    {
+                        return db.SortedSetRemoveRangeByRankAsync(key, 0, -size - 1, flags);
+                    }
                 }
-                else
-                {
-                    return db.SortedSetRemoveRangeByRankAsync(key, 0, -size - 1, flags);
-                }
-            }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1343,16 +1482,19 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> SortedSetCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<long> SortedSetCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-
-                return db.SortedSetLengthAsync(key, double.NegativeInfinity, double.PositiveInfinity, Exclude.None, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.SortedSetLengthAsync(key, double.NegativeInfinity, double.PositiveInfinity, Exclude.None, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1362,19 +1504,20 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="val">值</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> SortedSetExistsAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<bool> SortedSetExistsAsync<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<bool>.Factory.StartNew(() =>
             {
                 using (var redis = _RedisProvider.Redis)
                 {
-                    var db = redis.GetDatabase();
+                    IDatabase db = redis.GetDatabase();
                     RedisValue value = JsonSerialize(val);
                     return db.SortedSetScore(key, value, flags) != null;
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1383,16 +1526,17 @@ namespace NETCore.RedisKit
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<T> SortedSetGetMinByScoreAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<T> SortedSetGetMinByScoreAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<T>.Factory.StartNew(() =>
             {
                 using (var redis = _RedisProvider.Redis)
                 {
-                    var db = redis.GetDatabase();
-                    var values = db.SortedSetRangeByRank(key, 0, 1, Order.Ascending, flags);
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = db.SortedSetRangeByRank(key, 0, 1, Order.Ascending, flags);
 
                     if (values != null && values.Any())
                     {
@@ -1400,7 +1544,7 @@ namespace NETCore.RedisKit
                     }
                     return default(T);
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1409,16 +1553,17 @@ namespace NETCore.RedisKit
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<T> SortedSetGetMaxByScoreAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<T> SortedSetGetMaxByScoreAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<T>.Factory.StartNew(() =>
             {
                 using (var redis = _RedisProvider.Redis)
                 {
-                    var db = redis.GetDatabase();
-                    var values = db.SortedSetRangeByRank(key, 0, 1, Order.Descending, flags);
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = db.SortedSetRangeByRank(key, 0, 1, Order.Descending, flags);
 
                     if (values != null && values.Any())
                     {
@@ -1426,7 +1571,7 @@ namespace NETCore.RedisKit
                     }
                     return default(T);
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1438,22 +1583,23 @@ namespace NETCore.RedisKit
         /// <param name="pageSize">每页显示数量</param>
         /// <param name="order">排序规则<see cref="Order"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<IEnumerable<T>> SortedSetGetPageListAsync<T>(RedisKey key, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> SortedSetGetPageListAsync<T>(RedisKey key, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentMinValue(page, 1, nameof(page));
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                using (var redis = _RedisProvider.Redis)
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    var db = redis.GetDatabase();
-                    var values = db.SortedSetRangeByRank(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
-                    var result = new List<T>();
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = db.SortedSetRangeByRank(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
+                    List<T> result = new List<T>();
                     if (values != null && values.Length > 0)
                     {
-                        foreach (var value in values)
+                        foreach (RedisValue value in values)
                         {
                             if (!value.IsNullOrEmpty)
                             {
@@ -1464,7 +1610,7 @@ namespace NETCore.RedisKit
                     }
                     return result;
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1479,22 +1625,23 @@ namespace NETCore.RedisKit
         /// <param name="order">排序规则<see cref="Order"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <param name="exclude">排除规则<see cref="Exclude"/>,默认为None</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<IEnumerable<T>> SortedSetGetPageListAsync<T>(RedisKey key, double startScore, double stopScore, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, Exclude exclude = Exclude.None)
+        public Task<IEnumerable<T>> SortedSetGetPageListAsync<T>(RedisKey key, double startScore, double stopScore, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, Exclude exclude = Exclude.None, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentMinValue(page, 1, nameof(page));
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                using (var redis = _RedisProvider.Redis)
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    var db = redis.GetDatabase();
-                    var values = db.SortedSetRangeByScore(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
-                    var result = new List<T>();
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = db.SortedSetRangeByScore(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
+                    List<T> result = new List<T>();
                     if (values != null && values.Length > 0)
                     {
-                        foreach (var value in values)
+                        foreach (RedisValue value in values)
                         {
                             if (!value.IsNullOrEmpty)
                             {
@@ -1505,7 +1652,7 @@ namespace NETCore.RedisKit
                     }
                     return result;
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1516,17 +1663,21 @@ namespace NETCore.RedisKit
         /// <param name="pageSize">每页显示数量</param>
         /// <param name="order">排序规则<see cref="Order"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<SortedSetEntry[]> SortedSetGetPageListWithScoreAsync(RedisKey key, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<SortedSetEntry[]> SortedSetGetPageListWithScoreAsync(RedisKey key, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentMinValue(page, 1, nameof(page));
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.SortedSetRangeByRankWithScoresAsync(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.SortedSetRangeByRankWithScoresAsync(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1541,17 +1692,21 @@ namespace NETCore.RedisKit
         /// <param name="order">排序规则<see cref="Order"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <param name="exclude">排除规则<see cref="Exclude"/>,默认为None</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<SortedSetEntry[]> SortedSetGetPageListWithScoreAsync(RedisKey key, double startScore, double stopScore, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, Exclude exclude = Exclude.None)
+        public Task<SortedSetEntry[]> SortedSetGetPageListWithScoreAsync(RedisKey key, double startScore, double stopScore, int page, int pageSize, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, Exclude exclude = Exclude.None, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentMinValue(page, 1, nameof(page));
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.SortedSetRangeByScoreWithScoresAsync(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.SortedSetRangeByScoreWithScoresAsync(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1561,8 +1716,9 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="order">排序规则<see cref="Order"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<IEnumerable<T>> SortedSetGetAllAsync<T>(RedisKey key, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> SortedSetGetAllAsync<T>(RedisKey key, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
 
@@ -1570,20 +1726,20 @@ namespace NETCore.RedisKit
             {
                 using (var redis = _RedisProvider.Redis)
                 {
-                    var db = redis.GetDatabase();
-                    var values = db.SortedSetRangeByRank(key, 0, -1, order, flags);
-                    var result = new List<T>();
-                    foreach (var value in values)
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = db.SortedSetRangeByRank(key, 0, -1, order, flags);
+                    List<T> result = new List<T>();
+                    foreach (RedisValue value in values)
                     {
                         if (!value.IsNullOrEmpty)
                         {
-                            var data = JsonDserialize<T>(value);
+                            T data = JsonDserialize<T>(value);
                             result.Add(data);
                         }
                     }
                     return result;
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1593,19 +1749,23 @@ namespace NETCore.RedisKit
         /// <param name="combineKeys">待合并的Key集合<see cref="Array"/></param>
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> SortedSetCombineAndStoreAsync(RedisKey storeKey, RedisKey[] combineKeys, SetOperation setOperation, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetCombineAndStoreAsync(RedisKey storeKey, RedisKey[] combineKeys, SetOperation setOperation, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(storeKey, nameof(storeKey));
             if (combineKeys == null || !combineKeys.Any())
             {
                 return Task.FromResult<long>(0);
             }
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.SortedSetCombineAndStoreAsync(setOperation, storeKey, combineKeys, null, Aggregate.Sum, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.SortedSetCombineAndStoreAsync(setOperation, storeKey, combineKeys, null, Aggregate.Sum, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1615,22 +1775,25 @@ namespace NETCore.RedisKit
         /// <param name="combineKeys">待合并的Key集合<see cref="IEnumerable{T}"/></param>
         /// <param name="operation">合并类型<see cref="SetOperation"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> SortedSetCombineAndStoreAsync(RedisKey storeKey, IEnumerable<RedisKey> combineKeys, SetOperation setOperation, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> SortedSetCombineAndStoreAsync(RedisKey storeKey, IEnumerable<RedisKey> combineKeys, SetOperation setOperation, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(storeKey, nameof(storeKey));
             if (combineKeys == null || !combineKeys.Any())
             {
                 return Task.FromResult<long>(0);
             }
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                var keys = combineKeys.ToArray();
-                return db.SortedSetCombineAndStoreAsync(setOperation, storeKey, keys, null, Aggregate.Sum, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    RedisKey[] keys = combineKeys.ToArray();
+                    return db.SortedSetCombineAndStoreAsync(setOperation, storeKey, keys, null, Aggregate.Sum, flags);
+                }
+            }, cancellationToken);
         }
-
 
         /// <summary>
         ///  Sorted Set Expire At DeteTime 操作
@@ -1638,16 +1801,19 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="expiresAt">DateTime失效点：到达该时间点，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> SortedSetExpireAtAsync(RedisKey key, DateTime expiresAt, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SortedSetExpireAtAsync(RedisKey key, DateTime expiresAt, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyExpireAsync(key, expiresAt, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyExpireAsync(key, expiresAt, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1656,15 +1822,19 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="expiresIn">TimeSpan失效点：经过该时间段，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> SortedSetExpireInAsync(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> SortedSetExpireInAsync(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyExpireAsync(key, expiresIn, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyExpireAsync(key, expiresIn, flags);
+                }
+            }, cancellationToken);
         }
         #endregion
 
@@ -1679,17 +1849,21 @@ namespace NETCore.RedisKit
         /// <param name="val">值</param>
         /// <param name="when">依据value的执行条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> HashSetAsync<T>(RedisKey key, RedisValue hashField, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> HashSetAsync<T>(RedisKey key, RedisValue hashField, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                var value = JsonSerialize(val);
-                return db.HashSetAsync(key, hashField, value, when, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    string value = JsonSerialize(val);
+                    return db.HashSetAsync(key, hashField, value, when, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1698,19 +1872,23 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="values">值集合<see cref="HashEntry"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task HashSetRangeAsync(RedisKey key, IEnumerable<HashEntry> hashFields, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task HashSetRangeAsync(RedisKey key, IEnumerable<HashEntry> hashFields, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             if (hashFields == null || !hashFields.Any())
             {
                 return Task.FromResult(0);
             }
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.HashSetAsync(key, hashFields.ToArray(), flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.HashSetAsync(key, hashFields.ToArray(), flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1719,16 +1897,20 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="hashField">hash项</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> HashRemoveAsync(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> HashRemoveAsync(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.HashDeleteAsync(key, hashField, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.HashDeleteAsync(key, hashField, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1737,19 +1919,23 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="hashField">hash项集合<see cref="Array"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> HashRemoveAsync(RedisKey key, RedisValue[] hashFields, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> HashRemoveAsync(RedisKey key, RedisValue[] hashFields, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             if (hashFields == null || !hashFields.Any())
             {
                 return Task.FromResult<long>(0);
             }
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.HashDeleteAsync(key, hashFields, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.HashDeleteAsync(key, hashFields, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1758,8 +1944,9 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="hashFields">hash项集合<see cref="IEnumerable{T}"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> HashRemoveAsync(RedisKey key, IEnumerable<RedisValue> hashFields, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<long> HashRemoveAsync(RedisKey key, IEnumerable<RedisValue> hashFields, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
 
@@ -1767,11 +1954,14 @@ namespace NETCore.RedisKit
             {
                 return Task.FromResult<long>(0);
             }
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.HashDeleteAsync(key, hashFields.ToArray(), flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.HashDeleteAsync(key, hashFields.ToArray(), flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1779,15 +1969,19 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> HashRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> HashRemoveAllAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyDeleteAsync(key, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyDeleteAsync(key, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1796,16 +1990,20 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="hashField">hash项</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> HashExistsAsync(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<bool> HashExistsAsync(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.HashExistsAsync(key, hashField, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.HashExistsAsync(key, hashField, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1813,16 +2011,19 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<long> HashCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<long> HashCountAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.HashLengthAsync(key, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.HashLengthAsync(key, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1832,24 +2033,25 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="hashField">hash项</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<T> HashGetAsync<T>(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<T> HashGetAsync<T>(RedisKey key, RedisValue hashField, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
-            return Task<T>.Factory.StartNew(() =>
+            return Task.Run(() =>
             {
-                using (var redis = _RedisProvider.Redis)
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    var db = redis.GetDatabase();
-                    var value = db.HashGet(key, hashField, flags);
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue value = db.HashGet(key, hashField, flags);
                     if (!string.IsNullOrEmpty(value))
                     {
                         return JsonDserialize<T>(value);
                     }
                     return default(T);
                 }
-            });
+            }, cancellationToken);
         }
 
 
@@ -1860,21 +2062,22 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="hashFields">hash项集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<IEnumerable<T>> HashGetAsync<T>(RedisKey key, IEnumerable<RedisValue> hashFields, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> HashGetAsync<T>(RedisKey key, IEnumerable<RedisValue> hashFields, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
 
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                var result = new List<T>();
+                List<T> result = new List<T>();
 
                 if (hashFields != null && hashFields.Any())
                 {
-                    using (var redis = _RedisProvider.Redis)
+                    using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                     {
-                        var db = redis.GetDatabase();
-                        var values = db.HashGet(key, hashFields.ToArray(), flags);
+                        IDatabase db = redis.GetDatabase();
+                        RedisValue[] values = db.HashGet(key, hashFields.ToArray(), flags);
 
                         if (values != null && values.Length > 0)
                         {
@@ -1889,7 +2092,7 @@ namespace NETCore.RedisKit
                     }
                 }
                 return result;
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1898,19 +2101,18 @@ namespace NETCore.RedisKit
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<IEnumerable<T>> HashGetAllAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<IEnumerable<T>> HashGetAllAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                var result = new List<T>();
-
-                using (var redis = _RedisProvider.Redis)
+                List<T> result = new List<T>();
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
                 {
-                    var db = redis.GetDatabase();
-                    var values = db.HashValues(key, flags);
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = db.HashValues(key, flags);
 
                     if (values != null && values.Length > 0)
                     {
@@ -1924,7 +2126,7 @@ namespace NETCore.RedisKit
                     }
                     return result;
                 }
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1932,16 +2134,19 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<HashEntry[]> HashGetAllAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        public Task<HashEntry[]> HashGetAllAsync(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.HashGetAllAsync(key, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.HashGetAllAsync(key, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1950,15 +2155,19 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="expiresAt">DateTime失效点：到达该时间点，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> HashExpireAtAsync(RedisKey key, DateTime expiresAt, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> HashExpireAtAsync(RedisKey key, DateTime expiresAt, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyExpireAsync(key, expiresAt, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyExpireAsync(key, expiresAt, flags);
+                }
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -1967,15 +2176,19 @@ namespace NETCore.RedisKit
         /// <param name="key">键</param>
         /// <param name="expiresIn">TimeSpan失效点：经过该时间段，立即失效</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> HashExpireInAsync(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster)
+        public Task<bool> HashExpireInAsync(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken))
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                return db.KeyExpireAsync(key, expiresIn, flags);
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    return db.KeyExpireAsync(key, expiresIn, flags);
+                }
+            }, cancellationToken);
         }
         #endregion
 
@@ -1986,19 +2199,23 @@ namespace NETCore.RedisKit
         /// </summary>
         /// <param name="action">执行命令</param>
         /// <param name="asyncObjec">同步对象</param>
+        /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        public Task<bool> TransactionAsync(Action<ITransaction> action, object asyncObjec = null)
+        public Task<bool> TransactionAsync(Action<ITransaction> action, object asyncObjec = null, CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (var redis = _RedisProvider.Redis)
+            return Task.Run(() =>
             {
-                var db = redis.GetDatabase();
-                //创建事务
-                var transition = db.CreateTransaction(asyncObjec);
-                //执行Action
-                action(transition);
-                //执行事务
-                return transition.ExecuteAsync();
-            }
+                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                {
+                    IDatabase db = redis.GetDatabase();
+                    //创建事务
+                    ITransaction transition = db.CreateTransaction(asyncObjec);
+                    //执行Action
+                    action(transition);
+                    //执行事务
+                    return transition.ExecuteAsync();
+                }
+            }, cancellationToken);
         }
         #endregion
 

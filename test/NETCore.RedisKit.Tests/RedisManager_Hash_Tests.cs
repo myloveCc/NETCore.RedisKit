@@ -37,18 +37,18 @@ namespace NETCore.RedisKit.Tests
             var setResult = _RedisService.HashSetAsync(test_key, 1111111, "1111111").Result;
             var valueResult = _RedisService.HashGetAsync<string>(test_key, 1111111).Result;
             Assert.True(setResult);
-            Assert.Equal(valueResult, "1111111");
+            Assert.Equal("1111111", valueResult);
 
             setResult = _RedisService.HashSetAsync(test_key, 2222222, "1111111").Result;
             valueResult = _RedisService.HashGetAsync<string>(test_key, 2222222).Result;
             Assert.True(setResult);
-            Assert.Equal(valueResult, "1111111");
+            Assert.Equal("1111111", valueResult);
 
             //如果Field已存在，更新后返回false
             setResult = _RedisService.HashSetAsync(test_key, 1111111, "3333333").Result;
             valueResult = _RedisService.HashGetAsync<string>(test_key, 1111111).Result;
             Assert.False(setResult);
-            Assert.Equal(valueResult, "3333333");
+            Assert.Equal("3333333", valueResult);
 
             var delResult = _RedisService.HashRemoveAllAsync(test_key).Result;
             Assert.True(delResult);
@@ -63,7 +63,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -72,12 +72,12 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             var hashValue = _RedisService.HashGetAsync<string>(test_key, 1).Result;
             Assert.NotEmpty(hashValue);
             Assert.NotNull(hashValue);
-            Assert.Equal(hashValue, "第1条测试数据");
+            Assert.Equal("第1条测试数据", hashValue);
 
             _RedisService.HashRemoveAllAsync(test_key);
         }
@@ -91,7 +91,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -100,13 +100,13 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             var delResult = _RedisService.HashRemoveAsync(test_key, 1).Result;
             Assert.True(delResult);
 
             hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 9);
+            Assert.Equal(9, hashCount);
 
             var hashValue = _RedisService.HashGetAsync<string>(test_key, 1).Result;
             Assert.Null(hashValue);
@@ -123,7 +123,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -132,15 +132,15 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             var delFilelds = new RedisValue[] { 1, 2, 3 };
             var delResult = _RedisService.HashRemoveAsync(test_key, delFilelds).Result;
 
-            Assert.Equal(delResult, 3);
+            Assert.Equal(3, delResult);
 
             hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 7);
+            Assert.Equal(7, hashCount);
 
             var hashValue = _RedisService.HashGetAsync<string>(test_key, 1).Result;
             Assert.Null(hashValue);
@@ -153,15 +153,15 @@ namespace NETCore.RedisKit.Tests
         }
 
         [Fact(DisplayName = "移除多条Hash数据，根据Fileld集合")]
-        public void HashRemoveAsyncRangeByFileldListTest()
+        public async Task HashRemoveAsyncRangeByFileldListTest()
         {
             var test_key = "test_hash_remove_rang_by_fileld_list";
 
-            _RedisService.HashRemoveAllAsync(test_key).Wait();
+            await _RedisService.HashRemoveAllAsync(test_key);
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -170,15 +170,15 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             var delFilelds = new List<RedisValue>() { 1, 2, 3 };
             var delResult = _RedisService.HashRemoveAsync(test_key, delFilelds).Result;
 
-            Assert.Equal(delResult, 3);
+            Assert.Equal(3, delResult);
 
             hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 7);
+            Assert.Equal(7, hashCount);
 
             var hashValue = _RedisService.HashGetAsync<string>(test_key, 1).Result;
             Assert.Null(hashValue);
@@ -199,7 +199,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -208,7 +208,7 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             var delResult = _RedisService.HashRemoveAllAsync(test_key).Result;
             Assert.True(delResult);
@@ -229,7 +229,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -238,7 +238,7 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             var existResult = _RedisService.HashExistsAsync(test_key, 1).Result;
             Assert.True(existResult);
@@ -251,15 +251,15 @@ namespace NETCore.RedisKit.Tests
         }
 
         [Fact(DisplayName = "获取Hash的总数量")]
-        public void HashCountAsyncTest()
+        public async Task HashCountAsyncTest()
         {
             var test_key = "test_hash_remove_count";
 
-            _RedisService.HashRemoveAllAsync(test_key).Wait();
+            await _RedisService.HashRemoveAllAsync(test_key);
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -268,21 +268,21 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
-            _RedisService.HashRemoveAsync(test_key, 1);
+            await _RedisService.HashRemoveAsync(test_key, 1);
             hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 9);
+            Assert.Equal(9, hashCount);
 
-            _RedisService.HashRemoveAsync(test_key, new List<RedisValue>() { 2, 3 });
+            await _RedisService.HashRemoveAsync(test_key, new List<RedisValue>() { 2, 3 });
             hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 7);
+            Assert.Equal(7, hashCount);
 
-            _RedisService.HashRemoveAllAsync(test_key).Wait();
+            await _RedisService.HashRemoveAllAsync(test_key);
         }
 
         [Fact(DisplayName = "根据Field获取Hash值")]
-        public void HashGetAsyncTest()
+        public async Task HashGetAsyncTest()
         {
             var test_key = "test_hash_get_by_field";
 
@@ -290,7 +290,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -299,15 +299,15 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             var hashValue = _RedisService.HashGetAsync<string>(test_key, 1).Result;
-            Assert.Equal(hashValue, "第1条测试数据");
+            Assert.Equal("第1条测试数据", hashValue);
 
             hashValue = _RedisService.HashGetAsync<string>(test_key, 8).Result;
-            Assert.Equal(hashValue, "第8条测试数据");
+            Assert.Equal("第8条测试数据", hashValue);
 
-            _RedisService.HashRemoveAllAsync(test_key).Wait();
+            await _RedisService.HashRemoveAllAsync(test_key);
         }
 
         [Fact(DisplayName = "根据Field集合获取Hash值集合")]
@@ -319,7 +319,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -328,10 +328,10 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             var hashValues = _RedisService.HashGetAsync<string>(test_key, new List<RedisValue>() { 1, 4, 7 }).Result.ToList();
-            Assert.Equal(hashValues.Count(), 3);
+            Assert.Equal(3, hashValues.Count());
             Assert.True(hashValues.Contains("第1条测试数据"));
             Assert.True(hashValues.Contains("第4条测试数据"));
             Assert.True(hashValues.Contains("第7条测试数据"));
@@ -349,7 +349,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -358,11 +358,11 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             var hashValues = _RedisService.HashGetAllAsync<string>(test_key).Result.ToList();
 
-            Assert.Equal(hashValues.Count(), 10);
+            Assert.Equal(10, hashValues.Count());
             Assert.True(hashValues.Contains("第1条测试数据"));
             Assert.True(hashValues.Contains("第4条测试数据"));
             Assert.True(hashValues.Contains("第7条测试数据"));
@@ -380,7 +380,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -389,16 +389,15 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             var hashEntries = _RedisService.HashGetAllAsync(test_key).Result.ToList();
 
-            Assert.Equal(hashEntries.Count(), 10);
+            Assert.Equal(10, hashEntries.Count());
 
             var firstValue = hashEntries.First();
-            Assert.NotNull(firstValue);
-            Assert.Equal(firstValue.Name, "0");
-            Assert.Equal(JsonManager.Deserialize<string>(firstValue.Value), "第0条测试数据");
+            Assert.Equal("0", firstValue.Name);
+            Assert.Equal("第0条测试数据", JsonManager.Deserialize<string>(firstValue.Value));
 
             _RedisService.HashRemoveAllAsync(test_key).Wait();
         }
@@ -412,7 +411,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -421,16 +420,17 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             _RedisService.HashExpireAtAsync(test_key, DateTime.Now.AddSeconds(5));
 
 
-            Task.Factory.StartNew(() => {
+            Task.Factory.StartNew(() =>
+            {
                 Task.Delay(6).Wait();
 
                 hashCount = _RedisService.HashCountAsync(test_key).Result;
-                Assert.Equal(hashCount, 0);
+                Assert.Equal(0, hashCount);
 
                 _RedisService.HashRemoveAllAsync(test_key).Wait();
             });
@@ -445,7 +445,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<HashEntry>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0;i < 10;i++)
             {
                 var hashEntry = new HashEntry(i, JsonManager.Serialize($"第{i}条测试数据"));
                 values.Add(hashEntry);
@@ -454,15 +454,16 @@ namespace NETCore.RedisKit.Tests
             _RedisService.HashSetRangeAsync(test_key, values).Wait();
 
             var hashCount = _RedisService.HashCountAsync(test_key).Result;
-            Assert.Equal(hashCount, 10);
+            Assert.Equal(10, hashCount);
 
             _RedisService.HashExpireInAsync(test_key, new TimeSpan(0, 0, 5));
 
-            Task.Factory.StartNew(() => {
+            Task.Factory.StartNew(() =>
+            {
                 Task.Delay(6).Wait();
 
                 hashCount = _RedisService.HashCountAsync(test_key).Result;
-                Assert.Equal(hashCount, 0);
+                Assert.Equal(0, hashCount);
 
                 _RedisService.HashRemoveAllAsync(test_key).Wait();
             });

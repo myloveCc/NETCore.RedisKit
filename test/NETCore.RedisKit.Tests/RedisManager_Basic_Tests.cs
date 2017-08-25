@@ -31,11 +31,11 @@ namespace NETCore.RedisKit.Tests
 
             var addResult = _RedisService.IncrementAsync(test_key).Result;
 
-            Assert.NotEqual(addResult, 0);
-            Assert.Equal(addResult, 1);
+            Assert.NotEqual(0, addResult);
+            Assert.Equal(1, addResult);
 
             addResult = _RedisService.IncrementAsync(test_key).Result;
-            Assert.Equal(addResult, 2);
+            Assert.Equal(2, addResult);
 
             var delResult = _RedisService.StringRemoveAsync(test_key).Result;
             Assert.True(delResult);
@@ -47,11 +47,11 @@ namespace NETCore.RedisKit.Tests
             var test_key = "test_increment_long";
             var addResult = _RedisService.IncrementAsync(test_key, 2).Result;
 
-            Assert.NotEqual(addResult, 0);
-            Assert.Equal(addResult, 2);
+            Assert.NotEqual(0, addResult);
+            Assert.Equal(2, addResult);
 
             addResult = _RedisService.IncrementAsync(test_key, 3).Result;
-            Assert.Equal(addResult, 5);
+            Assert.Equal(5, addResult);
 
             var delResult = _RedisService.StringRemoveAsync(test_key).Result;
             Assert.True(delResult);
@@ -63,11 +63,11 @@ namespace NETCore.RedisKit.Tests
             var test_key = "test_increment_double";
             var addResult = _RedisService.IncrementAsync(test_key, 2.0).Result;
 
-            Assert.NotEqual(addResult, 0);
-            Assert.Equal(addResult, 2.0);
+            Assert.NotEqual(0, addResult);
+            Assert.Equal(2.0, addResult);
 
             addResult = _RedisService.IncrementAsync(test_key, 3.0).Result;
-            Assert.Equal(addResult, 5.0);
+            Assert.Equal(5.0, addResult);
 
             var delResult = _RedisService.StringRemoveAsync(test_key).Result;
             Assert.True(delResult);
@@ -78,15 +78,15 @@ namespace NETCore.RedisKit.Tests
         {
             var test_key = "test_decrement";
             var incReuslt = _RedisService.IncrementAsync(test_key, 2).Result;
-            Assert.Equal(incReuslt, 2);
+            Assert.Equal(2, incReuslt);
 
             var decResult = _RedisService.DecrementAsync(test_key).Result;
 
-            Assert.NotEqual(decResult, 0);
-            Assert.Equal(decResult, 1);
+            Assert.NotEqual(0, decResult);
+            Assert.Equal(1, decResult);
 
             decResult = _RedisService.DecrementAsync(test_key).Result;
-            Assert.Equal(decResult, 0);
+            Assert.Equal(0, decResult);
             var delResult = _RedisService.StringRemoveAsync(test_key).Result;
             Assert.True(delResult);
         }
@@ -158,7 +158,7 @@ namespace NETCore.RedisKit.Tests
             Assert.Null(getValue);
 
             getValue = _RedisService.StringGetAsync<string>(test_key_new).Result;
-            Assert.Equal(getValue, "RenameKey");
+            Assert.Equal("RenameKey", getValue);
 
             var delResult = _RedisService.StringRemoveAsync(test_key_new).Result;
             Assert.True(delResult);
@@ -177,40 +177,40 @@ namespace NETCore.RedisKit.Tests
             var addResult = _RedisService.StringSetAsync(test_key_string, "111").Result;
             Assert.True(addResult);
             var keyType = _RedisService.KeyTypeAsync(test_key_string).Result;
-            Assert.Equal(keyType, RedisType.String);
+            Assert.Equal(RedisType.String, keyType);
             var delResult = _RedisService.StringRemoveAsync(test_key_string).Result;
             Assert.True(delResult);
 
-            _RedisService.ListRemoveAllAsync(test_key_list);
+            await _RedisService.ListRemoveAllAsync(test_key_list);
             var listAddResult = _RedisService.ListLeftPushAsync(test_key_list, "1111").Result;
-            Assert.Equal(listAddResult, 1);
+            Assert.Equal(1, listAddResult);
             keyType = _RedisService.KeyTypeAsync(test_key_list).Result;
-            Assert.Equal(keyType, RedisType.List);
+            Assert.Equal(RedisType.List, keyType);
             delResult = _RedisService.ListRemoveAllAsync(test_key_list).Result;
             Assert.True(delResult);
 
-            _RedisService.SetRemoveAllAsync(test_key_set);
+            await _RedisService.SetRemoveAllAsync(test_key_set);
             var setAddResult = _RedisService.SetAddAsync(test_key_set, "1111").Result;
             Assert.True(setAddResult);
             keyType = _RedisService.KeyTypeAsync(test_key_set).Result;
-            Assert.Equal(keyType, RedisType.Set);
+            Assert.Equal(RedisType.Set, keyType);
             delResult = _RedisService.SetRemoveAllAsync(test_key_set).Result;
             Assert.True(delResult);
 
-            _RedisService.SortedSetRemoveAllAsync(test_key_zset);
+            await _RedisService.SortedSetRemoveAllAsync(test_key_zset);
             var zsetAddResult = _RedisService.SortedSetAddAsync(test_key_zset, "1111", 1).Result;
             Assert.True(zsetAddResult);
             keyType = _RedisService.KeyTypeAsync(test_key_zset).Result;
-            Assert.Equal(keyType, RedisType.SortedSet);
+            Assert.Equal(RedisType.SortedSet, keyType);
             delResult = _RedisService.SortedSetRemoveAllAsync(test_key_zset).Result;
             Assert.True(delResult);
 
 
-            _RedisService.HashRemoveAllAsync(test_key_hash);
+            await _RedisService.HashRemoveAllAsync(test_key_hash);
             var hashAddResult = _RedisService.HashSetAsync(test_key_hash, 1, "1111").Result;
             Assert.True(hashAddResult);
             keyType = _RedisService.KeyTypeAsync(test_key_hash).Result;
-            Assert.Equal(keyType, RedisType.Hash);
+            Assert.Equal(RedisType.Hash, keyType);
             delResult = _RedisService.HashRemoveAllAsync(test_key_hash).Result;
             Assert.True(delResult);
         }
