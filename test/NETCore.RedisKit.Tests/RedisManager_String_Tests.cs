@@ -49,7 +49,7 @@ namespace NETCore.RedisKit.Tests
         }
 
         [Fact(DisplayName = "设置String值，并指定过期时间点")]
-        public void StringSetAsyncExpireAtTest()
+        public async Task StringSetAsyncExpireAtTest()
         {
             var test_key = "test_set_expireat";
             var setResult = _RedisService.StringSetAsync(test_key, "11111", DateTime.Now.AddSeconds(5)).Result;
@@ -93,7 +93,7 @@ namespace NETCore.RedisKit.Tests
             getValue = _RedisService.StringGetAsync<string>(test_key).Result;
             Assert.NotNull(getValue);
             Assert.NotEmpty(getValue);
-            Assert.Equal(getValue, "1111");
+            Assert.Equal("1111", getValue);
 
             var delResult = _RedisService.StringRemoveAsync(test_key).Result;
             Assert.True(delResult);

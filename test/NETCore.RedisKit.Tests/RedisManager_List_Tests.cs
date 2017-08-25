@@ -27,29 +27,29 @@ namespace NETCore.RedisKit.Tests
         }
 
         [Fact(DisplayName = "在List值之前（左侧）插入")]
-        public void ListInsertLeftAsyncTest()
+        public async Task ListInsertLeftAsyncTest()
         {
             var test_key = "test_list_insert_left";
 
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var pushResult = _RedisService.ListLeftPushAsync(test_key, "1111111").Result;
-            Assert.Equal(pushResult, 1);
+            Assert.Equal(1, pushResult);
 
             pushResult = _RedisService.ListLeftPushAsync(test_key, "2222222").Result;
-            Assert.Equal(pushResult, 2);
+            Assert.Equal(2, pushResult);
 
             pushResult = _RedisService.ListLeftPushAsync(test_key, "3333333").Result;
-            Assert.Equal(pushResult, 3);
+            Assert.Equal(3, pushResult);
 
             var insertBeforeResult = _RedisService.ListInsertLeftAsync(test_key, "44444444", "1111111").Result;
-            Assert.Equal(insertBeforeResult, 4);
+            Assert.Equal(4, insertBeforeResult);
 
             var firstValue = _RedisService.ListRightPopAsync<string>(test_key).Result;
-            Assert.Equal(firstValue, "1111111");
+            Assert.Equal("1111111", firstValue);
 
             var secondValue = _RedisService.ListRightPopAsync<string>(test_key).Result;
-            Assert.Equal(secondValue, "44444444");
+            Assert.Equal("44444444", secondValue);
 
             var delResult = _RedisService.ListRemoveAllAsync(test_key).Result;
             Assert.True(delResult);
@@ -57,79 +57,79 @@ namespace NETCore.RedisKit.Tests
 
 
         [Fact(DisplayName = "在List值右侧插入")]
-        public void ListInsertRightAsyncTest()
+        public async Task ListInsertRightAsyncTest()
         {
             var test_key = "test_list_insert_right";
 
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var pushResult = _RedisService.ListLeftPushAsync(test_key, "1111111").Result;
-            Assert.Equal(pushResult, 1);
+            Assert.Equal(1, pushResult);
 
             pushResult = _RedisService.ListLeftPushAsync(test_key, "2222222").Result;
-            Assert.Equal(pushResult, 2);
+            Assert.Equal(2, pushResult);
 
             pushResult = _RedisService.ListLeftPushAsync(test_key, "3333333").Result;
-            Assert.Equal(pushResult, 3);
+            Assert.Equal(3, pushResult);
 
             var insertAfterResult = _RedisService.ListInsertRightAsync(test_key, "44444444", "1111111").Result;
-            Assert.Equal(insertAfterResult, 4);
+            Assert.Equal(4, insertAfterResult);
 
             var firstValue = _RedisService.ListRightPopAsync<string>(test_key).Result;
-            Assert.Equal(firstValue, "44444444");
+            Assert.Equal("44444444", firstValue);
 
             var secondValue = _RedisService.ListRightPopAsync<string>(test_key).Result;
-            Assert.Equal(secondValue, "1111111");
+            Assert.Equal("1111111", secondValue);
 
             var delResult = _RedisService.ListRemoveAllAsync(test_key).Result;
             Assert.True(delResult);
         }
 
         [Fact(DisplayName = "在List左侧添加值")]
-        public void ListLeftPushAsyncTest()
+        public async Task ListLeftPushAsyncTest()
         {
             var test_key = "test_list_push_left";
 
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var pushResult = _RedisService.ListLeftPushAsync(test_key, "1111111").Result;
-            Assert.Equal(pushResult, 1);
+            Assert.Equal(1, pushResult);
 
             pushResult = _RedisService.ListLeftPushAsync(test_key, "2222222").Result;
-            Assert.Equal(pushResult, 2);
+            Assert.Equal(2, pushResult);
 
             pushResult = _RedisService.ListLeftPushAsync(test_key, "3333333").Result;
-            Assert.Equal(pushResult, 3);
+            Assert.Equal(3, pushResult);
 
             var rightValue = _RedisService.ListRightPopAsync<string>(test_key).Result;
             Assert.NotEmpty(rightValue);
-            Assert.Equal(rightValue, "1111111");
+            Assert.Equal("1111111", rightValue);
 
             var leftValue = _RedisService.ListLeftPopAsync<string>(test_key).Result;
             Assert.NotEmpty(leftValue);
-            Assert.Equal(leftValue, "3333333");
+            Assert.Equal("3333333", leftValue);
 
             var delResult = _RedisService.ListRemoveAllAsync(test_key).Result;
             Assert.True(delResult);
         }
 
         [Fact(DisplayName = "在List左侧添加多个值集合")]
-        public void ListLeftPushAsyncRangeTest()
+        public async Task ListLeftPushAsyncRangeTest()
         {
             var test_key = "test_list_push_left_range";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var values = new List<string>() { "1111111", "2222222", "3333333" };
             var pushResult = _RedisService.ListLeftPushRanageAsync(test_key, values).Result;
-            Assert.Equal(pushResult, 3);
+            Assert.Equal(3, pushResult);
 
             var rightValue = _RedisService.ListRightPopAsync<string>(test_key).Result;
             Assert.NotEmpty(rightValue);
-            Assert.Equal(rightValue, "1111111");
+            Assert.Equal("1111111", rightValue);
 
             var leftValue = _RedisService.ListLeftPopAsync<string>(test_key).Result;
             Assert.NotEmpty(leftValue);
-            Assert.Equal(leftValue, "3333333");
+            Assert.Equal("3333333", leftValue);
 
             var delResult = _RedisService.ListRemoveAllAsync(test_key).Result;
             Assert.True(delResult);
@@ -137,28 +137,28 @@ namespace NETCore.RedisKit.Tests
 
 
         [Fact(DisplayName = "在List右侧添加值")]
-        public void ListRightPushAsyncTest()
+        public  async Task ListRightPushAsyncTest()
         {
             var test_key = "test_list_push_right";
 
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var pushResult = _RedisService.ListRightPushAsync(test_key, "1111111").Result;
-            Assert.Equal(pushResult, 1);
+            Assert.Equal(1, pushResult);
 
             pushResult = _RedisService.ListRightPushAsync(test_key, "2222222").Result;
-            Assert.Equal(pushResult, 2);
+            Assert.Equal(2, pushResult);
 
             pushResult = _RedisService.ListRightPushAsync(test_key, "3333333").Result;
-            Assert.Equal(pushResult, 3);
+            Assert.Equal(3, pushResult);
 
             var rightValue = _RedisService.ListRightPopAsync<string>(test_key).Result;
             Assert.NotEmpty(rightValue);
-            Assert.Equal(rightValue, "3333333");
+            Assert.Equal("3333333", rightValue);
 
             var leftValue = _RedisService.ListLeftPopAsync<string>(test_key).Result;
             Assert.NotEmpty(leftValue);
-            Assert.Equal(leftValue, "1111111");
+            Assert.Equal("1111111", leftValue);
 
             var delResult = _RedisService.ListRemoveAllAsync(test_key).Result;
             Assert.True(delResult);
@@ -166,92 +166,92 @@ namespace NETCore.RedisKit.Tests
 
 
         [Fact(DisplayName = "在List右侧添加多个值集合")]
-        public void ListRightPushAsyncRangeTest()
+        public async Task ListRightPushAsyncRangeTest()
         {
             var test_key = "test_list_push_right_range";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var values = new List<string>() { "1111111", "2222222", "3333333" };
             var pushResult = _RedisService.ListRightPushRanageAsync(test_key, values).Result;
-            Assert.Equal(pushResult, 3);
+            Assert.Equal(3, pushResult);
 
             var rightValue = _RedisService.ListRightPopAsync<string>(test_key).Result;
             Assert.NotEmpty(rightValue);
-            Assert.Equal(rightValue, "3333333");
+            Assert.Equal("3333333", rightValue);
 
             var leftValue = _RedisService.ListLeftPopAsync<string>(test_key).Result;
             Assert.NotEmpty(leftValue);
-            Assert.Equal(leftValue, "1111111");
+            Assert.Equal("1111111", leftValue);
 
             var delResult = _RedisService.ListRemoveAllAsync(test_key).Result;
             Assert.True(delResult);
         }
 
         [Fact(DisplayName = "在List左侧取出一个值")]
-        public void ListLeftPopAsyncTest()
+        public async Task ListLeftPopAsyncTest()
         {
             var test_key = "test_list_pop_left";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var values = new List<string>() { "1111111", "2222222", "3333333" };
             var pushResult = _RedisService.ListLeftPushRanageAsync(test_key, values).Result;
-            Assert.Equal(pushResult, 3);
+            Assert.Equal(3, pushResult);
 
             var leftValue = _RedisService.ListLeftPopAsync<string>(test_key).Result;
 
-            Assert.Equal(leftValue, "3333333");
+            Assert.Equal("3333333", leftValue);
 
             var delResult = _RedisService.ListRemoveAllAsync(test_key).Result;
             Assert.True(delResult);
         }
 
         [Fact(DisplayName = "在List右侧取出一个值")]
-        public void ListRightPopAsyncTest()
+        public async Task ListRightPopAsyncTest()
         {
             var test_key = "test_list_pop_right";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var values = new List<string>() { "1111111", "2222222", "3333333" };
             var pushResult = _RedisService.ListLeftPushRanageAsync(test_key, values).Result;
-            Assert.Equal(pushResult, 3);
+            Assert.Equal(3, pushResult);
 
             var leftValue = _RedisService.ListRightPopAsync<string>(test_key).Result;
 
-            Assert.Equal(leftValue, "1111111");
+            Assert.Equal("1111111", leftValue);
 
             var delResult = _RedisService.ListRemoveAllAsync(test_key).Result;
             Assert.True(delResult);
         }
 
         [Fact(DisplayName = "在List移除指定值（可能存在多个）")]
-        public void ListRemoveAsyncTest()
+        public async Task ListRemoveAsyncTest()
         {
             var test_key = "test_list_remove";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var values = new List<string>() { "1111111", "2222222", "3333333", "1111111", "1111111" };
             var pushResult = _RedisService.ListLeftPushRanageAsync(test_key, values).Result;
-            Assert.Equal(pushResult, 5);
+            Assert.Equal(5, pushResult);
 
             var removeResult = _RedisService.ListRemoveAsync(test_key, "1111111").Result;
-            Assert.Equal(removeResult, 3);
+            Assert.Equal(3, removeResult);
 
             var countResult = _RedisService.ListCountAsync(test_key).Result;
-            Assert.Equal(countResult, 2);
+            Assert.Equal(2, countResult);
 
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
         }
 
 
         [Fact(DisplayName = "在List移除全部缓存")]
-        public void ListRemoveAllAsyncTest()
+        public async Task ListRemoveAllAsyncTest()
         {
             var test_key = "test_list_remove_all";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var values = new List<string>() { "1111111", "2222222", "3333333", "1111111", "1111111" };
             var pushResult = _RedisService.ListLeftPushRanageAsync(test_key, values).Result;
-            Assert.Equal(pushResult, 5);
+            Assert.Equal(5, pushResult);
 
             var removeResult = _RedisService.ListRemoveAllAsync(test_key).Result;
             Assert.True(removeResult);
@@ -260,123 +260,123 @@ namespace NETCore.RedisKit.Tests
             Assert.False(removeResult);
 
             var countResult = _RedisService.ListCountAsync(test_key).Result;
-            Assert.Equal(countResult, 0);
+            Assert.Equal(0, countResult);
 
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
         }
 
         [Fact(DisplayName = "获取List的总数量")]
-        public void ListCountAsyncTest()
+        public async Task ListCountAsyncTest()
         {
             var test_key = "test_list_count";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var values = new List<string>() { "1111111", "2222222", "3333333", "1111111", "1111111" };
             var pushResult = _RedisService.ListLeftPushRanageAsync(test_key, values).Result;
-            Assert.Equal(pushResult, 5);
+            Assert.Equal(5, pushResult);
 
             var countResult = _RedisService.ListCountAsync(test_key).Result;
-            Assert.Equal(countResult, 5);
+            Assert.Equal(5, countResult);
 
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
         }
 
         [Fact(DisplayName = "根据索引Index获取List的值")]
-        public void ListGetByIndexAsyncTest()
+        public async Task ListGetByIndexAsyncTest()
         {
             var test_key = "test_get_by_index";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var values = new List<string>() { "1111111", "2222222", "3333333", "1111111", "4444444" };
             var pushResult = _RedisService.ListLeftPushRanageAsync(test_key, values).Result;
-            Assert.Equal(pushResult, 5);
+            Assert.Equal(5, pushResult);
 
             var firstValue = _RedisService.ListGetByIndexAsync<string>(test_key, 0).Result;
-            Assert.Equal(firstValue, "4444444");
+            Assert.Equal("4444444", firstValue);
 
             var lastValue = _RedisService.ListGetByIndexAsync<string>(test_key, -1).Result;
-            Assert.Equal(lastValue, "1111111");
+            Assert.Equal("1111111", lastValue);
 
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
         }
 
         [Fact(DisplayName = "获取List全部数据")]
-        public void ListGetAllAsyncTest()
+        public async Task ListGetAllAsyncTest()
         {
             var test_key = "test_get_all";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var values = new List<string>() { "1111111", "2222222", "3333333", "1111111", "4444444" };
             var pushResult = _RedisService.ListLeftPushRanageAsync(test_key, values).Result;
-            Assert.Equal(pushResult, 5);
+            Assert.Equal(5, pushResult);
 
             var getAllResult = _RedisService.ListGetAllAsync<string>(test_key).Result.ToList();
-            Assert.Equal(getAllResult.Count(), 5);
+            Assert.Equal(5, getAllResult.Count());
 
-            Assert.Equal(getAllResult[0], "4444444");
-            Assert.Equal(getAllResult[4], "1111111");
+            Assert.Equal("4444444", getAllResult[0]);
+            Assert.Equal("1111111", getAllResult[4]);
 
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
         }
 
 
         [Fact(DisplayName = "获取List区间数据操作")]
-        public void ListGetRangeAsyncTest()
+        public async Task ListGetRangeAsyncTest()
         {
             var test_key = "test_get_rang";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
 
             var values = new List<string>() { "1111111", "2222222", "3333333", "1111111", "4444444" };
             var pushResult = _RedisService.ListLeftPushRanageAsync(test_key, values).Result;
-            Assert.Equal(pushResult, 5);
+            Assert.Equal(5, pushResult);
 
             var getRanageResult = _RedisService.ListGetRangeAsync<string>(test_key, 0, 2).Result.ToList();
-            Assert.Equal(getRanageResult.Count(), 3);
+            Assert.Equal(3, getRanageResult.Count());
 
             var firstValue = getRanageResult.First();
-            Assert.Equal(firstValue, "4444444");
+            Assert.Equal("4444444", firstValue);
             var lastValue = getRanageResult.Last();
-            Assert.Equal(lastValue, "3333333");
+            Assert.Equal("3333333", lastValue);
 
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
         }
 
         [Fact(DisplayName = "List过期时间点")]
-        public void ListExpireAtAsyncTest()
+        public  async Task ListExpireAtAsyncTest()
         {
             var test_key = "test_list_expire_at";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
             var pushResult = _RedisService.ListLeftPushAsync(test_key, "111111").Result;
-            Assert.Equal(pushResult, 1);
+            Assert.Equal(1, pushResult);
 
             var exipireAtResult = _RedisService.ListExpireAtAsync(test_key, DateTime.Now.AddSeconds(5));
 
-            Task.Factory.StartNew(() =>
-            {
-                Task.Delay(6).Wait();
+             Task.Factory.StartNew(() =>
+             {
+                 Task.Delay(6).Wait();
 
-                var listCount = _RedisService.ListCountAsync(test_key).Result;
+                 var listCount = _RedisService.ListCountAsync(test_key).Result;
 
-                Assert.Equal(listCount, 0);
-            });
+                 Assert.Equal(0, listCount);
+             });
         }
 
         [Fact(DisplayName = "List过期时间段")]
-        public void ListExpireInAsyncTest()
+        public async Task ListExpireInAsyncTest()
         {
             var test_key = "test_list_expire_in";
-            _RedisService.ListRemoveAllAsync(test_key);
+            await _RedisService.ListRemoveAllAsync(test_key);
             var pushResult = _RedisService.ListLeftPushAsync(test_key, "111111").Result;
-            Assert.Equal(pushResult, 1);
+            Assert.Equal(1, pushResult);
 
             var exipireAtResult = _RedisService.ListExpireInAsync(test_key, new TimeSpan(0, 0, 6));
 
-            Task.Factory.StartNew(() =>
-            {
-                Task.Delay(6).Wait();
-                var listCount = _RedisService.ListCountAsync(test_key).Result;
-                Assert.Equal(listCount, 0);
-            });
+             Task.Factory.StartNew(() =>
+             {
+                 Task.Delay(6).Wait();
+                 var listCount = _RedisService.ListCountAsync(test_key).Result;
+                 Assert.Equal(0, listCount);
+             });
         }
     }
 }

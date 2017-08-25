@@ -27,13 +27,13 @@ namespace NETCore.RedisKit.Tests
         }
 
         [Fact(DisplayName = "Redis事务")]
-        public void TransitionAsyncTest()
+        public async Task TransitionAsyncTest()
         {
             var test_key1 = "test_set";
             var test_key2 = "test_hash";
 
-            _RedisService.SetRemoveAllAsync(test_key1);
-            _RedisService.HashRemoveAllAsync(test_key2);
+            await _RedisService.SetRemoveAllAsync(test_key1);
+            await _RedisService.HashRemoveAllAsync(test_key2);
 
             var result = _RedisService.TransactionAsync((transition) =>
             {
@@ -52,10 +52,10 @@ namespace NETCore.RedisKit.Tests
             var hashValue = _RedisService.HashGetAsync<string>(test_key2, 1111).Result;
             Assert.NotEmpty(hashValue);
             Assert.NotNull(hashValue);
-            Assert.Equal(hashValue, "11111111");
+            Assert.Equal("11111111", hashValue);
 
-            _RedisService.SetRemoveAllAsync(test_key1);
-            _RedisService.HashRemoveAllAsync(test_key2);
+            await _RedisService.SetRemoveAllAsync(test_key1);
+            await _RedisService.HashRemoveAllAsync(test_key2);
         }
     }
 }

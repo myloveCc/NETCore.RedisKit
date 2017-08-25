@@ -38,7 +38,9 @@ namespace NETCore.RedisKit
 
         #region ConnectionMultiplexer
 
-        //Redis实例
+        /// <summary>
+        /// Redis conection
+        /// </summary>
         public ConnectionMultiplexer Redis
         {
             get
@@ -47,13 +49,14 @@ namespace NETCore.RedisKit
             }
         }
 
-
-
+        /// <summary>
+        /// Lazy load
+        /// </summary>
+        /// <returns></returns>
         private Lazy<ConnectionMultiplexer> lazyConnection()
         {
             return new Lazy<ConnectionMultiplexer>(() =>
              {
-                 //可以配置日志路径
                  return ConnectionMultiplexer.Connect(_ConfigurationOptions);
              });
         }
@@ -62,7 +65,7 @@ namespace NETCore.RedisKit
 
         #region Config
         /// <summary>
-        /// 初始化配置信息
+        /// Init configuration
         /// </summary>
         /// <returns></returns>
         private ConfigurationOptions InitConfigurationOptions()
