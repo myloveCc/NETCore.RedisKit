@@ -10,14 +10,15 @@
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Description>StackExchange.Redis extensions tool. Easy use redis in asp.net core.</Description>
     <PackageReleaseNotes>Update targetFramework to netstandard2.0
-Refactoring project</PackageReleaseNotes>
+Refactoring project
+Update tests</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/myloveCc/NETCore.RedisKit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/myloveCc/NETCore.RedisKit</RepositoryUrl>
     <PackageTags>StackExchange.Redis ASP.NETCore</PackageTags>
     <AssemblyVersion>2.0.1.1</AssemblyVersion>
     <FileVersion>2.0.1.1</FileVersion>
     <PackageLicenseUrl>https://github.com/myloveCc/NETCore.RedisKit/blob/master/LICENSE</PackageLicenseUrl>
-    <Version>2.0.1-beta</Version>
+    <Version>2.0.1-beta1</Version>
     <PackageId>NETCore.RedisKit</PackageId>
   </PropertyGroup>
 
