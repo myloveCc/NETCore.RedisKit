@@ -112,10 +112,10 @@ namespace NETCore.RedisKit.Tests
 
 
         [Fact(DisplayName = "减去指定值(double)")]
-        public void DecrementAsyncWithDoubleTest()
+        public async Task DecrementAsyncWithDoubleTest()
         {
             var test_key = "test_decrement_long";
-            _RedisService.StringRemoveAsync(test_key);
+            await _RedisService.StringRemoveAsync(test_key);
             var incReuslt = _RedisService.IncrementAsync(test_key, 5.0).Result;
             Assert.Equal(5.0, incReuslt);
 
