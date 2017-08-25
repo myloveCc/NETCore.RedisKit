@@ -48,14 +48,14 @@ Install-Package NETCore.RedisKit -Version 2.0.1-beta1
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-	// Add framework services.
-	services.AddMvc();
+    // Add framework services.
+    services.AddMvc();
 
     // Add redis service
-	services.AddRedisKit(options =>
-	{
-		options.EndPoints = "127.0.0.1:6379";
-	});
+    services.AddRedisKit(options =>
+    {
+	options.EndPoints = "127.0.0.1:6379";
+    });
 }
 
 ```
@@ -72,7 +72,7 @@ public HomeController(IRedisService redisService)
 public IActionResult Index()
 {
     _RedisService.ItemSet("hello", "world");
-	_RedisService.ItemGet<string>("hello");
+    _RedisService.ItemGet<string>("hello");
     return View();
 }
 
