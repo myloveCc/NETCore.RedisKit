@@ -6,7 +6,7 @@
 To install NETCore.RedisKit, run the following command in the [Package Manager Console](https://docs.microsoft.com/zh-cn/nuget/tools/package-manager-console)
 
 ```
-Install-Package NETCore.RedisKit -Version 2.0.0
+Install-Package NETCore.RedisKit -Version 2.0.1 
 ```
 ---
 
@@ -36,6 +36,7 @@ Install-Package NETCore.RedisKit -Version 2.0.0
 | `tiebreaker={string}`     | `TieBreaker`              |  `__Booksleeve_TieBreak`  | Key to use for selecting a server in an ambiguous master scenario  |
 | `version={string}`        | `DefaultVersion`          |  `(3.0 in Azure, else 2.0)` | Redis version level (useful when the server does not make this available) |
 | `writeBuffer={int}`       | `WriteBuffer`             |  `4096`                   | Size of the output buffer |
+| `IsShowLog={bool}`        | `IsShowLog`               |  `false`                  | Cusotm options to show log |
 
 
 - You can find more information from [StackExchange.Redis Configration](https://stackexchange.github.io/StackExchange.Redis/Configuration)
@@ -47,18 +48,14 @@ Install-Package NETCore.RedisKit -Version 2.0.0
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-  // Add framework services.
-  services.AddMvc();
+	// Add framework services.
+	services.AddMvc();
 
-  services.AddRedisKit(optionsBuilder =>
-  {
-      optionsBuilder.UseRedis(
-        options: new RedisKitOptions()
-        {
-            EndPoints = "127.0.0.1:6379"
-        },
-        isShowLog: true);
-  });
+    // Add redis service
+	services.AddRedisKit(options =>
+	{
+		options.EndPoints = "127.0.0.1:6379";
+	});
 }
 
 ```
@@ -74,7 +71,8 @@ public HomeController(IRedisService redisService)
 
 public IActionResult Index()
 {
-    _RedisService.StringSet("hello", "world");
+    _RedisService.ItemSet("hello", "world");
+	_RedisService.ItemGet<string>("hello");
     return View();
 }
 
