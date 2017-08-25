@@ -82,7 +82,7 @@ namespace NETCore.RedisKit.Tests
         }
 
         [Fact(DisplayName = "根据单个key获取String值")]
-        public void StringGetAsyncTest()
+        public async Task StringGetAsyncTest()
         {
             var test_key = "test_get";
 

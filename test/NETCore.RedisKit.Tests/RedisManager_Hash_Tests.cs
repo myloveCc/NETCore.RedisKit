@@ -187,7 +187,7 @@ namespace NETCore.RedisKit.Tests
             hashValue = _RedisService.HashGetAsync<string>(test_key, 3).Result;
             Assert.Null(hashValue);
 
-            _RedisService.HashRemoveAllAsync(test_key);
+            await _RedisService.HashRemoveAllAsync(test_key);
         }
 
         [Fact(DisplayName = "移除全部Hash表数据")]
@@ -332,10 +332,10 @@ namespace NETCore.RedisKit.Tests
 
             var hashValues = _RedisService.HashGetAsync<string>(test_key, new List<RedisValue>() { 1, 4, 7 }).Result.ToList();
             Assert.Equal(3, hashValues.Count());
-            Assert.True(hashValues.Contains("第1条测试数据"));
-            Assert.True(hashValues.Contains("第4条测试数据"));
-            Assert.True(hashValues.Contains("第7条测试数据"));
-            Assert.False(hashValues.Contains("第8条测试数据"));
+            Assert.Contains("第1条测试数据", hashValues);
+            Assert.Contains("第4条测试数据", hashValues);
+            Assert.Contains("第7条测试数据", hashValues);
+            Assert.DoesNotContain("第8条测试数据", hashValues);
 
             _RedisService.HashRemoveAllAsync(test_key).Wait();
         }
