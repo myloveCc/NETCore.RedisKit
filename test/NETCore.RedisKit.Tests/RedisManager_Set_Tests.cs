@@ -1,13 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using NETCore.RedisKit.Loging;
+using NETCore.RedisKit;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using StackExchange.Redis;
-using NETCore.RedisKit.Core.Internal;
-using NETCore.RedisKit.Infrastructure.Internal;
-using Microsoft.Extensions.Logging;
-using NETCore.RedisKit.Core;
+using System.Threading.Tasks;
+using NETCore.RedisKit.Infrastructure;
+using NETCore.RedisKit.Configuration;
+using System.Collections.Generic;
+using System.Linq;
+using System;
+using NETCore.RedisKit.Services;
 
 namespace NETCore.RedisKit.Tests
 {
@@ -19,12 +21,11 @@ namespace NETCore.RedisKit.Tests
             IRedisProvider redisProvider = new RedisProvider(new RedisKitOptions()
             {
                 EndPoints = "127.0.0.1:6379"
-            }, true);
+            });
 
+            IRedisLogger logger = new RedisLogger(new LoggerFactory(), redisProvider);
 
-            IRedisKitLogger logger = new RedisKitLogger(new LoggerFactory(), redisProvider);
-
-            _RedisService = new RedisService(redisProvider, logger);
+            _RedisService = new RedisService(redisProvider, logger, new DefaultJosnSerializeService());
         }
 
         [Fact(DisplayName = "新增单个值到Set集合")]
@@ -97,7 +98,7 @@ namespace NETCore.RedisKit.Tests
 
             var values = new List<string>() { "11111", "22222", "33333", "11111" };
             var addResult = _RedisService.SetAddRanageAsync(test_key, values).Result;
-            Assert.Equal(addResult, 3);
+            Assert.Equal(3, addResult);
 
             var delResult = _RedisService.SetRemoveAllAsync(test_key).Result;
             Assert.True(delResult);
@@ -282,7 +283,7 @@ namespace NETCore.RedisKit.Tests
 
                 var setCount = _RedisService.SetCountAsync(test_key).Result;
 
-                Assert.Equal(setCount, 0);
+                Assert.Equal(0, setCount);
             });
             _RedisService.SetRemoveAllAsync(test_key);
         }
@@ -305,7 +306,7 @@ namespace NETCore.RedisKit.Tests
 
                 var setCount = _RedisService.SetCountAsync(test_key).Result;
 
-                Assert.Equal(setCount, 0);
+                Assert.Equal(0, setCount);
             });
             _RedisService.SetRemoveAllAsync(test_key);
         }

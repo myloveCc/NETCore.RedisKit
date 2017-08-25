@@ -92,10 +92,13 @@ namespace NETCore.RedisKit
 
         #endregion
 
-        #region String
+        #region Item
+
+        [Obsolete("The method is out of date and recommended use 'ItemSet'")]
+        bool StringSet<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster);
 
         /// <summary>
-        /// String Set操作（包括新增（key不存在）/更新(如果key已存在)）
+        /// ItemSet操作（包括新增（key不存在）/更新(如果key已存在)）
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
@@ -103,10 +106,12 @@ namespace NETCore.RedisKit
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>true 成功 false 失败</returns>
-        bool StringSet<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster);
+        bool ItemSet<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster);
 
+        [Obsolete("The method is out of date and recommended use 'ItemSet'")]
+        bool StringSet<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster);
         /// <summary>
-        /// String Set操作（包括新增/更新）,同时可以设置过期时间点
+        /// ItemSet操作（包括新增/更新）,同时可以设置过期时间点
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
@@ -115,9 +120,10 @@ namespace NETCore.RedisKit
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>true 成功 false 失败</returns>
-        bool StringSet<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster);
+        bool ItemSet<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster);
 
-
+        [Obsolete("The method is out of date and recommended use 'ItemSet'")]
+        bool StringSet<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster);
         /// <summary>
         /// String Set操作（包括新增/更新）,同时可以设置过期时间段
         /// </summary>
@@ -128,42 +134,49 @@ namespace NETCore.RedisKit
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>true 成功 false 失败</returns>
-        bool StringSet<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster);
+        bool ItemSet<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster);
 
+        [Obsolete("The method is out of date and recommended use 'ItemGet'")]
+        T StringGet<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave);
         /// <summary>
-        /// String Get 操作
+        /// Item Get 操作
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns>如果key存在，找到对应Value,如果不存在，返回默认值.</returns>
-        T StringGet<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave);
+        T ItemGet<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave);
 
+        [Obsolete("The method is out of date and recommended use 'ItemGet'")]
+        IEnumerable<T> StringGet<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave);
         /// <summary>
-        /// String Get 操作（获取多条）
+        /// Item Get 操作（获取多条）
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="keys">键集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
-        IEnumerable<T> StringGet<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave);
+        IEnumerable<T> ItemGet<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave);
 
+        [Obsolete("The method is out of date and recommended use 'ItemRemove'")]
+        bool StringRemove(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster);
         /// <summary>
-        /// Sting Del 操作
+        /// Item remove 操作
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>True if the key was removed. else false</returns>
-        bool StringRemove(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster);
+        bool ItemRemove(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster);
 
-
+        [Obsolete("The method is out of date and recommended use 'ItemRemove'")]
+        long StringRemove(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.DemandMaster);
         /// <summary>
-        /// Sting Del 操作（删除多条）
+        /// Item remove 操作（删除多条）
         /// </summary>
         /// <param name="keys">键集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
-        long StringRemove(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.DemandMaster);
+        long ItemRemove(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.DemandMaster);
 
         #endregion
 
