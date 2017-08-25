@@ -1,13 +1,14 @@
+using NETCore.RedisKit.Loging;
+using Microsoft.Extensions.Logging;
+using Xunit;
+using StackExchange.Redis;
+using System.Threading.Tasks;
+using NETCore.RedisKit.Infrastructure;
+using NETCore.RedisKit.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using StackExchange.Redis;
-using NETCore.RedisKit.Core.Internal;
-using NETCore.RedisKit.Infrastructure.Internal;
-using Microsoft.Extensions.Logging;
-using NETCore.RedisKit.Core;
+using NETCore.RedisKit.Services;
 
 namespace NETCore.RedisKit.Tests
 {
@@ -19,12 +20,11 @@ namespace NETCore.RedisKit.Tests
             IRedisProvider redisProvider = new RedisProvider(new RedisKitOptions()
             {
                 EndPoints = "127.0.0.1:6379"
-            }, true);
+            });
 
+            IRedisLogger logger = new RedisLogger(new LoggerFactory(), redisProvider);
 
-            IRedisKitLogger logger = new RedisKitLogger(new LoggerFactory(), redisProvider);
-
-            _RedisService = new RedisService(redisProvider, logger);
+            _RedisService = new RedisService(redisProvider, logger, new DefaultJosnSerializeService());
         }
 
         [Fact(DisplayName = "新增/更新Hash数据")]
@@ -363,10 +363,10 @@ namespace NETCore.RedisKit.Tests
             var hashValues = _RedisService.HashGetAllAsync<string>(test_key).Result.ToList();
 
             Assert.Equal(10, hashValues.Count());
-            Assert.True(hashValues.Contains("第1条测试数据"));
-            Assert.True(hashValues.Contains("第4条测试数据"));
-            Assert.True(hashValues.Contains("第7条测试数据"));
-            Assert.False(hashValues.Contains("第11条测试数据"));
+            Assert.Contains("第1条测试数据", hashValues);
+            Assert.Contains("第4条测试数据", hashValues);
+            Assert.Contains("第7条测试数据", hashValues);
+            Assert.DoesNotContain("第11条测试数据", hashValues);
 
             _RedisService.HashRemoveAllAsync(test_key).Wait();
         }

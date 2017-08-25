@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using NETCore.RedisKit.Infrastructure;
 
-namespace NETCore.RedisKit.Core.Internal
+namespace NETCore.RedisKit.Loging
 {
-    public class RedisKitLogger : IRedisKitLogger
+    public class RedisLogger : IRedisLogger
     {
         private ILogger _Logger;
         private IRedisProvider _RedisProvider;
 
-        public RedisKitLogger(ILoggerFactory loggerFactory, IRedisProvider rediProvider)
+        public RedisLogger(ILoggerFactory loggerFactory, IRedisProvider rediProvider)
         {
             _Logger = loggerFactory.CreateLogger("NETCore.RedisKit.RedisService.Logging");
             _RedisProvider = rediProvider;

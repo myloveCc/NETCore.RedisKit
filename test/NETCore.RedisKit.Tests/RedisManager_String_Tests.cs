@@ -1,13 +1,15 @@
+using NETCore.RedisKit.Loging;
+using NETCore.RedisKit;
+using Microsoft.Extensions.Logging;
+using Xunit;
+using StackExchange.Redis;
+using System.Threading.Tasks;
+using NETCore.RedisKit.Infrastructure;
+using NETCore.RedisKit.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using StackExchange.Redis;
-using NETCore.RedisKit.Core.Internal;
-using NETCore.RedisKit.Infrastructure.Internal;
-using Microsoft.Extensions.Logging;
-using NETCore.RedisKit.Core;
+using NETCore.RedisKit.Services;
 
 namespace NETCore.RedisKit.Tests
 {
@@ -19,32 +21,32 @@ namespace NETCore.RedisKit.Tests
             IRedisProvider redisProvider = new RedisProvider(new RedisKitOptions()
             {
                 EndPoints = "127.0.0.1:6379"
-            }, true);
+            });
 
 
-            IRedisKitLogger logger = new RedisKitLogger(new LoggerFactory(), redisProvider);
+            IRedisLogger logger = new RedisLogger(new LoggerFactory(), redisProvider);
 
-            _RedisService = new RedisService(redisProvider, logger);
+            _RedisService = new RedisService(redisProvider, logger, new DefaultJosnSerializeService());
         }
 
         [Fact(DisplayName = "设置String值")]
         public async Task StringSetAsyncTest()
         {
             var test_key = "test_set";
-            var setResult = await _RedisService.StringSetAsync(test_key, "11111");
+            var setResult = await _RedisService.ItemSetAsync(test_key, "11111");
 
             Assert.True(setResult);
 
-            var getValue = _RedisService.StringGetAsync<string>(test_key).Result;
+            var getValue = _RedisService.ItemGetAsync<string>(test_key).Result;
             Assert.NotEmpty(getValue);
             Assert.NotNull(getValue);
             Assert.Equal("11111", getValue);
 
-            await _RedisService.StringSetAsync(test_key, "22222");
-            getValue = _RedisService.StringGetAsync<string>(test_key).Result;
+            await _RedisService.ItemSetAsync(test_key, "22222");
+            getValue = _RedisService.ItemGetAsync<string>(test_key).Result;
             Assert.Equal("22222", getValue);
 
-            var delResult = _RedisService.StringRemoveAsync(test_key).Result;
+            var delResult = _RedisService.ItemRemoveAsync(test_key).Result;
             Assert.True(delResult);
         }
 

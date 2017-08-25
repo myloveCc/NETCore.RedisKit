@@ -14,13 +14,15 @@ Refactoring project</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/myloveCc/NETCore.RedisKit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/myloveCc/NETCore.RedisKit</RepositoryUrl>
     <PackageTags>StackExchange.Redis ASP.NETCore</PackageTags>
-    <AssemblyVersion>2.0.1.0</AssemblyVersion>
-    <FileVersion>2.0.1.0</FileVersion>
+    <AssemblyVersion>2.0.1.1</AssemblyVersion>
+    <FileVersion>2.0.1.1</FileVersion>
     <PackageLicenseUrl>https://github.com/myloveCc/NETCore.RedisKit/blob/master/LICENSE</PackageLicenseUrl>
-    <Version>2.0.1</Version>
+    <Version>2.0.1-pre</Version>
+    <PackageId>NETCore.RedisKit</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="StackExchange.Redis" Version="1.2.6" />

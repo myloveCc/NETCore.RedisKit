@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NETCore.RedisKit.Extensions;
-using NETCore.RedisKit.Infrastructure.Internal;
 
 namespace NETCore.RedisKit.Web
 {
@@ -32,14 +26,11 @@ namespace NETCore.RedisKit.Web
             // Add framework services.
             services.AddMvc();
 
-            services.AddRedisKit(optionsBuilder =>
+            // Add redis service
+            services.AddRedisKit(options =>
             {
-                optionsBuilder.UseRedis(
-                  options: new RedisKitOptions()
-                  {
-                      EndPoints = "127.0.0.1:6379"
-                  },
-                  isShowLog: true);
+                options.EndPoints = "127.0.0.1:6379";
+                options.IsShowLog = true;
             });
         }
 

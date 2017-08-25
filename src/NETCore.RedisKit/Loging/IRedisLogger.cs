@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace NETCore.RedisKit.Core.Internal
+namespace NETCore.RedisKit.Loging
 {
-    public interface IRedisKitLogger
+    public interface IRedisLogger
     {
         void LogCritical(EventId eventId, string message, params object[] args);
 
