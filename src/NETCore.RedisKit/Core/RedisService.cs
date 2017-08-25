@@ -2,22 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NETCore.RedisKit.Core.Internal;
+using NETCore.RedisKit.Loging;
+using NETCore.RedisKit.Infrastructure;
 using NETCore.RedisKit.Shared;
 using Newtonsoft.Json;
 using StackExchange.Redis;
+using NETCore.RedisKit.Services;
 
 namespace NETCore.RedisKit
 {
     public partial class RedisService:IRedisService
     {
         private readonly IRedisProvider _RedisProvider;
-        private readonly IRedisKitLogger _Logger;
+        private readonly IRedisLogger _Logger;
+        private readonly ISerializeService _SerializeService;
 
-        public RedisService(IRedisProvider redisProvider, IRedisKitLogger logger)
+        public RedisService(IRedisProvider redisProvider, IRedisLogger logger, ISerializeService jsonSerialize)
         {
             _RedisProvider = redisProvider;
             _Logger = logger;
+            _SerializeService = jsonSerialize;
         }
 
         #region Sync
@@ -199,10 +203,9 @@ namespace NETCore.RedisKit
 
         #endregion
 
-        #region String
-
+        #region Item
         /// <summary>
-        /// String Set操作（包括新增（key不存在）/更新(如果key已存在)）
+        /// Item Set操作（包括新增（key不存在）/更新(如果key已存在)）
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
@@ -210,12 +213,23 @@ namespace NETCore.RedisKit
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>true 成功 false 失败</returns>
+        public bool ItemSet<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        {
+            return ItemSetInner(key, val, when, flags);
+        }
+
+        [Obsolete("The method is out of date and recommended use 'ItemSet'")]
         public bool StringSet<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        {
+            return ItemSetInner(key, val, when, flags);
+        }
+
+        private bool ItemSetInner<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
             {
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
 
                 _Logger.LogInformation("StringSet Key={key} with value={value}. Condition: When={when},Flags={flags} ", key, value, when, flags);
 
@@ -226,7 +240,7 @@ namespace NETCore.RedisKit
         }
 
         /// <summary>
-        /// String Set操作（包括新增/更新）,同时可以设置过期时间点
+        /// Item Set操作（包括新增/更新）,同时可以设置过期时间点
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
@@ -235,13 +249,24 @@ namespace NETCore.RedisKit
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>true 成功 false 失败</returns>
+        public bool ItemSet<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        {
+            return ItemSetInner(key, val, expiresAt, when, flags);
+        }
+
+        [Obsolete("The method is out of date and recommended use 'ItemSet'")]
         public bool StringSet<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        {
+            return ItemSetInner(key, val, expiresAt, when, flags);
+        }
+
+        private bool ItemSetInner<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
 
             using (var redis = _RedisProvider.Redis)
             {
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 _Logger.LogInformation("StringSet Key={key} with value={value} expiresAt={expiresAt}. Condition: When={when},Flags={flags} ", key, value, expiresAt, when, flags);
                 var db = redis.GetDatabase();
                 var timeSpan = expiresAt.Subtract(DateTime.Now);
@@ -250,7 +275,7 @@ namespace NETCore.RedisKit
         }
 
         /// <summary>
-        /// String Set操作（包括新增/更新）,同时可以设置过期时间段
+        /// Item Set操作（包括新增/更新）,同时可以设置过期时间段
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
@@ -259,13 +284,24 @@ namespace NETCore.RedisKit
         /// <param name="when">操作前置条件<see cref="When"/></param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>true 成功 false 失败</returns>
+        public bool ItemSet<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        {
+            return ItemSetInner(key, val, expiresIn, when, flags);
+        }
+
+        [Obsolete("The method is out of date and recommended use 'ItemSet'")]
         public bool StringSet<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
+        {
+            return ItemSetInner(key, val, expiresIn, when, flags);
+        }
+
+        private bool ItemSetInner<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
 
             using (var redis = _RedisProvider.Redis)
             {
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 _Logger.LogInformation("StringSet Key={key} with value={value} expiresAt={expiresIn}. Condition: When={when},Flags={flags} ", key, value, expiresIn, when, flags);
 
                 var db = redis.GetDatabase();
@@ -274,13 +310,24 @@ namespace NETCore.RedisKit
         }
 
         /// <summary>
-        /// String Get 操作
+        /// Item Get 操作
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns>如果key存在，找到对应Value,如果不存在，返回默认值.</returns>
+        public T ItemGet<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        {
+            return ItemGetInner<T>(key, flags);
+        }
+
+        [Obsolete("The method is out of date and recommended use 'ItemGet'")]
         public T StringGet<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
+        {
+            return ItemGetInner<T>(key, flags);
+        }
+
+        private T ItemGetInner<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             using (var redis = _RedisProvider.Redis)
@@ -297,18 +344,29 @@ namespace NETCore.RedisKit
 
                     return result;
                 }
-                return JsonDserialize<T>(value);
+                return DataDserialize<T>(value);
             }
         }
 
+
         /// <summary>
-        /// String Get 操作（获取多条）
+        /// Item Get 操作（获取多条）
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="keys">键集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <returns></returns>
+        public IEnumerable<T> ItemGet<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave)
+        {
+            return ItemGetInner<T>(keys, flags);
+        }
+
+        [Obsolete("The method is out of date and recommended use 'ItemGet'")]
         public IEnumerable<T> StringGet<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave)
+        {
+            return ItemGetInner<T>(keys, flags);
+        }
+        private IEnumerable<T> ItemGetInner<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(keys, nameof(keys));
             using (var redis = _RedisProvider.Redis)
@@ -324,11 +382,11 @@ namespace NETCore.RedisKit
                         {
                             if (!x.IsNullOrEmpty)
                             {
-                                result.Add(JsonDserialize<T>(x));
+                                result.Add(DataDserialize<T>(x));
                             }
                         });
 
-                        _Logger.LogInformation("StringGet keys={keys} values={values}.Conditions: flags={flags}", keys, JsonSerialize(values), flags);
+                        _Logger.LogInformation("StringGet keys={keys} values={values}.Conditions: flags={flags}", keys, DataSerialize(values), flags);
                     }
                     else
                     {
@@ -343,13 +401,26 @@ namespace NETCore.RedisKit
             }
         }
 
+
         /// <summary>
-        /// String Del 操作
+        /// Item remove 操作
         /// </summary>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns>True if the key was removed. else false</returns>
+        public bool ItemRemove(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        {
+            return ItemRemoveInnner(key, flags);
+        }
+
+        [Obsolete("The method is out of date and recommended use 'ItemRemove'")]
         public bool StringRemove(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
+        {
+            return ItemRemoveInnner(key, flags);
+        }
+
+
+        private bool ItemRemoveInnner(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             _Logger.LogInformation("StringRemove value with key={key},Coditions: flags={flags}", key, flags);
@@ -361,12 +432,23 @@ namespace NETCore.RedisKit
         }
 
         /// <summary>
-        /// String Del 操作（删除多条）
+        /// Item remove 操作
         /// </summary>
         /// <param name="keys">键集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <returns></returns>
+        public long ItemRemove(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.DemandMaster)
+        {
+            return ItemRemoveInnner(keys, flags);
+        }
+
+        [Obsolete("The method is out of date and recommended use 'ItemRemove'")]
         public long StringRemove(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.DemandMaster)
+        {
+            return ItemRemoveInnner(keys, flags);
+        }
+
+        private long ItemRemoveInnner(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(keys, nameof(keys));
             _Logger.LogInformation("StringRemove multi values with keys={keys},Coditions: flags={flags}", keys, flags);
@@ -396,8 +478,8 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                RedisValue pivotValue = JsonSerialize(pivot);
+                RedisValue value = DataSerialize(val);
+                RedisValue pivotValue = DataSerialize(pivot);
 
                 return db.ListInsertBefore(key, pivotValue, value, flags);
             }
@@ -418,8 +500,8 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
-                RedisValue pivotValue = JsonSerialize(pivot);
+                RedisValue value = DataSerialize(val);
+                RedisValue pivotValue = DataSerialize(pivot);
 
                 return db.ListInsertAfter(key, pivotValue, value, flags);
             }
@@ -440,7 +522,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.ListLeftPush(key, value, when, flags);
             }
         }
@@ -467,7 +549,7 @@ namespace NETCore.RedisKit
                 var i = 0;
                 vals.ForEach(x =>
                 {
-                    values[i] = JsonSerialize(x);
+                    values[i] = DataSerialize(x);
                     i++;
                 });
 
@@ -490,7 +572,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.ListRightPush(key, value, when, flags);
             }
         }
@@ -518,7 +600,7 @@ namespace NETCore.RedisKit
                 var i = 0;
                 vals.ForEach(x =>
                 {
-                    values[i] = JsonSerialize(x);
+                    values[i] = DataSerialize(x);
                     i++;
                 });
                 return db.ListRightPush(key, values, flags);
@@ -541,7 +623,7 @@ namespace NETCore.RedisKit
                 RedisValue value = db.ListLeftPop(key, flags);
                 if (!value.IsNullOrEmpty)
                 {
-                    return JsonDserialize<T>(value);
+                    return DataDserialize<T>(value);
                 }
                 return default(T);
             }
@@ -563,7 +645,7 @@ namespace NETCore.RedisKit
                 RedisValue value = db.ListRightPop(key, flags);
                 if (!value.IsNullOrEmpty)
                 {
-                    return JsonDserialize<T>(value);
+                    return DataDserialize<T>(value);
                 }
                 return default(T);
             }
@@ -583,7 +665,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.ListRemove(key, value, 0, flags);
             }
         }
@@ -637,7 +719,7 @@ namespace NETCore.RedisKit
                 RedisValue value = db.ListGetByIndex(key, index, flags);
                 if (!value.IsNullOrEmpty)
                 {
-                    return JsonDserialize<T>(value);
+                    return DataDserialize<T>(value);
                 }
                 return default(T);
             }
@@ -664,7 +746,7 @@ namespace NETCore.RedisKit
                     {
                         if (!x.IsNullOrEmpty)
                         {
-                            result.Add(JsonDserialize<T>(x));
+                            result.Add(DataDserialize<T>(x));
                         }
                     });
                 }
@@ -695,7 +777,7 @@ namespace NETCore.RedisKit
                     {
                         if (!x.IsNullOrEmpty)
                         {
-                            result.Add(JsonDserialize<T>(x));
+                            result.Add(DataDserialize<T>(x));
                         }
                     });
                 }
@@ -757,7 +839,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.SetAdd(key, value, flags);
             }
         }
@@ -784,7 +866,7 @@ namespace NETCore.RedisKit
                 var i = 0;
                 vals.ForEach(x =>
                 {
-                    values[i] = JsonSerialize(x);
+                    values[i] = DataSerialize(x);
                     i++;
                 });
 
@@ -806,7 +888,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.SetRemove(key, value, flags);
             }
         }
@@ -833,7 +915,7 @@ namespace NETCore.RedisKit
                 var i = 0;
                 vals.ForEach(x =>
                 {
-                    values[i] = JsonSerialize(x);
+                    values[i] = DataSerialize(x);
                     i++;
                 });
                 return db.SetRemove(key, values, flags);
@@ -884,7 +966,7 @@ namespace NETCore.RedisKit
                     {
                         if (!x.IsNullOrEmpty)
                         {
-                            result.Add(JsonDserialize<T>(x));
+                            result.Add(DataDserialize<T>(x));
                         }
                     });
                 }
@@ -918,7 +1000,7 @@ namespace NETCore.RedisKit
                     {
                         if (!x.IsNullOrEmpty)
                         {
-                            result.Add(JsonDserialize<T>(x));
+                            result.Add(DataDserialize<T>(x));
                         }
                     });
                 }
@@ -988,7 +1070,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.SetMove(sourceKey, destinationKey, value, flags);
             }
         }
@@ -1006,7 +1088,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.SetContains(key, value, flags);
             }
         }
@@ -1049,7 +1131,7 @@ namespace NETCore.RedisKit
                     {
                         if (!x.IsNullOrEmpty)
                         {
-                            result.Add(JsonDserialize<T>(x));
+                            result.Add(DataDserialize<T>(x));
                         }
                     });
                 }
@@ -1109,7 +1191,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.SortedSetAdd(key, value, score, flags);
             }
         }
@@ -1150,7 +1232,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.SortedSetIncrement(key, value, score, flags);
             }
         }
@@ -1170,7 +1252,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.SortedSetDecrement(key, value, score, flags);
             }
         }
@@ -1189,7 +1271,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.SortedSetRemove(key, value, flags);
             }
         }
@@ -1215,7 +1297,7 @@ namespace NETCore.RedisKit
                 var i = 0;
                 vals.ForEach(x =>
                 {
-                    values[i] = JsonSerialize(x);
+                    values[i] = DataSerialize(x);
                     i++;
                 });
 
@@ -1330,7 +1412,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                RedisValue value = JsonSerialize(val);
+                RedisValue value = DataSerialize(val);
                 return db.SortedSetScore(key, value, flags) != null;
             }
         }
@@ -1352,7 +1434,7 @@ namespace NETCore.RedisKit
 
                 if (values != null && values.Any())
                 {
-                    return JsonDserialize<T>(values.First());
+                    return DataDserialize<T>(values.First());
                 }
                 return default(T);
             }
@@ -1375,7 +1457,7 @@ namespace NETCore.RedisKit
 
                 if (values != null && values.Any())
                 {
-                    return JsonDserialize<T>(values.First());
+                    return DataDserialize<T>(values.First());
                 }
                 return default(T);
             }
@@ -1407,7 +1489,7 @@ namespace NETCore.RedisKit
                     {
                         if (!value.IsNullOrEmpty)
                         {
-                            var data = JsonDserialize<T>(value);
+                            var data = DataDserialize<T>(value);
                             result.Add(data);
                         }
                     }
@@ -1446,7 +1528,7 @@ namespace NETCore.RedisKit
                     {
                         if (!value.IsNullOrEmpty)
                         {
-                            var data = JsonDserialize<T>(value);
+                            var data = DataDserialize<T>(value);
                             result.Add(data);
                         }
                     }
@@ -1520,7 +1602,7 @@ namespace NETCore.RedisKit
                 {
                     if (!value.IsNullOrEmpty)
                     {
-                        var data = JsonDserialize<T>(value);
+                        var data = DataDserialize<T>(value);
                         result.Add(data);
                     }
                 }
@@ -1626,7 +1708,7 @@ namespace NETCore.RedisKit
             using (var redis = _RedisProvider.Redis)
             {
                 var db = redis.GetDatabase();
-                var value = JsonSerialize(val);
+                var value = DataSerialize(val);
                 return db.HashSet(key, hashField, value, when, flags);
             }
         }
@@ -1780,7 +1862,7 @@ namespace NETCore.RedisKit
                 var value = db.HashGet(key, hashField, flags);
                 if (!value.IsNullOrEmpty)
                 {
-                    return JsonDserialize<T>(value);
+                    return DataDserialize<T>(value);
                 }
                 return default(T);
             }
@@ -1812,7 +1894,7 @@ namespace NETCore.RedisKit
                         {
                             if (!x.IsNullOrEmpty)
                             {
-                                result.Add(JsonDserialize<T>(x));
+                                result.Add(DataDserialize<T>(x));
                             }
                         });
                     }
@@ -1843,7 +1925,7 @@ namespace NETCore.RedisKit
                     {
                         if (!x.IsNullOrEmpty)
                         {
-                            result.Add(JsonDserialize<T>(x));
+                            result.Add(DataDserialize<T>(x));
                         }
                     });
                 }
@@ -1911,13 +1993,13 @@ namespace NETCore.RedisKit
         /// <typeparam name="T">泛型类</typeparam>
         /// <param name="value">序列化对象</param>
         /// <returns>序列化之后的json字符串</returns>
-        private string JsonSerialize<T>(T val)
+        private string DataSerialize<T>(T val)
         {
             if (val == null)
             {
                 return string.Empty;
             }
-            return JsonConvert.SerializeObject(val);
+            return _SerializeService.ObjectSerialize(val);
         }
 
         /// <summary>
@@ -1926,13 +2008,13 @@ namespace NETCore.RedisKit
         /// <typeparam name="T">泛型类</typeparam>
         /// <param name="value">json字符串</param>
         /// <returns>反序列化之后的对象</returns>
-        private T JsonDserialize<T>(string val)
+        private T DataDserialize<T>(string val)
         {
             if (string.IsNullOrEmpty(val))
             {
                 return default(T);
             }
-            return JsonConvert.DeserializeObject<T>(val);
+            return _SerializeService.ObjectDserialize<T>(val);
         }
         #endregion
 

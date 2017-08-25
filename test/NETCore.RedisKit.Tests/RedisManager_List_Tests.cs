@@ -1,12 +1,15 @@
-using NETCore.RedisKit.Core.Internal;
-using NETCore.RedisKit.Infrastructure.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
+using NETCore.RedisKit.Loging;
+using NETCore.RedisKit;
 using Microsoft.Extensions.Logging;
-using NETCore.RedisKit.Core;
+using Xunit;
+using StackExchange.Redis;
+using System.Threading.Tasks;
+using NETCore.RedisKit.Infrastructure;
+using NETCore.RedisKit.Configuration;
+using System.Collections.Generic;
+using System;
+using System.Linq;
+using NETCore.RedisKit.Services;
 
 namespace NETCore.RedisKit.Tests
 {
@@ -18,12 +21,11 @@ namespace NETCore.RedisKit.Tests
             IRedisProvider redisProvider = new RedisProvider(new RedisKitOptions()
             {
                 EndPoints = "127.0.0.1:6379"
-            }, true);
+            });
 
+            IRedisLogger logger = new RedisLogger(new LoggerFactory(), redisProvider);
 
-            IRedisKitLogger logger = new RedisKitLogger(new LoggerFactory(), redisProvider);
-
-            _RedisService = new RedisService(redisProvider, logger);
+            _RedisService = new RedisService(redisProvider, logger, new DefaultJosnSerializeService());
         }
 
         [Fact(DisplayName = "在List值之前（左侧）插入")]
@@ -137,7 +139,7 @@ namespace NETCore.RedisKit.Tests
 
 
         [Fact(DisplayName = "在List右侧添加值")]
-        public  async Task ListRightPushAsyncTest()
+        public async Task ListRightPushAsyncTest()
         {
             var test_key = "test_list_push_right";
 
@@ -342,7 +344,7 @@ namespace NETCore.RedisKit.Tests
         }
 
         [Fact(DisplayName = "List过期时间点")]
-        public  async Task ListExpireAtAsyncTest()
+        public async Task ListExpireAtAsyncTest()
         {
             var test_key = "test_list_expire_at";
             await _RedisService.ListRemoveAllAsync(test_key);
@@ -351,14 +353,14 @@ namespace NETCore.RedisKit.Tests
 
             var exipireAtResult = _RedisService.ListExpireAtAsync(test_key, DateTime.Now.AddSeconds(5));
 
-             Task.Factory.StartNew(() =>
-             {
-                 Task.Delay(6).Wait();
+            Task.Factory.StartNew(() =>
+            {
+                Task.Delay(6).Wait();
 
-                 var listCount = _RedisService.ListCountAsync(test_key).Result;
+                var listCount = _RedisService.ListCountAsync(test_key).Result;
 
-                 Assert.Equal(0, listCount);
-             });
+                Assert.Equal(0, listCount);
+            });
         }
 
         [Fact(DisplayName = "List过期时间段")]
@@ -371,12 +373,12 @@ namespace NETCore.RedisKit.Tests
 
             var exipireAtResult = _RedisService.ListExpireInAsync(test_key, new TimeSpan(0, 0, 6));
 
-             Task.Factory.StartNew(() =>
-             {
-                 Task.Delay(6).Wait();
-                 var listCount = _RedisService.ListCountAsync(test_key).Result;
-                 Assert.Equal(0, listCount);
-             });
+            Task.Factory.StartNew(() =>
+            {
+                Task.Delay(6).Wait();
+                var listCount = _RedisService.ListCountAsync(test_key).Result;
+                Assert.Equal(0, listCount);
+            });
         }
     }
 }

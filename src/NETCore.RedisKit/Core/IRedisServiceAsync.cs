@@ -100,8 +100,11 @@ namespace NETCore.RedisKit
 
         #region String
 
+        [Obsolete("The method is out of date and recommended use 'ItemSetAsync'")]
+        Task<bool> StringSetAsync<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
+
         /// <summary>
-        /// String Set操作（包括新增（key不存在）/更新(如果key已存在)）
+        /// Item Set操作（包括新增（key不存在）/更新(如果key已存在)）
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
@@ -110,10 +113,12 @@ namespace NETCore.RedisKit
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>true 成功 false 失败</returns>
-        Task<bool> StringSetAsync<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
+        Task<bool> ItemSetAsync<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
 
+        [Obsolete("The method is out of date and recommended use 'ItemSetAsync'")]
+        Task<bool> StringSetAsync<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
         /// <summary>
-        /// String Set操作（包括新增/更新）,同时可以设置过期时间段
+        /// Item Set操作（包括新增/更新）,同时可以设置过期时间段
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
@@ -123,10 +128,12 @@ namespace NETCore.RedisKit
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>true 成功 false 失败</returns>
-        Task<bool> StringSetAsync<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
+        Task<bool> ItemSetAsync<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
 
+        [Obsolete("The method is out of date and recommended use 'ItemSetAsync'")]
+        Task<bool> StringSetAsync<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
         /// <summary>
-        /// String Set操作（包括新增/更新）,同时可以设置过期时间点
+        /// Item Set操作（包括新增/更新）,同时可以设置过期时间点
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
@@ -136,28 +143,34 @@ namespace NETCore.RedisKit
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>true 成功 false 失败</returns>
-        Task<bool> StringSetAsync<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
+        Task<bool> ItemSetAsync<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
 
+        [Obsolete("The method is out of date and recommended use 'ItemGetAsync'")]
+        Task<T> StringGetAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken));
         /// <summary>
-        /// String Get 操作
+        /// Item Get 操作
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="key">键</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>如果key存在，找到对应Value,如果不存在，返回默认值.</returns>
-        Task<T> StringGetAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken));
+        Task<T> ItemGetAsync<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken));
 
+        [Obsolete("The method is out of date and recommended use 'ItemGetAsync'")]
+        Task<IEnumerable<T>> StringGetAsync<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken));
         /// <summary>
-        /// String Get 操作（获取多条）
+        /// Item Get 操作（获取多条）
         /// </summary>
         /// <typeparam name="T">泛型</typeparam>
         /// <param name="keys">键集合</param>
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为PreferSlave</param>
         /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        Task<IEnumerable<T>> StringGetAsync<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IEnumerable<T>> ItemGetAsync<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave, CancellationToken cancellationToken = default(CancellationToken));
 
+        [Obsolete("The method is out of date and recommended use 'ItemRemoveAsync'")]
+        Task<bool> StringRemoveAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
         /// <summary>
         /// Sting Del 操作
         /// </summary>
@@ -165,8 +178,10 @@ namespace NETCore.RedisKit
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns>True if the key was removed. else false</returns>
-        Task<bool> StringRemoveAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
+        Task<bool> ItemRemoveAsync(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
 
+        [Obsolete("The method is out of date and recommended use 'ItemRemoveAsync'")]
+        Task<long> StringRemoveAsync(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
         /// <summary>
         /// Sting Del 操作（删除多条）
         /// </summary>
@@ -174,7 +189,7 @@ namespace NETCore.RedisKit
         /// <param name="flags">操作标识<see cref="CommandFlags"/>,默认为DemandMaster</param>
         /// <param name="cancellationToken"><see cref="CancellationToken"/></param>
         /// <returns></returns>
-        Task<long> StringRemoveAsync(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
+        Task<long> ItemRemoveAsync(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.DemandMaster, CancellationToken cancellationToken = default(CancellationToken));
 
         #endregion
 

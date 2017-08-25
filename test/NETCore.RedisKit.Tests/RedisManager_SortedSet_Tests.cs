@@ -1,12 +1,13 @@
-using System.Collections.Generic;
-using System.Linq;
+using NETCore.RedisKit.Loging;
+using NETCore.RedisKit;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using StackExchange.Redis;
-using NETCore.RedisKit.Core.Internal;
-using NETCore.RedisKit.Infrastructure.Internal;
-using Microsoft.Extensions.Logging;
-using NETCore.RedisKit.Core;
 using System.Threading.Tasks;
+using NETCore.RedisKit.Infrastructure;
+using NETCore.RedisKit.Configuration;
+using System.Collections.Generic;
+using NETCore.RedisKit.Services;
 
 namespace NETCore.RedisKit.Tests
 {
@@ -19,12 +20,12 @@ namespace NETCore.RedisKit.Tests
             IRedisProvider redisProvider = new RedisProvider(new RedisKitOptions()
             {
                 EndPoints = "127.0.0.1:6379"
-            }, true);
+            });
 
 
-            IRedisKitLogger logger = new RedisKitLogger(new LoggerFactory(), redisProvider);
+            IRedisLogger logger = new RedisLogger(new LoggerFactory(), redisProvider);
 
-            _RedisService = new RedisService(redisProvider, logger);
+            _RedisService = new RedisService(redisProvider, logger, new DefaultJosnSerializeService());
         }
 
 

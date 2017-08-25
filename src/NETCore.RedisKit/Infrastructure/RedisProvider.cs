@@ -2,12 +2,12 @@ using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NETCore.RedisKit.Infrastructure.Internal;
 using System.Linq;
+using NETCore.RedisKit.Configuration;
 
-namespace NETCore.RedisKit
+namespace NETCore.RedisKit.Infrastructure
 {
-    public class RedisProvider : IRedisProvider
+    public class RedisProvider:IRedisProvider
     {
         /// <summary>
         /// rediskit options
@@ -25,10 +25,10 @@ namespace NETCore.RedisKit
         public bool IsShowLog { get; private set; }
 
         #region ctor
-        public RedisProvider(RedisKitOptions options, bool isShowLog)
+        public RedisProvider(RedisKitOptions options)
         {
             _RedisKitOptions = options;
-            IsShowLog = isShowLog;
+            IsShowLog = options.IsShowLog;
 
             //init exchange redis config options
             _ConfigurationOptions = InitConfigurationOptions();
@@ -77,26 +77,26 @@ namespace NETCore.RedisKit
                     "INFO", "CONFIG", "CLUSTER",
                     "PING", "ECHO", "CLIENT"
                 }, available: false),
-                AbortOnConnectFail=_RedisKitOptions.AbortOnConnectFail,
-                AllowAdmin=_RedisKitOptions.AllowAdmin,
-                ChannelPrefix=_RedisKitOptions.ChannelPrefix,
+                AbortOnConnectFail = _RedisKitOptions.AbortOnConnectFail,
+                AllowAdmin = _RedisKitOptions.AllowAdmin,
+                ChannelPrefix = _RedisKitOptions.ChannelPrefix,
                 ConnectRetry = _RedisKitOptions.ConnectRetry,
                 ConnectTimeout = _RedisKitOptions.ConnectTimeout,
-                ConfigurationChannel=_RedisKitOptions.ConfigurationChannel,
-                DefaultDatabase=_RedisKitOptions.DefaultDatabase,
+                ConfigurationChannel = _RedisKitOptions.ConfigurationChannel,
+                DefaultDatabase = _RedisKitOptions.DefaultDatabase,
                 KeepAlive = _RedisKitOptions.KeepAlive,
-                ClientName=_RedisKitOptions.ClientName,
-				Password = _RedisKitOptions.Password,
-                Proxy=_RedisKitOptions.Proxy,
-                ResolveDns=_RedisKitOptions.ResolveDns,
-                ServiceName=_RedisKitOptions.ServiceName,
-                Ssl=_RedisKitOptions.Ssl,
-                SslHost=_RedisKitOptions.SslHost,
-                SslProtocols=_RedisKitOptions.SslProtocols,
-				SyncTimeout = _RedisKitOptions.SyncTimeout,
-                TieBreaker=_RedisKitOptions.TieBreaker,
+                ClientName = _RedisKitOptions.ClientName,
+                Password = _RedisKitOptions.Password,
+                Proxy = _RedisKitOptions.Proxy,
+                ResolveDns = _RedisKitOptions.ResolveDns,
+                ServiceName = _RedisKitOptions.ServiceName,
+                Ssl = _RedisKitOptions.Ssl,
+                SslHost = _RedisKitOptions.SslHost,
+                SslProtocols = _RedisKitOptions.SslProtocols,
+                SyncTimeout = _RedisKitOptions.SyncTimeout,
+                TieBreaker = _RedisKitOptions.TieBreaker,
                 DefaultVersion = new Version(_RedisKitOptions.DefaultVersion),
-                WriteBuffer=_RedisKitOptions.WriteBuffer
+                WriteBuffer = _RedisKitOptions.WriteBuffer
             };
 
             //add endpoints

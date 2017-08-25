@@ -4,7 +4,7 @@ using System.Text;
 using NETCore.RedisKit.Exceptions;
 using Newtonsoft.Json;
 
-namespace NETCore.RedisKit
+namespace NETCore.RedisKit.Services
 {
     public class DefaultJosnSerializeService:ISerializeService
     {
@@ -53,7 +53,7 @@ namespace NETCore.RedisKit
 
                 throw new SerializeException("default json service dserialize error", ex);
             }
-           
+
         }
     }
 }
