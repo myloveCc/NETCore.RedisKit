@@ -6,7 +6,7 @@
 To install NETCore.RedisKit, run the following command in the [Package Manager Console](https://docs.microsoft.com/zh-cn/nuget/tools/package-manager-console)
 
 ```
-Install-Package NETCore.RedisKit -Version 2.0.1-beta1
+Install-Package NETCore.RedisKit -Version 2.0.1-beta2
 ```
 ---
 
@@ -91,12 +91,12 @@ public ValuesController(IRedisProvider redisProvider)
 [HttpGet]
 public string Get()
 {
-    using (var redis = _RedisProvider.Redis)
-    {
-        var db = redis.GetDatabase();
+    var redis = _RedisProvider.Redis)
+    
+    var db = redis.GetDatabase();
 
-        return db.StringGet("hello");
-    }
+    return db.StringGet("hello");
+    
 }
 ```
 
