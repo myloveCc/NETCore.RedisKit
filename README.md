@@ -91,10 +91,8 @@ public ValuesController(IRedisProvider redisProvider)
 [HttpGet]
 public string Get()
 {
-    var redis = _RedisProvider.Redis)
-    
+    var redis = _RedisProvider.Redis;
     var db = redis.GetDatabase();
-
     return db.StringGet("hello");
     
 }

@@ -11,7 +11,7 @@ using NETCore.RedisKit.Infrastructure;
 namespace NETCore.RedisKit.Web.Controllers
 {
     [Route("api/[controller]")]
-    public class ValuesController : Controller
+    public class ValuesController:Controller
     {
         private readonly IRedisProvider _RedisProvider;
         public ValuesController(IRedisProvider redisProvider)
@@ -23,12 +23,10 @@ namespace NETCore.RedisKit.Web.Controllers
         [HttpGet]
         public string Get()
         {
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
+            var redis = _RedisProvider.Redis;
+            var db = redis.GetDatabase();
+            return db.StringGet("hello");
 
-                return db.StringGet("hello");
-            }
         }
 
         // GET api/values/5
