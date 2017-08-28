@@ -1,4 +1,7 @@
 # NETCore.RedisKit
+
+[![NuGet](https://img.shields.io/nuget/v/NETCore.RedisKit.svg)](https://nuget.org/packages/NETCore.RedisKit)
+
 [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) Tools. Easy use redis in your asp.net core project.
 
 # Install with nuget
