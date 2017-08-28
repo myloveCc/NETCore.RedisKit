@@ -73,6 +73,7 @@ namespace NETCore.RedisKit.Tests
         public void DecrementAsyncTest()
         {
             var test_key = "test_decrement";
+            _RedisService.ItemRemove(test_key);
             var incReuslt = _RedisService.IncrementAsync(test_key, 2).Result;
             Assert.Equal(2, incReuslt);
 
