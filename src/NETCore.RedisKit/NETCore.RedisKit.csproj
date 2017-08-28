@@ -9,16 +9,15 @@
     <Copyright>Copyright 2017 (c) Lvcc. All rights reserved</Copyright>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <Description>StackExchange.Redis extensions tool. Easy use redis in asp.net core.</Description>
-    <PackageReleaseNotes>Update targetFramework to netstandard2.0
-Refactoring project
-Update tests</PackageReleaseNotes>
+    <PackageReleaseNotes>Update redisProvider and redisService
+Add ICustomRedisEventService.</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/myloveCc/NETCore.RedisKit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/myloveCc/NETCore.RedisKit</RepositoryUrl>
     <PackageTags>StackExchange.Redis ASP.NETCore</PackageTags>
-    <AssemblyVersion>2.0.1.1</AssemblyVersion>
-    <FileVersion>2.0.1.1</FileVersion>
+    <AssemblyVersion>2.0.1.2</AssemblyVersion>
+    <FileVersion>2.0.1.2</FileVersion>
     <PackageLicenseUrl>https://github.com/myloveCc/NETCore.RedisKit/blob/master/LICENSE</PackageLicenseUrl>
-    <Version>2.0.1-beta1</Version>
+    <Version>2.0.1-beta2</Version>
     <PackageId>NETCore.RedisKit</PackageId>
   </PropertyGroup>
 
