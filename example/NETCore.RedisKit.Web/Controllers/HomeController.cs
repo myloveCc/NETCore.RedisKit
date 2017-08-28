@@ -7,7 +7,7 @@ using NETCore.RedisKit.Loging;
 
 namespace NETCore.RedisKit.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController:Controller
     {
         private readonly IRedisService _RedisService;
         public HomeController(IRedisService redisService)
@@ -17,7 +17,7 @@ namespace NETCore.RedisKit.Web.Controllers
 
         public IActionResult Index()
         {
-            _RedisService.StringSet("hello", "world");
+            _RedisService.ItemSet("hello", "world");
             return View();
         }
 
@@ -25,7 +25,7 @@ namespace NETCore.RedisKit.Web.Controllers
         {
 
             ViewData["Message"] = "Your application description page.";
-            ViewData["Hello"] = _RedisService.StringGet<string>("hello");
+            ViewData["Hello"] = _RedisService.ItemGet<string>("hello");
             return View();
         }
 

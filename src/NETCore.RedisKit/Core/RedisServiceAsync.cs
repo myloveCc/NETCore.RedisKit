@@ -30,11 +30,9 @@ namespace NETCore.RedisKit
 
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.StringIncrementAsync(key, 1, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.StringIncrementAsync(key, 1, flags);
             }, cancellationToken);
         }
 
@@ -52,11 +50,9 @@ namespace NETCore.RedisKit
 
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.StringIncrementAsync(key, value, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.StringIncrementAsync(key, value, flags);
             }, cancellationToken);
         }
 
@@ -73,11 +69,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.StringIncrementAsync(key, value, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.StringIncrementAsync(key, value, flags);
             }, cancellationToken);
         }
 
@@ -94,11 +88,9 @@ namespace NETCore.RedisKit
 
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.StringDecrementAsync(key, 1, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.StringDecrementAsync(key, 1, flags);
             }, cancellationToken);
         }
         /// <summary>
@@ -114,11 +106,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.StringDecrementAsync(key, value, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.StringDecrementAsync(key, value, flags);
             }, cancellationToken);
         }
 
@@ -135,11 +125,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.StringDecrementAsync(key, value, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.StringDecrementAsync(key, value, flags);
             }, cancellationToken);
         }
 
@@ -158,15 +146,13 @@ namespace NETCore.RedisKit
 
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                if (oldKey.Equals(newKey) || !db.KeyExists(oldKey, flags))
                 {
-                    IDatabase db = redis.GetDatabase();
-                    if (oldKey.Equals(newKey) || !db.KeyExists(oldKey, flags))
-                    {
-                        return Task<bool>.FromResult(false);
-                    }
-                    return db.KeyRenameAsync(oldKey, newKey, When.Always, flags);
+                    return Task<bool>.FromResult(false);
                 }
+                return db.KeyRenameAsync(oldKey, newKey, When.Always, flags);
             }, cancellationToken);
         }
 
@@ -182,11 +168,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyTypeAsync(key, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyTypeAsync(key, flags);
             }, cancellationToken);
         }
 
@@ -203,11 +187,9 @@ namespace NETCore.RedisKit
 
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyExistsAsync(key, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyExistsAsync(key, flags);
             }, cancellationToken);
         }
 
@@ -240,11 +222,9 @@ namespace NETCore.RedisKit
 
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.StringSetAsync(key, value, null, when, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.StringSetAsync(key, value, null, when, flags);
             }, cancellationToken);
         }
 
@@ -273,12 +253,10 @@ namespace NETCore.RedisKit
             RedisValue value = DataSerialize(val);
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    var timeSpan = expiresAt.Subtract(DateTime.Now);
-                    return db.StringSetAsync(key, value, timeSpan, when, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                var timeSpan = expiresAt.Subtract(DateTime.Now);
+                return db.StringSetAsync(key, value, timeSpan, when, flags);
             }, cancellationToken);
         }
 
@@ -309,11 +287,9 @@ namespace NETCore.RedisKit
 
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.StringSetAsync(key, value, expiresIn, when, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.StringSetAsync(key, value, expiresIn, when, flags);
             }, cancellationToken);
         }
 
@@ -338,17 +314,15 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = db.StringGet(key, flags);
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = db.StringGet(key, flags);
 
-                    if (value.IsNullOrEmpty)
-                    {
-                        return default(T);
-                    }
-                    return DataDserialize<T>(value);
+                if (value.IsNullOrEmpty)
+                {
+                    return default(T);
                 }
+                return DataDserialize<T>(value);
             }, cancellationToken);
         }
 
@@ -375,20 +349,18 @@ namespace NETCore.RedisKit
                 var result = new List<T>();
                 if (keys != null && keys.Any())
                 {
-                    using (var redis = _RedisProvider.Redis)
+                    ConnectionMultiplexer redis = _RedisProvider.Redis;
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = db.StringGet(keys.ToArray(), flags);
+                    if (values != null && values.Length > 0)
                     {
-                        var db = redis.GetDatabase();
-                        RedisValue[] values = db.StringGet(keys.ToArray(), flags);
-                        if (values != null && values.Length > 0)
+                        values.ForEach(x =>
                         {
-                            values.ForEach(x =>
+                            if (!x.IsNullOrEmpty)
                             {
-                                if (!x.IsNullOrEmpty)
-                                {
-                                    result.Add(DataDserialize<T>(x));
-                                }
-                            });
-                        }
+                                result.Add(DataDserialize<T>(x));
+                            }
+                        });
                     }
                 }
                 return result;
@@ -417,11 +389,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyDeleteAsync(key, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyDeleteAsync(key, flags);
             }, cancellationToken);
         }
 
@@ -446,12 +416,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(keys, nameof(keys));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    var keyArray = keys.ToArray();
-                    return db.KeyDeleteAsync(keyArray, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                var keyArray = keys.ToArray();
+                return db.KeyDeleteAsync(keyArray, flags);
             }, cancellationToken);
         }
 
@@ -474,14 +442,12 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    RedisValue pivotValue = DataSerialize(pivot);
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                RedisValue pivotValue = DataSerialize(pivot);
 
-                    return db.ListInsertBeforeAsync(key, pivotValue, value, flags);
-                }
+                return db.ListInsertBeforeAsync(key, pivotValue, value, flags);
             }, cancellationToken);
         }
 
@@ -500,14 +466,12 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    RedisValue pivotValue = DataSerialize(pivot);
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                RedisValue pivotValue = DataSerialize(pivot);
 
-                    return db.ListInsertAfterAsync(key, pivotValue, value, flags);
-                }
+                return db.ListInsertAfterAsync(key, pivotValue, value, flags);
             }, cancellationToken);
         }
 
@@ -526,12 +490,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.ListLeftPushAsync(key, value, when, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.ListLeftPushAsync(key, value, when, flags);
             }, cancellationToken);
         }
 
@@ -553,19 +515,17 @@ namespace NETCore.RedisKit
             }
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = new RedisValue[vals.Count()];
+                var i = 0;
+                vals.ForEach(x =>
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = new RedisValue[vals.Count()];
-                    var i = 0;
-                    vals.ForEach(x =>
-                    {
-                        values[i] = DataSerialize(x);
-                        i++;
-                    });
+                    values[i] = DataSerialize(x);
+                    i++;
+                });
 
-                    return db.ListLeftPushAsync(key, values, flags);
-                }
+                return db.ListLeftPushAsync(key, values, flags);
             }, cancellationToken);
         }
 
@@ -585,12 +545,10 @@ namespace NETCore.RedisKit
 
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.ListRightPushAsync(key, value, when, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.ListRightPushAsync(key, value, when, flags);
             }, cancellationToken);
         }
 
@@ -613,18 +571,16 @@ namespace NETCore.RedisKit
 
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = new RedisValue[vals.Count()];
+                var i = 0;
+                vals.ForEach(x =>
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = new RedisValue[vals.Count()];
-                    var i = 0;
-                    vals.ForEach(x =>
-                    {
-                        values[i] = DataSerialize(x);
-                        i++;
-                    });
-                    return db.ListRightPushAsync(key, values, flags);
-                }
+                    values[i] = DataSerialize(x);
+                    i++;
+                });
+                return db.ListRightPushAsync(key, values, flags);
             }, cancellationToken);
         }
 
@@ -641,16 +597,14 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<T>.Factory.StartNew(() =>
             {
-                using (var redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = db.ListLeftPopAsync(key, flags).Result;
+                if (!value.IsNullOrEmpty)
                 {
-                    var db = redis.GetDatabase();
-                    RedisValue value = db.ListLeftPopAsync(key, flags).Result;
-                    if (!value.IsNullOrEmpty)
-                    {
-                        return DataDserialize<T>(value);
-                    }
-                    return default(T);
+                    return DataDserialize<T>(value);
                 }
+                return default(T);
             }, cancellationToken);
         }
 
@@ -667,16 +621,14 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<T>.Factory.StartNew(() =>
             {
-                using (var redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = db.ListRightPopAsync(key, flags).Result;
+                if (!value.IsNullOrEmpty)
                 {
-                    var db = redis.GetDatabase();
-                    RedisValue value = db.ListRightPopAsync(key, flags).Result;
-                    if (!value.IsNullOrEmpty)
-                    {
-                        return DataDserialize<T>(value);
-                    }
-                    return default(T);
+                    return DataDserialize<T>(value);
                 }
+                return default(T);
             }, cancellationToken);
         }
 
@@ -694,12 +646,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.ListRemoveAsync(key, value, 0, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.ListRemoveAsync(key, value, 0, flags);
             }, cancellationToken);
         }
 
@@ -715,11 +665,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyDeleteAsync(key, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyDeleteAsync(key, flags);
             }, cancellationToken);
         }
 
@@ -735,11 +683,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.ListLengthAsync(key, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.ListLengthAsync(key, flags);
             }, cancellationToken);
         }
 
@@ -757,16 +703,14 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = db.ListGetByIndexAsync(key, index, flags).Result;
+                if (!value.IsNullOrEmpty)
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = db.ListGetByIndexAsync(key, index, flags).Result;
-                    if (!value.IsNullOrEmpty)
-                    {
-                        return DataDserialize<T>(value);
-                    }
-                    return default(T);
+                    return DataDserialize<T>(value);
                 }
+                return default(T);
             }, cancellationToken);
         }
 
@@ -783,23 +727,21 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run<IEnumerable<T>>(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = db.ListRangeAsync(key, 0, -1, flags).Result;
+                List<T> result = new List<T>();
+                if (values.Any())
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = db.ListRangeAsync(key, 0, -1, flags).Result;
-                    List<T> result = new List<T>();
-                    if (values.Any())
+                    values.ToList().ForEach(x =>
                     {
-                        values.ToList().ForEach(x =>
+                        if (!x.IsNullOrEmpty)
                         {
-                            if (!x.IsNullOrEmpty)
-                            {
-                                result.Add(DataDserialize<T>(x));
-                            }
-                        });
-                    }
-                    return result;
+                            result.Add(DataDserialize<T>(x));
+                        }
+                    });
                 }
+                return result;
             }, cancellationToken);
         }
 
@@ -818,23 +760,21 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run<IEnumerable<T>>(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = db.ListRangeAsync(key, startIndex, stopIndex, flags).Result;
+                List<T> result = new List<T>();
+                if (values.Any())
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = db.ListRangeAsync(key, startIndex, stopIndex, flags).Result;
-                    List<T> result = new List<T>();
-                    if (values.Any())
+                    values.ToList().ForEach(x =>
                     {
-                        values.ToList().ForEach(x =>
+                        if (!x.IsNullOrEmpty)
                         {
-                            if (!x.IsNullOrEmpty)
-                            {
-                                result.Add(DataDserialize<T>(x));
-                            }
-                        });
-                    }
-                    return result;
+                            result.Add(DataDserialize<T>(x));
+                        }
+                    });
                 }
+                return result;
             }, cancellationToken);
         }
 
@@ -851,11 +791,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyExpireAsync(key, expireAt, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyExpireAsync(key, expireAt, flags);
             }, cancellationToken);
         }
         /// <summary>
@@ -871,11 +809,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyExpireAsync(key, expireIn, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyExpireAsync(key, expireIn, flags);
             }, cancellationToken);
         }
         #endregion
@@ -896,12 +832,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.SetAddAsync(key, value, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.SetAddAsync(key, value, flags);
             }, cancellationToken);
         }
 
@@ -923,19 +857,17 @@ namespace NETCore.RedisKit
             }
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = new RedisValue[vals.Count()];
+                int i = 0;
+                vals.ForEach(x =>
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = new RedisValue[vals.Count()];
-                    int i = 0;
-                    vals.ForEach(x =>
-                    {
-                        values[i] = DataSerialize(x);
-                        i++;
-                    });
+                    values[i] = DataSerialize(x);
+                    i++;
+                });
 
-                    return db.SetAddAsync(key, values, flags);
-                }
+                return db.SetAddAsync(key, values, flags);
             }, cancellationToken);
         }
 
@@ -953,12 +885,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.SetRemoveAsync(key, value, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.SetRemoveAsync(key, value, flags);
             }, cancellationToken);
         }
 
@@ -980,19 +910,16 @@ namespace NETCore.RedisKit
             }
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = new RedisValue[vals.Count()];
+                int i = 0;
+                vals.ForEach(x =>
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = new RedisValue[vals.Count()];
-                    int i = 0;
-                    vals.ForEach(x =>
-                    {
-                        values[i] = DataSerialize(x);
-                        i++;
-                    });
-
-                    return db.SetRemoveAsync(key, values, flags);
-                }
+                    values[i] = DataSerialize(x);
+                    i++;
+                });
+                return db.SetRemoveAsync(key, values, flags);
             }, cancellationToken);
         }
 
@@ -1008,11 +935,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyDeleteAsync(key, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyDeleteAsync(key, flags);
             }, cancellationToken);
         }
 
@@ -1036,23 +961,21 @@ namespace NETCore.RedisKit
                     return result;
                 }
 
-                using (var redis = _RedisProvider.Redis)
-                {
-                    var db = redis.GetDatabase();
-                    var values = db.SetCombineAsync(operation, keys.ToArray(), flags).Result;
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = db.SetCombineAsync(operation, keys.ToArray(), flags).Result;
 
-                    if (values != null && values.Any())
+                if (values != null && values.Any())
+                {
+                    values.ToList().ForEach(x =>
                     {
-                        values.ToList().ForEach(x =>
+                        if (!x.IsNullOrEmpty)
                         {
-                            if (!x.IsNullOrEmpty)
-                            {
-                                result.Add(DataDserialize<T>(x));
-                            }
-                        });
-                    }
-                    return result;
+                            result.Add(DataDserialize<T>(x));
+                        }
+                    });
                 }
+                return result;
             }, cancellationToken);
         }
 
@@ -1072,25 +995,23 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(sencondKey, nameof(sencondKey));
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                using (var redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                var values = db.SetCombineAsync(operation, firstKey, sencondKey, flags).Result;
+
+                var result = new List<T>();
+
+                if (values != null && values.Any())
                 {
-                    var db = redis.GetDatabase();
-                    var values = db.SetCombineAsync(operation, firstKey, sencondKey, flags).Result;
-
-                    var result = new List<T>();
-
-                    if (values != null && values.Any())
+                    values.ToList().ForEach(x =>
                     {
-                        values.ToList().ForEach(x =>
+                        if (!x.IsNullOrEmpty)
                         {
-                            if (!x.IsNullOrEmpty)
-                            {
-                                result.Add(DataDserialize<T>(x));
-                            }
-                        });
-                    }
-                    return result;
+                            result.Add(DataDserialize<T>(x));
+                        }
+                    });
                 }
+                return result;
             }, cancellationToken);
         }
 
@@ -1114,11 +1035,9 @@ namespace NETCore.RedisKit
 
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.SetCombineAndStoreAsync(operation, storeKey, soureKeys.ToArray(), flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.SetCombineAndStoreAsync(operation, storeKey, soureKeys.ToArray(), flags);
             }, cancellationToken);
 
         }
@@ -1140,11 +1059,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(secondKey, nameof(secondKey));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.SetCombineAndStoreAsync(operation, storeKey, firstKey, secondKey, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.SetCombineAndStoreAsync(operation, storeKey, firstKey, secondKey, flags);
             }, cancellationToken);
         }
 
@@ -1165,12 +1082,10 @@ namespace NETCore.RedisKit
 
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.SetMoveAsync(sourceKey, destinationKey, value, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.SetMoveAsync(sourceKey, destinationKey, value, flags);
             }, cancellationToken);
         }
 
@@ -1188,12 +1103,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.SetContainsAsync(key, value, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.SetContainsAsync(key, value, flags);
             }, cancellationToken);
         }
 
@@ -1209,11 +1122,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.SetLengthAsync(key, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.SetLengthAsync(key, flags);
             }, cancellationToken);
         }
 
@@ -1230,24 +1141,22 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                using (var redis = _RedisProvider.Redis)
-                {
-                    var db = redis.GetDatabase();
-                    RedisValue[] values = db.SetMembersAsync(key).Result;
-                    var result = new List<T>();
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                var db = redis.GetDatabase();
+                RedisValue[] values = db.SetMembersAsync(key).Result;
+                var result = new List<T>();
 
-                    if (values != null && values.Any())
+                if (values != null && values.Any())
+                {
+                    values.ToList().ForEach(x =>
                     {
-                        values.ToList().ForEach(x =>
+                        if (!x.IsNullOrEmpty)
                         {
-                            if (!x.IsNullOrEmpty)
-                            {
-                                result.Add(DataDserialize<T>(x));
-                            }
-                        });
-                    }
-                    return result;
+                            result.Add(DataDserialize<T>(x));
+                        }
+                    });
                 }
+                return result;
             }, cancellationToken);
         }
 
@@ -1264,11 +1173,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyExpireAsync(key, expireAt, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyExpireAsync(key, expireAt, flags);
             }, cancellationToken);
         }
         /// <summary>
@@ -1284,11 +1191,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyExpireAsync(key, expireIn, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyExpireAsync(key, expireIn, flags);
             }, cancellationToken);
         }
 
@@ -1311,12 +1216,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.SortedSetAddAsync(key, value, score, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.SortedSetAddAsync(key, value, score, flags);
             }, cancellationToken);
         }
 
@@ -1339,12 +1242,10 @@ namespace NETCore.RedisKit
             }
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    SortedSetEntry[] values = vals.ToArray();
-                    return db.SortedSetAddAsync(key, values, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                SortedSetEntry[] values = vals.ToArray();
+                return db.SortedSetAddAsync(key, values, flags);
             }, cancellationToken);
         }
 
@@ -1363,12 +1264,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.SortedSetIncrementAsync(key, value, score, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.SortedSetIncrementAsync(key, value, score, flags);
             }, cancellationToken);
         }
 
@@ -1387,12 +1286,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.SortedSetDecrementAsync(key, value, score, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.SortedSetDecrementAsync(key, value, score, flags);
             }, cancellationToken);
         }
 
@@ -1410,12 +1307,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.SortedSetRemoveAsync(key, value, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.SortedSetRemoveAsync(key, value, flags);
             }, cancellationToken);
         }
 
@@ -1437,19 +1332,17 @@ namespace NETCore.RedisKit
             }
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = new RedisValue[vals.Count()];
+                int i = 0;
+                vals.ForEach(x =>
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = new RedisValue[vals.Count()];
-                    int i = 0;
-                    vals.ForEach(x =>
-                    {
-                        values[i] = DataSerialize(x);
-                        i++;
-                    });
+                    values[i] = DataSerialize(x);
+                    i++;
+                });
 
-                    return db.SortedSetRemoveAsync(key, values, flags);
-                }
+                return db.SortedSetRemoveAsync(key, values, flags);
             }, cancellationToken);
         }
 
@@ -1467,11 +1360,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.SortedSetRemoveRangeByRankAsync(key, startIndex, stopIndex, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.SortedSetRemoveRangeByRankAsync(key, startIndex, stopIndex, flags);
             }, cancellationToken);
         }
         /// <summary>
@@ -1489,11 +1380,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.SortedSetRemoveRangeByScoreAsync(key, startScore, stopScore, exclue, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.SortedSetRemoveRangeByScoreAsync(key, startScore, stopScore, exclue, flags);
             }, cancellationToken);
         }
 
@@ -1509,11 +1398,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyDeleteAsync(key, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyDeleteAsync(key, flags);
             }, cancellationToken);
         }
 
@@ -1531,17 +1418,15 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                if (order == Order.Ascending)
                 {
-                    IDatabase db = redis.GetDatabase();
-                    if (order == Order.Ascending)
-                    {
-                        return db.SortedSetRemoveRangeByRankAsync(key, size, -1, flags);
-                    }
-                    else
-                    {
-                        return db.SortedSetRemoveRangeByRankAsync(key, 0, -size - 1, flags);
-                    }
+                    return db.SortedSetRemoveRangeByRankAsync(key, size, -1, flags);
+                }
+                else
+                {
+                    return db.SortedSetRemoveRangeByRankAsync(key, 0, -size - 1, flags);
                 }
             }, cancellationToken);
         }
@@ -1558,11 +1443,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.SortedSetLengthAsync(key, double.NegativeInfinity, double.PositiveInfinity, Exclude.None, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.SortedSetLengthAsync(key, double.NegativeInfinity, double.PositiveInfinity, Exclude.None, flags);
             }, cancellationToken);
         }
 
@@ -1580,12 +1463,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<bool>.Factory.StartNew(() =>
             {
-                using (var redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = DataSerialize(val);
-                    return db.SortedSetScore(key, value, flags) != null;
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = DataSerialize(val);
+                return db.SortedSetScore(key, value, flags) != null;
             }, cancellationToken);
         }
 
@@ -1602,17 +1483,15 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<T>.Factory.StartNew(() =>
             {
-                using (var redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = db.SortedSetRangeByRank(key, 0, 1, Order.Ascending, flags);
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = db.SortedSetRangeByRank(key, 0, 1, Order.Ascending, flags);
 
-                    if (values != null && values.Any())
-                    {
-                        return DataDserialize<T>(values.First());
-                    }
-                    return default(T);
+                if (values != null && values.Any())
+                {
+                    return DataDserialize<T>(values.First());
                 }
+                return default(T);
             }, cancellationToken);
         }
 
@@ -1629,17 +1508,15 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task<T>.Factory.StartNew(() =>
             {
-                using (var redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = db.SortedSetRangeByRank(key, 0, 1, Order.Descending, flags);
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = db.SortedSetRangeByRank(key, 0, 1, Order.Descending, flags);
 
-                    if (values != null && values.Any())
-                    {
-                        return DataDserialize<T>(values.First());
-                    }
-                    return default(T);
+                if (values != null && values.Any())
+                {
+                    return DataDserialize<T>(values.First());
                 }
+                return default(T);
             }, cancellationToken);
         }
 
@@ -1661,24 +1538,22 @@ namespace NETCore.RedisKit
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = db.SortedSetRangeByRank(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
+                List<T> result = new List<T>();
+                if (values != null && values.Length > 0)
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = db.SortedSetRangeByRank(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
-                    List<T> result = new List<T>();
-                    if (values != null && values.Length > 0)
+                    foreach (RedisValue value in values)
                     {
-                        foreach (RedisValue value in values)
+                        if (!value.IsNullOrEmpty)
                         {
-                            if (!value.IsNullOrEmpty)
-                            {
-                                var data = DataDserialize<T>(value);
-                                result.Add(data);
-                            }
+                            var data = DataDserialize<T>(value);
+                            result.Add(data);
                         }
                     }
-                    return result;
                 }
+                return result;
             }, cancellationToken);
         }
 
@@ -1703,24 +1578,22 @@ namespace NETCore.RedisKit
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = db.SortedSetRangeByScore(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
+                List<T> result = new List<T>();
+                if (values != null && values.Length > 0)
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = db.SortedSetRangeByScore(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
-                    List<T> result = new List<T>();
-                    if (values != null && values.Length > 0)
+                    foreach (RedisValue value in values)
                     {
-                        foreach (RedisValue value in values)
+                        if (!value.IsNullOrEmpty)
                         {
-                            if (!value.IsNullOrEmpty)
-                            {
-                                var data = DataDserialize<T>(value);
-                                result.Add(data);
-                            }
+                            var data = DataDserialize<T>(value);
+                            result.Add(data);
                         }
                     }
-                    return result;
                 }
+                return result;
             }, cancellationToken);
         }
 
@@ -1741,11 +1614,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.SortedSetRangeByRankWithScoresAsync(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.SortedSetRangeByRankWithScoresAsync(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
             }, cancellationToken);
         }
 
@@ -1770,11 +1641,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.SortedSetRangeByScoreWithScoresAsync(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.SortedSetRangeByScoreWithScoresAsync(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
             }, cancellationToken);
         }
 
@@ -1793,21 +1662,19 @@ namespace NETCore.RedisKit
 
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
-                using (var redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = db.SortedSetRangeByRank(key, 0, -1, order, flags);
+                List<T> result = new List<T>();
+                foreach (RedisValue value in values)
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = db.SortedSetRangeByRank(key, 0, -1, order, flags);
-                    List<T> result = new List<T>();
-                    foreach (RedisValue value in values)
+                    if (!value.IsNullOrEmpty)
                     {
-                        if (!value.IsNullOrEmpty)
-                        {
-                            T data = DataDserialize<T>(value);
-                            result.Add(data);
-                        }
+                        T data = DataDserialize<T>(value);
+                        result.Add(data);
                     }
-                    return result;
                 }
+                return result;
             }, cancellationToken);
         }
 
@@ -1829,11 +1696,9 @@ namespace NETCore.RedisKit
             }
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.SortedSetCombineAndStoreAsync(setOperation, storeKey, combineKeys, null, Aggregate.Sum, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.SortedSetCombineAndStoreAsync(setOperation, storeKey, combineKeys, null, Aggregate.Sum, flags);
             }, cancellationToken);
         }
 
@@ -1855,12 +1720,10 @@ namespace NETCore.RedisKit
             }
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisKey[] keys = combineKeys.ToArray();
-                    return db.SortedSetCombineAndStoreAsync(setOperation, storeKey, keys, null, Aggregate.Sum, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisKey[] keys = combineKeys.ToArray();
+                return db.SortedSetCombineAndStoreAsync(setOperation, storeKey, keys, null, Aggregate.Sum, flags);
             }, cancellationToken);
         }
 
@@ -1877,11 +1740,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyExpireAsync(key, expiresAt, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyExpireAsync(key, expiresAt, flags);
             }, cancellationToken);
         }
 
@@ -1898,11 +1759,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyExpireAsync(key, expiresIn, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyExpireAsync(key, expiresIn, flags);
             }, cancellationToken);
         }
         #endregion
@@ -1926,12 +1785,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    string value = DataSerialize(val);
-                    return db.HashSetAsync(key, hashField, value, when, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                string value = DataSerialize(val);
+                return db.HashSetAsync(key, hashField, value, when, flags);
             }, cancellationToken);
         }
 
@@ -1952,11 +1809,9 @@ namespace NETCore.RedisKit
             }
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.HashSetAsync(key, hashFields.ToArray(), flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.HashSetAsync(key, hashFields.ToArray(), flags);
             }, cancellationToken);
         }
 
@@ -1974,11 +1829,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.HashDeleteAsync(key, hashField, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.HashDeleteAsync(key, hashField, flags);
             }, cancellationToken);
         }
 
@@ -1999,11 +1852,9 @@ namespace NETCore.RedisKit
             }
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.HashDeleteAsync(key, hashFields, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.HashDeleteAsync(key, hashFields, flags);
             }, cancellationToken);
         }
 
@@ -2025,11 +1876,9 @@ namespace NETCore.RedisKit
             }
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.HashDeleteAsync(key, hashFields.ToArray(), flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.HashDeleteAsync(key, hashFields.ToArray(), flags);
             }, cancellationToken);
         }
 
@@ -2045,11 +1894,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyDeleteAsync(key, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyDeleteAsync(key, flags);
             }, cancellationToken);
         }
 
@@ -2067,11 +1914,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.HashExistsAsync(key, hashField, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.HashExistsAsync(key, hashField, flags);
             }, cancellationToken);
         }
 
@@ -2087,11 +1932,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.HashLengthAsync(key, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.HashLengthAsync(key, flags);
             }, cancellationToken);
         }
 
@@ -2110,16 +1953,14 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue value = db.HashGet(key, hashField, flags);
+                if (!string.IsNullOrEmpty(value))
                 {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue value = db.HashGet(key, hashField, flags);
-                    if (!string.IsNullOrEmpty(value))
-                    {
-                        return DataDserialize<T>(value);
-                    }
-                    return default(T);
+                    return DataDserialize<T>(value);
                 }
+                return default(T);
             }, cancellationToken);
         }
 
@@ -2143,21 +1984,19 @@ namespace NETCore.RedisKit
 
                 if (hashFields != null && hashFields.Any())
                 {
-                    using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                    {
-                        IDatabase db = redis.GetDatabase();
-                        RedisValue[] values = db.HashGet(key, hashFields.ToArray(), flags);
+                    ConnectionMultiplexer redis = _RedisProvider.Redis;
+                    IDatabase db = redis.GetDatabase();
+                    RedisValue[] values = db.HashGet(key, hashFields.ToArray(), flags);
 
-                        if (values != null && values.Length > 0)
+                    if (values != null && values.Length > 0)
+                    {
+                        values.ForEach(x =>
                         {
-                            values.ForEach(x =>
+                            if (!x.IsNullOrEmpty)
                             {
-                                if (!x.IsNullOrEmpty)
-                                {
-                                    result.Add(DataDserialize<T>(x));
-                                }
-                            });
-                        }
+                                result.Add(DataDserialize<T>(x));
+                            }
+                        });
                     }
                 }
                 return result;
@@ -2178,23 +2017,21 @@ namespace NETCore.RedisKit
             return Task<IEnumerable<T>>.Factory.StartNew(() =>
             {
                 List<T> result = new List<T>();
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    RedisValue[] values = db.HashValues(key, flags);
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = db.HashValues(key, flags);
 
-                    if (values != null && values.Length > 0)
+                if (values != null && values.Length > 0)
+                {
+                    values.ForEach(x =>
                     {
-                        values.ForEach(x =>
+                        if (!x.IsNullOrEmpty)
                         {
-                            if (!x.IsNullOrEmpty)
-                            {
-                                result.Add(DataDserialize<T>(x));
-                            }
-                        });
-                    }
-                    return result;
+                            result.Add(DataDserialize<T>(x));
+                        }
+                    });
                 }
+                return result;
             }, cancellationToken);
         }
 
@@ -2210,11 +2047,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.HashGetAllAsync(key, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.HashGetAllAsync(key, flags);
             }, cancellationToken);
         }
 
@@ -2231,11 +2066,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyExpireAsync(key, expiresAt, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyExpireAsync(key, expiresAt, flags);
             }, cancellationToken);
         }
 
@@ -2252,11 +2085,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    return db.KeyExpireAsync(key, expiresIn, flags);
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                return db.KeyExpireAsync(key, expiresIn, flags);
             }, cancellationToken);
         }
         #endregion
@@ -2274,16 +2105,14 @@ namespace NETCore.RedisKit
         {
             return Task.Run(() =>
             {
-                using (ConnectionMultiplexer redis = _RedisProvider.Redis)
-                {
-                    IDatabase db = redis.GetDatabase();
-                    //创建事务
-                    ITransaction transition = db.CreateTransaction(asyncObjec);
-                    //执行Action
-                    action(transition);
-                    //执行事务
-                    return transition.ExecuteAsync();
-                }
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                //创建事务
+                ITransaction transition = db.CreateTransaction(asyncObjec);
+                //执行Action
+                action(transition);
+                //执行事务
+                return transition.ExecuteAsync();
             }, cancellationToken);
         }
         #endregion

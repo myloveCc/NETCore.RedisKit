@@ -17,14 +17,9 @@ namespace NETCore.RedisKit.Tests
         private readonly IRedisService _RedisService;
         public _RedisService_Hash_Tests()
         {
-            IRedisProvider redisProvider = new RedisProvider(new RedisKitOptions()
-            {
-                EndPoints = "127.0.0.1:6379"
-            });
+            IRedisLogger logger = new RedisLogger(new LoggerFactory(), new RedisKitOptions() { IsShowLog = false });
 
-            IRedisLogger logger = new RedisLogger(new LoggerFactory(), redisProvider);
-
-            _RedisService = new RedisService(redisProvider, logger, new DefaultJosnSerializeService());
+            _RedisService = new RedisService(CommonManager.Instance._RedisProvider, logger, new DefaultJosnSerializeService());
         }
 
         [Fact(DisplayName = "新增/更新Hash数据")]

@@ -18,15 +18,9 @@ namespace NETCore.RedisKit.Tests
         private readonly IRedisService _RedisService;
         public _RedisService_String_Tests()
         {
-            IRedisProvider redisProvider = new RedisProvider(new RedisKitOptions()
-            {
-                EndPoints = "127.0.0.1:6379"
-            });
+            IRedisLogger logger = new RedisLogger(new LoggerFactory(), new RedisKitOptions() { IsShowLog = false });
 
-
-            IRedisLogger logger = new RedisLogger(new LoggerFactory(), redisProvider);
-
-            _RedisService = new RedisService(redisProvider, logger, new DefaultJosnSerializeService());
+            _RedisService = new RedisService(CommonManager.Instance._RedisProvider, logger, new DefaultJosnSerializeService());
         }
 
         [Fact(DisplayName = "设置String值")]
@@ -54,13 +48,13 @@ namespace NETCore.RedisKit.Tests
         public async Task StringSetAsyncExpireAtTest()
         {
             var test_key = "test_set_expireat";
-            var setResult = _RedisService.StringSetAsync(test_key, "11111", DateTime.Now.AddSeconds(5)).Result;
+            var setResult = await _RedisService.ItemSetAsync(test_key, "11111", DateTime.Now.AddSeconds(5));
             Assert.True(setResult);
 
             var getValue = Task<string>.Factory.StartNew(() =>
             {
                 Task.Delay(new TimeSpan(0, 0, 6)).Wait();
-                return _RedisService.StringGetAsync<string>(test_key).Result;
+                return _RedisService.ItemGetAsync<string>(test_key).Result;
             }).Result;
             Assert.Null(getValue);
         }
@@ -70,13 +64,13 @@ namespace NETCore.RedisKit.Tests
         public void StringSetAsyncExpireInTest()
         {
             var test_key = "test_set_expirein";
-            var setResult = _RedisService.StringSetAsync(test_key, "11111", new TimeSpan(0, 0, 5)).Result;
+            var setResult = _RedisService.ItemSetAsync(test_key, "11111", new TimeSpan(0, 0, 5)).Result;
             Assert.True(setResult);
 
             var getValue = Task<string>.Factory.StartNew(() =>
             {
                 Task.Delay(new TimeSpan(0, 0, 6)).Wait();
-                return _RedisService.StringGetAsync<string>(test_key).Result;
+                return _RedisService.ItemGetAsync<string>(test_key).Result;
             }).Result;
             Assert.Null(getValue);
         }
@@ -86,49 +80,49 @@ namespace NETCore.RedisKit.Tests
         {
             var test_key = "test_get";
 
-            var getValue = _RedisService.StringGetAsync<string>(test_key).Result;
+            var getValue = await _RedisService.ItemGetAsync<string>(test_key);
             Assert.Null(getValue);
 
-            var setResult = _RedisService.StringSetAsync(test_key, "1111").Result;
+            var setResult = _RedisService.ItemSetAsync(test_key, "1111").Result;
             Assert.True(setResult);
 
-            getValue = _RedisService.StringGetAsync<string>(test_key).Result;
+            getValue = _RedisService.ItemGetAsync<string>(test_key).Result;
             Assert.NotNull(getValue);
             Assert.NotEmpty(getValue);
             Assert.Equal("1111", getValue);
 
-            var delResult = _RedisService.StringRemoveAsync(test_key).Result;
+            var delResult = _RedisService.ItemRemoveAsync(test_key).Result;
             Assert.True(delResult);
         }
 
         [Fact(DisplayName = "根据Key集合获取多个值")]
-        public void StringGetAsyncRangeTest()
+        public async Task StringGetAsyncRangeTest()
         {
             var test_key = new List<RedisKey>() { "key1", "key2", "key3", "key4" };
 
-            _RedisService.StringSetAsync("key1", "1111");
-            _RedisService.StringSetAsync("key2", "2222");
-            _RedisService.StringSetAsync("key3", "3333");
+            await _RedisService.ItemSetAsync("key1", "1111");
+            await _RedisService.ItemSetAsync("key2", "2222");
+            await _RedisService.ItemSetAsync("key3", "3333");
 
-            var values = _RedisService.StringGetAsync<string>(test_key).Result.ToList();
+            var values = (await _RedisService.ItemGetAsync<string>(test_key)).ToList();
 
             Assert.Equal("1111", values[0]);
             Assert.Equal("2222", values[1]);
             Assert.Equal("3333", values[2]);
 
-            _RedisService.StringRemoveAsync(test_key);
+            await _RedisService.ItemRemoveAsync(test_key);
         }
 
         [Fact(DisplayName = "根据Key移除缓存")]
         public void StringRemoveAsyncTest()
         {
             var test_key = "test_remove";
-            var delResult = _RedisService.StringRemoveAsync(test_key).Result;
+            var delResult = _RedisService.ItemRemoveAsync(test_key).Result;
 
             Assert.False(delResult);
 
-            var result = _RedisService.StringSetAsync(test_key, "11111").Result;
-            delResult = _RedisService.StringRemoveAsync(test_key).Result;
+            var result = _RedisService.ItemSetAsync(test_key, "11111").Result;
+            delResult = _RedisService.ItemRemoveAsync(test_key).Result;
             Assert.True(delResult);
         }
 
@@ -137,11 +131,11 @@ namespace NETCore.RedisKit.Tests
         {
             var test_key = new List<RedisKey>() { "key1", "key2", "key3", "key4" };
 
-            await _RedisService.StringSetAsync("key1", "1111");
-            await _RedisService.StringSetAsync("key2", "2222");
-            await _RedisService.StringSetAsync("key3", "3333");
+            await _RedisService.ItemSetAsync("key1", "1111");
+            await _RedisService.ItemSetAsync("key2", "2222");
+            await _RedisService.ItemSetAsync("key3", "3333");
 
-            var delResult = await _RedisService.StringRemoveAsync(test_key);
+            var delResult = await _RedisService.ItemRemoveAsync(test_key);
 
             Assert.Equal(3, delResult);
         }

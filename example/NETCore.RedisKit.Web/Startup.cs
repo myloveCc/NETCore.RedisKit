@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NETCore.RedisKit.Services;
 
 namespace NETCore.RedisKit.Web
 {
@@ -25,6 +26,9 @@ namespace NETCore.RedisKit.Web
         {
             // Add framework services.
             services.AddMvc();
+
+            // Add redis event service
+            services.AddSingleton<ICustomRedisEventService, RedisEventService>();
 
             // Add redis service
             services.AddRedisKit(options =>

@@ -18,14 +18,9 @@ namespace NETCore.RedisKit.Tests
         private readonly IRedisService _RedisService;
         public _RedisService_Set_Tests()
         {
-            IRedisProvider redisProvider = new RedisProvider(new RedisKitOptions()
-            {
-                EndPoints = "127.0.0.1:6379"
-            });
+            IRedisLogger logger = new RedisLogger(new LoggerFactory(), new RedisKitOptions() { IsShowLog = false });
 
-            IRedisLogger logger = new RedisLogger(new LoggerFactory(), redisProvider);
-
-            _RedisService = new RedisService(redisProvider, logger, new DefaultJosnSerializeService());
+            _RedisService = new RedisService(CommonManager.Instance._RedisProvider, logger, new DefaultJosnSerializeService());
         }
 
         [Fact(DisplayName = "新增单个值到Set集合")]
@@ -277,15 +272,15 @@ namespace NETCore.RedisKit.Tests
             var expireResult = _RedisService.SetExpireAtAsync(test_key, DateTime.Now.AddSeconds(5)).Result;
             Assert.True(expireResult);
 
-            Task.Factory.StartNew(() =>
-            {
-                Task.Delay(6).Wait();
+            await Task.Factory.StartNew(() =>
+             {
+                 Task.Delay(6).Wait();
 
-                var setCount = _RedisService.SetCountAsync(test_key).Result;
+                 var setCount = _RedisService.SetCountAsync(test_key).Result;
 
-                Assert.Equal(0, setCount);
-            });
-            _RedisService.SetRemoveAllAsync(test_key);
+                 Assert.Equal(0, setCount);
+             });
+            await _RedisService.SetRemoveAllAsync(test_key);
         }
 
         [Fact(DisplayName = "集合过期时间段")]
@@ -300,7 +295,7 @@ namespace NETCore.RedisKit.Tests
             var expireResult = _RedisService.SetExpireInAsync(test_key, new TimeSpan(0, 0, 5)).Result;
             Assert.True(expireResult);
 
-            Task.Factory.StartNew(() =>
+           await Task.Factory.StartNew(() =>
             {
                 Task.Delay(6).Wait();
 
@@ -308,7 +303,7 @@ namespace NETCore.RedisKit.Tests
 
                 Assert.Equal(0, setCount);
             });
-            _RedisService.SetRemoveAllAsync(test_key);
+            await _RedisService.SetRemoveAllAsync(test_key);
         }
     }
 }

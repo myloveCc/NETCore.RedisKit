@@ -18,14 +18,8 @@ namespace NETCore.RedisKit.Tests
         private readonly IRedisService _RedisService;
         public _RedisService_List_Tests()
         {
-            IRedisProvider redisProvider = new RedisProvider(new RedisKitOptions()
-            {
-                EndPoints = "127.0.0.1:6379"
-            });
-
-            IRedisLogger logger = new RedisLogger(new LoggerFactory(), redisProvider);
-
-            _RedisService = new RedisService(redisProvider, logger, new DefaultJosnSerializeService());
+            IRedisLogger logger = new RedisLogger(new LoggerFactory(), new RedisKitOptions() { IsShowLog = false });
+            _RedisService = new RedisService(CommonManager.Instance._RedisProvider, logger, new DefaultJosnSerializeService());
         }
 
         [Fact(DisplayName = "在List值之前（左侧）插入")]
@@ -353,7 +347,7 @@ namespace NETCore.RedisKit.Tests
 
             var exipireAtResult = _RedisService.ListExpireAtAsync(test_key, DateTime.Now.AddSeconds(5));
 
-            Task.Factory.StartNew(() =>
+            await Task.Factory.StartNew(() =>
             {
                 Task.Delay(6).Wait();
 
@@ -373,7 +367,7 @@ namespace NETCore.RedisKit.Tests
 
             var exipireAtResult = _RedisService.ListExpireInAsync(test_key, new TimeSpan(0, 0, 6));
 
-            Task.Factory.StartNew(() =>
+            await Task.Factory.StartNew(() =>
             {
                 Task.Delay(6).Wait();
                 var listCount = _RedisService.ListCountAsync(test_key).Result;

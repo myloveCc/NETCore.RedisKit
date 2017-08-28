@@ -17,11 +17,17 @@ namespace NETCore.RedisKit
         private readonly IRedisLogger _Logger;
         private readonly ISerializeService _SerializeService;
 
-        public RedisService(IRedisProvider redisProvider, IRedisLogger logger, ISerializeService jsonSerialize)
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="redisProvider"></param>
+        /// <param name="logger"></param>
+        /// <param name="objSerialize"></param>
+        public RedisService(IRedisProvider redisProvider, IRedisLogger logger, ISerializeService objSerialize)
         {
             _RedisProvider = redisProvider;
             _Logger = logger;
-            _SerializeService = jsonSerialize;
+            _SerializeService = objSerialize;
         }
 
         #region Sync
@@ -38,11 +44,9 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             _Logger.LogInformation("Increment key={key} with value=1", key);
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.StringIncrement(key, 1, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.StringIncrement(key, 1, flags);
         }
 
         /// <summary>
@@ -57,11 +61,10 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
 
             _Logger.LogInformation("Increment {key}=with long valu={value}", key, value);
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.StringIncrement(key, value, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.StringIncrement(key, value, flags);
+
         }
 
         /// <summary>
@@ -76,11 +79,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             _Logger.LogInformation("Increment key={key} with double value={value}", key, value);
 
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.StringIncrement(key, value, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.StringIncrement(key, value, flags);
         }
 
         /// <summary>
@@ -93,11 +94,9 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             _Logger.LogInformation("Decrement key={key} with value=1", key);
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.StringDecrement(key, 1, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.StringDecrement(key, 1, flags);
         }
 
         /// <summary>
@@ -111,11 +110,9 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             _Logger.LogInformation("Decrement key={key} with long value={value}", key, value);
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.StringDecrement(key, value, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.StringDecrement(key, value, flags);
         }
 
         /// <summary>
@@ -129,11 +126,9 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             _Logger.LogInformation("Decrement key={key} with double value={value}", key, value);
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.StringDecrement(key, value, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.StringDecrement(key, value, flags);
         }
 
         /// <summary>
@@ -149,22 +144,20 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty((newKey), nameof(newKey));
 
             _Logger.LogInformation("Rename oldKey={oldkey} to newKey={newKey}.Condition: flags={flags}", oldKey, newKey, flags);
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            if (oldKey.Equals(newKey))
             {
-                var db = redis.GetDatabase();
-                if (oldKey.Equals(newKey))
-                {
-                    _Logger.LogWarning("oldKey={oldKey} equals newKey={newKey}", oldKey, newKey);
-                    return false;
-                }
-
-                if (!db.KeyExists(oldKey, flags))
-                {
-                    _Logger.LogWarning("oldKey={oldKey} don't exist. Condition:flags={flags}", oldKey, flags);
-                    return false;
-                }
-                return db.KeyRename(oldKey, newKey, When.Always, flags);
+                _Logger.LogWarning("oldKey={oldKey} equals newKey={newKey}", oldKey, newKey);
+                return false;
             }
+
+            if (!db.KeyExists(oldKey, flags))
+            {
+                _Logger.LogWarning("oldKey={oldKey} don't exist. Condition:flags={flags}", oldKey, flags);
+                return false;
+            }
+            return db.KeyRename(oldKey, newKey, When.Always, flags);
         }
 
         /// <summary>
@@ -177,11 +170,9 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             _Logger.LogInformation("Get reids key type with key={key}.Condition:flags={flags}", key, flags);
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyType(key, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyType(key, flags);
         }
 
         /// <summary>
@@ -194,11 +185,9 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             _Logger.LogInformation("Check reids key exist with key={key}.Condition:flags={flags}", key, flags);
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyExists(key, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyExists(key, flags);
         }
 
         #endregion
@@ -227,16 +216,12 @@ namespace NETCore.RedisKit
         private bool ItemSetInner<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                RedisValue value = DataSerialize(val);
+            RedisValue value = DataSerialize(val);
+            _Logger.LogInformation("StringSet Key={key} with value={value}. Condition: When={when},Flags={flags} ", key, value, when, flags);
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.StringSet(key, value, null, when, flags);
 
-                _Logger.LogInformation("StringSet Key={key} with value={value}. Condition: When={when},Flags={flags} ", key, value, when, flags);
-
-                var db = redis.GetDatabase();
-
-                return db.StringSet(key, value, null, when, flags);
-            }
         }
 
         /// <summary>
@@ -263,15 +248,12 @@ namespace NETCore.RedisKit
         private bool ItemSetInner<T>(RedisKey key, T val, DateTime expiresAt, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
-            using (var redis = _RedisProvider.Redis)
-            {
-                RedisValue value = DataSerialize(val);
-                _Logger.LogInformation("StringSet Key={key} with value={value} expiresAt={expiresAt}. Condition: When={when},Flags={flags} ", key, value, expiresAt, when, flags);
-                var db = redis.GetDatabase();
-                var timeSpan = expiresAt.Subtract(DateTime.Now);
-                return db.StringSet(key, value, timeSpan, when, flags);
-            }
+            RedisValue value = DataSerialize(val);
+            _Logger.LogInformation("StringSet Key={key} with value={value} expiresAt={expiresAt}. Condition: When={when},Flags={flags} ", key, value, expiresAt, when, flags);
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var timeSpan = expiresAt.Subtract(DateTime.Now);
+            return db.StringSet(key, value, timeSpan, when, flags);
         }
 
         /// <summary>
@@ -298,15 +280,12 @@ namespace NETCore.RedisKit
         private bool ItemSetInner<T>(RedisKey key, T val, TimeSpan expiresIn, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
+            RedisValue value = DataSerialize(val);
+            _Logger.LogInformation("StringSet Key={key} with value={value} expiresAt={expiresIn}. Condition: When={when},Flags={flags} ", key, value, expiresIn, when, flags);
 
-            using (var redis = _RedisProvider.Redis)
-            {
-                RedisValue value = DataSerialize(val);
-                _Logger.LogInformation("StringSet Key={key} with value={value} expiresAt={expiresIn}. Condition: When={when},Flags={flags} ", key, value, expiresIn, when, flags);
-
-                var db = redis.GetDatabase();
-                return db.StringSet(key, value, expiresIn, when, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.StringSet(key, value, expiresIn, when, flags);
         }
 
         /// <summary>
@@ -330,22 +309,20 @@ namespace NETCore.RedisKit
         private T ItemGetInner<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = db.StringGet(key, flags);
+
+            _Logger.LogInformation("StringGet value={value} by key={key}. Condition:Flags={flags} ", value, key, flags);
+
+            if (value.IsNullOrEmpty)
             {
-                var db = redis.GetDatabase();
-                RedisValue value = db.StringGet(key, flags);
+                var result = default(T);
+                _Logger.LogWarning("StringGet default value={value} by key={key}. Condition:Flags={flags} ", result, key, flags);
 
-                _Logger.LogInformation("StringGet value={value} by key={key}. Condition:Flags={flags} ", value, key, flags);
-
-                if (value.IsNullOrEmpty)
-                {
-                    var result = default(T);
-                    _Logger.LogWarning("StringGet default value={value} by key={key}. Condition:Flags={flags} ", result, key, flags);
-
-                    return result;
-                }
-                return DataDserialize<T>(value);
+                return result;
             }
+            return DataDserialize<T>(value);
         }
 
 
@@ -369,36 +346,35 @@ namespace NETCore.RedisKit
         private IEnumerable<T> ItemGetInner<T>(IEnumerable<RedisKey> keys, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(keys, nameof(keys));
-            using (var redis = _RedisProvider.Redis)
+           
+            var result = new List<T>();
+            if (keys != null && keys.Any())
             {
-                var result = new List<T>();
-                if (keys != null && keys.Any())
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                RedisValue[] values = db.StringGet(keys.ToArray(), flags);
+                if (values != null && values.Length > 0)
                 {
-                    var db = redis.GetDatabase();
-                    RedisValue[] values = db.StringGet(keys.ToArray(), flags);
-                    if (values != null && values.Length > 0)
+                    values.ForEach(x =>
                     {
-                        values.ForEach(x =>
+                        if (!x.IsNullOrEmpty)
                         {
-                            if (!x.IsNullOrEmpty)
-                            {
-                                result.Add(DataDserialize<T>(x));
-                            }
-                        });
+                            result.Add(DataDserialize<T>(x));
+                        }
+                    });
 
-                        _Logger.LogInformation("StringGet keys={keys} values={values}.Conditions: flags={flags}", keys, DataSerialize(values), flags);
-                    }
-                    else
-                    {
-                        _Logger.LogWarning("StringGet keys={keys} values is null or empty.Conditions: flags={flags}", keys, flags);
-                    }
+                    _Logger.LogInformation("StringGet keys={keys} values={values}.Conditions: flags={flags}", keys, DataSerialize(values), flags);
                 }
                 else
                 {
-                    _Logger.LogWarning("StringGet with keys={keys} is null or empty.Conditions: flags={flags}", keys, flags);
+                    _Logger.LogWarning("StringGet keys={keys} values is null or empty.Conditions: flags={flags}", keys, flags);
                 }
-                return result;
             }
+            else
+            {
+                _Logger.LogWarning("StringGet with keys={keys} is null or empty.Conditions: flags={flags}", keys, flags);
+            }
+            return result;
         }
 
 
@@ -424,11 +400,9 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             _Logger.LogInformation("StringRemove value with key={key},Coditions: flags={flags}", key, flags);
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyDelete(key, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyDelete(key, flags);
         }
 
         /// <summary>
@@ -452,12 +426,10 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(keys, nameof(keys));
             _Logger.LogInformation("StringRemove multi values with keys={keys},Coditions: flags={flags}", keys, flags);
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                var keyArray = keys.ToArray();
-                return db.KeyDelete(keyArray, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var keyArray = keys.ToArray();
+            return db.KeyDelete(keyArray, flags);
         }
 
         #endregion
@@ -475,14 +447,12 @@ namespace NETCore.RedisKit
         /// <returns>返回插入左侧成功后List的长度 或 -1 表示pivot未找到.</returns>
         public long ListInsertLeft<T>(RedisKey key, T val, T pivot, CommandFlags flags = CommandFlags.DemandMaster)
         {
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                RedisValue pivotValue = DataSerialize(pivot);
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            RedisValue pivotValue = DataSerialize(pivot);
 
-                return db.ListInsertBefore(key, pivotValue, value, flags);
-            }
+            return db.ListInsertBefore(key, pivotValue, value, flags);
         }
 
         /// <summary>
@@ -497,14 +467,12 @@ namespace NETCore.RedisKit
         public long ListInsertRight<T>(RedisKey key, T val, T pivot, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                RedisValue pivotValue = DataSerialize(pivot);
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            RedisValue pivotValue = DataSerialize(pivot);
 
-                return db.ListInsertAfter(key, pivotValue, value, flags);
-            }
+            return db.ListInsertAfter(key, pivotValue, value, flags);
         }
 
         /// <summary>
@@ -519,12 +487,10 @@ namespace NETCore.RedisKit
         public long ListLeftPush<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.ListLeftPush(key, value, when, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.ListLeftPush(key, value, when, flags);
         }
 
         /// <summary>
@@ -538,23 +504,21 @@ namespace NETCore.RedisKit
         public long ListLeftPushRanage<T>(RedisKey key, IEnumerable<T> vals, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            if (vals == null || !vals.Any())
             {
-                if (vals == null || !vals.Any())
-                {
-                    return 0;
-                }
-                var db = redis.GetDatabase();
-                RedisValue[] values = new RedisValue[vals.Count()];
-                var i = 0;
-                vals.ForEach(x =>
-                {
-                    values[i] = DataSerialize(x);
-                    i++;
-                });
-
-                return db.ListLeftPush(key, values, flags);
+                return 0;
             }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue[] values = new RedisValue[vals.Count()];
+            var i = 0;
+            vals.ForEach(x =>
+            {
+                values[i] = DataSerialize(x);
+                i++;
+            });
+
+            return db.ListLeftPush(key, values, flags);
         }
 
         /// <summary>
@@ -569,12 +533,10 @@ namespace NETCore.RedisKit
         public long ListRightPush<T>(RedisKey key, T val, When when = When.Always, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.ListRightPush(key, value, when, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.ListRightPush(key, value, when, flags);
         }
 
         /// <summary>
@@ -589,22 +551,20 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNull(vals, nameof(vals));
-            using (var redis = _RedisProvider.Redis)
+            if (vals == null || !vals.Any())
             {
-                if (vals == null || !vals.Any())
-                {
-                    return 0;
-                }
-                var db = redis.GetDatabase();
-                RedisValue[] values = new RedisValue[vals.Count()];
-                var i = 0;
-                vals.ForEach(x =>
-                {
-                    values[i] = DataSerialize(x);
-                    i++;
-                });
-                return db.ListRightPush(key, values, flags);
+                return 0;
             }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue[] values = new RedisValue[vals.Count()];
+            var i = 0;
+            vals.ForEach(x =>
+            {
+                values[i] = DataSerialize(x);
+                i++;
+            });
+            return db.ListRightPush(key, values, flags);
         }
 
         /// <summary>
@@ -617,16 +577,14 @@ namespace NETCore.RedisKit
         public T ListLeftPop<T>(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = db.ListLeftPop(key, flags);
+            if (!value.IsNullOrEmpty)
             {
-                var db = redis.GetDatabase();
-                RedisValue value = db.ListLeftPop(key, flags);
-                if (!value.IsNullOrEmpty)
-                {
-                    return DataDserialize<T>(value);
-                }
-                return default(T);
+                return DataDserialize<T>(value);
             }
+            return default(T);
         }
 
         /// <summary>
@@ -639,16 +597,14 @@ namespace NETCore.RedisKit
         public T ListRightPop<T>(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = db.ListRightPop(key, flags);
+            if (!value.IsNullOrEmpty)
             {
-                var db = redis.GetDatabase();
-                RedisValue value = db.ListRightPop(key, flags);
-                if (!value.IsNullOrEmpty)
-                {
-                    return DataDserialize<T>(value);
-                }
-                return default(T);
+                return DataDserialize<T>(value);
             }
+            return default(T);
         }
 
         /// <summary>
@@ -662,12 +618,10 @@ namespace NETCore.RedisKit
         public long ListRemove<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.ListRemove(key, value, 0, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.ListRemove(key, value, 0, flags);
         }
 
         /// <summary>
@@ -679,11 +633,9 @@ namespace NETCore.RedisKit
         public bool ListRemoveAll(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyDelete(key, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyDelete(key, flags);
         }
 
         /// <summary>
@@ -695,11 +647,9 @@ namespace NETCore.RedisKit
         public long ListCount(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.ListLength(key, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.ListLength(key, flags);
         }
 
         /// <summary>
@@ -713,16 +663,14 @@ namespace NETCore.RedisKit
         public T ListGetByIndex<T>(RedisKey key, long index, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = db.ListGetByIndex(key, index, flags);
+            if (!value.IsNullOrEmpty)
             {
-                var db = redis.GetDatabase();
-                RedisValue value = db.ListGetByIndex(key, index, flags);
-                if (!value.IsNullOrEmpty)
-                {
-                    return DataDserialize<T>(value);
-                }
-                return default(T);
+                return DataDserialize<T>(value);
             }
+            return default(T);
         }
 
         /// <summary>
@@ -735,23 +683,21 @@ namespace NETCore.RedisKit
         public IEnumerable<T> ListGetAll<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var values = db.ListRange(key, 0, -1, flags);
+            var result = new List<T>();
+            if (values.Any())
             {
-                var db = redis.GetDatabase();
-                var values = db.ListRange(key, 0, -1, flags);
-                var result = new List<T>();
-                if (values.Any())
+                values.ToList().ForEach(x =>
                 {
-                    values.ToList().ForEach(x =>
+                    if (!x.IsNullOrEmpty)
                     {
-                        if (!x.IsNullOrEmpty)
-                        {
-                            result.Add(DataDserialize<T>(x));
-                        }
-                    });
-                }
-                return result;
+                        result.Add(DataDserialize<T>(x));
+                    }
+                });
             }
+            return result;
         }
 
         /// <summary>
@@ -766,23 +712,21 @@ namespace NETCore.RedisKit
         public IEnumerable<T> ListGetRange<T>(RedisKey key, long startIndex, long stopIndex, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var values = db.ListRangeAsync(key, startIndex, stopIndex, flags).Result;
+            var result = new List<T>();
+            if (values.Any())
             {
-                var db = redis.GetDatabase();
-                var values = db.ListRangeAsync(key, startIndex, stopIndex, flags).Result;
-                var result = new List<T>();
-                if (values.Any())
+                values.ToList().ForEach(x =>
                 {
-                    values.ToList().ForEach(x =>
+                    if (!x.IsNullOrEmpty)
                     {
-                        if (!x.IsNullOrEmpty)
-                        {
-                            result.Add(DataDserialize<T>(x));
-                        }
-                    });
-                }
-                return result;
+                        result.Add(DataDserialize<T>(x));
+                    }
+                });
             }
+            return result;
         }
 
         /// <summary>
@@ -795,12 +739,9 @@ namespace NETCore.RedisKit
         public bool ListExpireAt(RedisKey key, DateTime expireAt, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyExpire(key, expireAt, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyExpire(key, expireAt, flags);
         }
 
         /// <summary>
@@ -813,12 +754,9 @@ namespace NETCore.RedisKit
         public bool ListExpireIn(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyExpire(key, expiresIn, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyExpire(key, expiresIn, flags);
         }
 
         #endregion
@@ -836,12 +774,10 @@ namespace NETCore.RedisKit
         public bool SetAdd<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.SetAdd(key, value, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.SetAdd(key, value, flags);
         }
 
         /// <summary>
@@ -859,19 +795,17 @@ namespace NETCore.RedisKit
             {
                 return 0;
             }
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue[] values = new RedisValue[vals.Count()];
+            var i = 0;
+            vals.ForEach(x =>
             {
-                var db = redis.GetDatabase();
-                RedisValue[] values = new RedisValue[vals.Count()];
-                var i = 0;
-                vals.ForEach(x =>
-                {
-                    values[i] = DataSerialize(x);
-                    i++;
-                });
+                values[i] = DataSerialize(x);
+                i++;
+            });
 
-                return db.SetAdd(key, values, flags);
-            }
+            return db.SetAdd(key, values, flags);
         }
 
         /// <summary>
@@ -885,12 +819,10 @@ namespace NETCore.RedisKit
         public bool SetRemove<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.SetRemove(key, value, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.SetRemove(key, value, flags);
         }
 
         /// <summary>
@@ -908,18 +840,16 @@ namespace NETCore.RedisKit
             {
                 return 0;
             }
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue[] values = new RedisValue[vals.Count()];
+            var i = 0;
+            vals.ForEach(x =>
             {
-                var db = redis.GetDatabase();
-                RedisValue[] values = new RedisValue[vals.Count()];
-                var i = 0;
-                vals.ForEach(x =>
-                {
-                    values[i] = DataSerialize(x);
-                    i++;
-                });
-                return db.SetRemove(key, values, flags);
-            }
+                values[i] = DataSerialize(x);
+                i++;
+            });
+            return db.SetRemove(key, values, flags);
         }
 
         /// <summary>
@@ -931,11 +861,9 @@ namespace NETCore.RedisKit
         public bool SetRemoveAll(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyDelete(key, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyDelete(key, flags);
         }
 
         /// <summary>
@@ -955,23 +883,20 @@ namespace NETCore.RedisKit
                 return result;
             }
 
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var values = db.SetCombine(operation, keys.ToArray(), flags);
+            if (values != null && values.Any())
             {
-                var db = redis.GetDatabase();
-                var values = db.SetCombine(operation, keys.ToArray(), flags);
-
-                if (values != null && values.Any())
+                values.ToList().ForEach(x =>
                 {
-                    values.ToList().ForEach(x =>
+                    if (!x.IsNullOrEmpty)
                     {
-                        if (!x.IsNullOrEmpty)
-                        {
-                            result.Add(DataDserialize<T>(x));
-                        }
-                    });
-                }
-                return result;
+                        result.Add(DataDserialize<T>(x));
+                    }
+                });
             }
+            return result;
         }
 
         /// <summary>
@@ -987,25 +912,21 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(firstKey, nameof(firstKey));
             Guard.ArgumentNotNullOrEmpty(sencondKey, nameof(sencondKey));
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue[] values = db.SetCombine(operation, firstKey, sencondKey, flags);
+            List<T> result = new List<T>();
+            if (values != null && values.Any())
             {
-                var db = redis.GetDatabase();
-                var values = db.SetCombine(operation, firstKey, sencondKey, flags);
-
-                var result = new List<T>();
-
-                if (values != null && values.Any())
+                values.ToList().ForEach(x =>
                 {
-                    values.ToList().ForEach(x =>
+                    if (!x.IsNullOrEmpty)
                     {
-                        if (!x.IsNullOrEmpty)
-                        {
-                            result.Add(DataDserialize<T>(x));
-                        }
-                    });
-                }
-                return result;
+                        result.Add(DataDserialize<T>(x));
+                    }
+                });
             }
+            return result;
         }
 
         /// <summary>
@@ -1024,12 +945,9 @@ namespace NETCore.RedisKit
             {
                 return 0;
             }
-
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.SetCombineAndStore(operation, storeKey, soureKeys.ToArray(), flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.SetCombineAndStore(operation, storeKey, soureKeys.ToArray(), flags);
         }
 
         /// <summary>
@@ -1047,11 +965,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(storeKey, nameof(storeKey));
             Guard.ArgumentNotNullOrEmpty(firstKey, nameof(firstKey));
             Guard.ArgumentNotNullOrEmpty(secondKey, nameof(secondKey));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.SetCombineAndStore(operation, storeKey, firstKey, secondKey, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.SetCombineAndStore(operation, storeKey, firstKey, secondKey, flags);
         }
 
         /// <summary>
@@ -1067,12 +983,10 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(sourceKey, nameof(sourceKey));
             Guard.ArgumentNotNullOrEmpty(destinationKey, nameof(destinationKey));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.SetMove(sourceKey, destinationKey, value, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.SetMove(sourceKey, destinationKey, value, flags);
         }
         /// <summary>
         /// Set Exists 操作
@@ -1085,12 +999,10 @@ namespace NETCore.RedisKit
         public bool SetExists<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.SetContains(key, value, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.SetContains(key, value, flags);
         }
 
         /// <summary>
@@ -1102,11 +1014,9 @@ namespace NETCore.RedisKit
         public long SetCount(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.SetLength(key, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.SetLength(key, flags);
         }
 
         /// <summary>
@@ -1119,24 +1029,22 @@ namespace NETCore.RedisKit
         public IEnumerable<T> SetGetAll<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue[] values = db.SetMembers(key);
-                var result = new List<T>();
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue[] values = db.SetMembers(key);
+            var result = new List<T>();
 
-                if (values != null && values.Any())
+            if (values != null && values.Any())
+            {
+                values.ToList().ForEach(x =>
                 {
-                    values.ToList().ForEach(x =>
+                    if (!x.IsNullOrEmpty)
                     {
-                        if (!x.IsNullOrEmpty)
-                        {
-                            result.Add(DataDserialize<T>(x));
-                        }
-                    });
-                }
-                return result;
+                        result.Add(DataDserialize<T>(x));
+                    }
+                });
             }
+            return result;
         }
 
         /// <summary>
@@ -1149,12 +1057,9 @@ namespace NETCore.RedisKit
         public bool SetExpireAt(RedisKey key, DateTime expireAt, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyExpire(key, expireAt, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyExpire(key, expireAt, flags);
         }
         /// <summary>
         /// Set Expire In 操作
@@ -1166,11 +1071,9 @@ namespace NETCore.RedisKit
         public bool SetExpireIn(RedisKey key, TimeSpan expireIn, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyExpire(key, expireIn, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyExpire(key, expireIn, flags);
         }
         #endregion
 
@@ -1188,12 +1091,10 @@ namespace NETCore.RedisKit
         public bool SortedSetAdd<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.SortedSetAdd(key, value, score, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.SortedSetAdd(key, value, score, flags);
         }
         /// <summary>
         /// SortedSet Add 操作（多条）
@@ -1210,12 +1111,10 @@ namespace NETCore.RedisKit
             {
                 return 0;
             }
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                SortedSetEntry[] values = vals.ToArray();
-                return db.SortedSetAdd(key, values, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            SortedSetEntry[] values = vals.ToArray();
+            return db.SortedSetAdd(key, values, flags);
         }
         /// <summary>
         /// SortedSet Increment Score 操作
@@ -1229,12 +1128,10 @@ namespace NETCore.RedisKit
         public double SortedSetIncrementScore<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.SortedSetIncrement(key, value, score, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.SortedSetIncrement(key, value, score, flags);
         }
 
         /// <summary>
@@ -1249,12 +1146,10 @@ namespace NETCore.RedisKit
         public double SortedSetDecrementScore<T>(RedisKey key, T val, double score, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.SortedSetDecrement(key, value, score, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.SortedSetDecrement(key, value, score, flags);
         }
 
         /// <summary>
@@ -1268,12 +1163,10 @@ namespace NETCore.RedisKit
         public bool SortedSetRemove<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.SortedSetRemove(key, value, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.SortedSetRemove(key, value, flags);
         }
         /// <summary>
         /// Sorted Remove 操作(删除多条)
@@ -1290,19 +1183,17 @@ namespace NETCore.RedisKit
             {
                 return 0;
             }
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue[] values = new RedisValue[vals.Count()];
+            var i = 0;
+            vals.ForEach(x =>
             {
-                var db = redis.GetDatabase();
-                RedisValue[] values = new RedisValue[vals.Count()];
-                var i = 0;
-                vals.ForEach(x =>
-                {
-                    values[i] = DataSerialize(x);
-                    i++;
-                });
+                values[i] = DataSerialize(x);
+                i++;
+            });
 
-                return db.SortedSetRemove(key, values, flags);
-            }
+            return db.SortedSetRemove(key, values, flags);
         }
         /// <summary>
         /// Sorted Remove 操作(根据索引区间删除,索引值按Score由小到大排序)
@@ -1315,11 +1206,9 @@ namespace NETCore.RedisKit
         public long SortedSetRemove(RedisKey key, long startIndex, long stopIndex, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.SortedSetRemoveRangeByRank(key, startIndex, stopIndex, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.SortedSetRemoveRangeByRank(key, startIndex, stopIndex, flags);
         }
         /// <summary>
         /// Sorted Remove 操作(根据Score区间删除，同时根据exclue<see cref="Exclude"/>排除删除项)
@@ -1333,11 +1222,9 @@ namespace NETCore.RedisKit
         public long SortedSetRemove(RedisKey key, double startScore, double stopScore, Exclude exclue, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.SortedSetRemoveRangeByScore(key, startScore, stopScore, exclue, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.SortedSetRemoveRangeByScore(key, startScore, stopScore, exclue, flags);
         }
 
         /// <summary>
@@ -1349,11 +1236,9 @@ namespace NETCore.RedisKit
         public bool SortedSetRemoveAll(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyDelete(key, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyDelete(key, flags);
         }
 
         /// <summary>
@@ -1367,18 +1252,16 @@ namespace NETCore.RedisKit
         public long SortedSetTrim(RedisKey key, long size, Order order = Order.Descending, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
 
-                if (order == Order.Ascending)
-                {
-                    return db.SortedSetRemoveRangeByRank(key, size, -1, flags);
-                }
-                else
-                {
-                    return db.SortedSetRemoveRangeByRank(key, 0, -size - 1, flags);
-                }
+            if (order == Order.Ascending)
+            {
+                return db.SortedSetRemoveRangeByRank(key, size, -1, flags);
+            }
+            else
+            {
+                return db.SortedSetRemoveRangeByRank(key, 0, -size - 1, flags);
             }
         }
 
@@ -1391,11 +1274,10 @@ namespace NETCore.RedisKit
         public long SortedSetCount(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.SortedSetLength(key, double.NegativeInfinity, double.PositiveInfinity, Exclude.None, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.SortedSetLength(key, double.NegativeInfinity, double.PositiveInfinity, Exclude.None, flags);
+
         }
 
         /// <summary>
@@ -1409,12 +1291,11 @@ namespace NETCore.RedisKit
         public bool SortedSetExists<T>(RedisKey key, T val, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                RedisValue value = DataSerialize(val);
-                return db.SortedSetScore(key, value, flags) != null;
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue value = DataSerialize(val);
+            return db.SortedSetScore(key, value, flags) != null;
+
         }
 
         /// <summary>
@@ -1427,17 +1308,15 @@ namespace NETCore.RedisKit
         public T SortedSetGetMinByScore<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                var values = db.SortedSetRangeByRank(key, 0, 1, Order.Ascending, flags);
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var values = db.SortedSetRangeByRank(key, 0, 1, Order.Ascending, flags);
 
-                if (values != null && values.Any())
-                {
-                    return DataDserialize<T>(values.First());
-                }
-                return default(T);
+            if (values != null && values.Any())
+            {
+                return DataDserialize<T>(values.First());
             }
+            return default(T);
         }
 
         /// <summary>
@@ -1450,17 +1329,15 @@ namespace NETCore.RedisKit
         public T SortedSetGetMaxByScore<T>(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                var values = db.SortedSetRangeByRank(key, 0, 1, Order.Descending, flags);
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var values = db.SortedSetRangeByRank(key, 0, 1, Order.Descending, flags);
 
-                if (values != null && values.Any())
-                {
-                    return DataDserialize<T>(values.First());
-                }
-                return default(T);
+            if (values != null && values.Any())
+            {
+                return DataDserialize<T>(values.First());
             }
+            return default(T);
         }
 
         /// <summary>
@@ -1478,24 +1355,22 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentMinValue(page, 1, nameof(page));
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            RedisValue[] values = db.SortedSetRangeByRank(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
+            List<T> result = new List<T>();
+            if (values != null && values.Length > 0)
             {
-                var db = redis.GetDatabase();
-                var values = db.SortedSetRangeByRank(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
-                var result = new List<T>();
-                if (values != null && values.Length > 0)
+                foreach (var value in values)
                 {
-                    foreach (var value in values)
+                    if (!value.IsNullOrEmpty)
                     {
-                        if (!value.IsNullOrEmpty)
-                        {
-                            var data = DataDserialize<T>(value);
-                            result.Add(data);
-                        }
+                        var data = DataDserialize<T>(value);
+                        result.Add(data);
                     }
                 }
-                return result;
             }
+            return result;
         }
 
         /// <summary>
@@ -1517,24 +1392,22 @@ namespace NETCore.RedisKit
             Guard.ArgumentMinValue(page, 1, nameof(page));
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
 
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var values = db.SortedSetRangeByScore(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
+            var result = new List<T>();
+            if (values != null && values.Length > 0)
             {
-                var db = redis.GetDatabase();
-                var values = db.SortedSetRangeByScore(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
-                var result = new List<T>();
-                if (values != null && values.Length > 0)
+                foreach (var value in values)
                 {
-                    foreach (var value in values)
+                    if (!value.IsNullOrEmpty)
                     {
-                        if (!value.IsNullOrEmpty)
-                        {
-                            var data = DataDserialize<T>(value);
-                            result.Add(data);
-                        }
+                        var data = DataDserialize<T>(value);
+                        result.Add(data);
                     }
                 }
-                return result;
             }
+            return result;
         }
 
         /// <summary>
@@ -1551,11 +1424,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentMinValue(page, 1, nameof(page));
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.SortedSetRangeByRankWithScores(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.SortedSetRangeByRankWithScores(key, (page - 1) * pageSize, page * pageSize - 1, order, flags);
         }
         /// <summary>
         /// Sorted Set Get Page List With Score 操作(根据分数区间)
@@ -1575,11 +1446,9 @@ namespace NETCore.RedisKit
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentMinValue(page, 1, nameof(page));
             Guard.ArgumentMinValue(pageSize, 1, nameof(pageSize));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.SortedSetRangeByScoreWithScores(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.SortedSetRangeByScoreWithScores(key, startScore, stopScore, exclude, order, (page - 1) * pageSize, page * pageSize - 1, flags);
         }
 
         /// <summary>
@@ -1593,21 +1462,19 @@ namespace NETCore.RedisKit
         public IEnumerable<T> SortedSetGetAll<T>(RedisKey key, Order order = Order.Ascending, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var values = db.SortedSetRangeByRank(key, 0, -1, order, flags);
+            var result = new List<T>();
+            foreach (var value in values)
             {
-                var db = redis.GetDatabase();
-                var values = db.SortedSetRangeByRank(key, 0, -1, order, flags);
-                var result = new List<T>();
-                foreach (var value in values)
+                if (!value.IsNullOrEmpty)
                 {
-                    if (!value.IsNullOrEmpty)
-                    {
-                        var data = DataDserialize<T>(value);
-                        result.Add(data);
-                    }
+                    var data = DataDserialize<T>(value);
+                    result.Add(data);
                 }
-                return result;
             }
+            return result;
         }
 
         /// <summary>
@@ -1626,11 +1493,9 @@ namespace NETCore.RedisKit
                 return 0;
             }
 
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.SortedSetCombineAndStore(setOperation, storeKey, combineKeys, null, Aggregate.Sum, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.SortedSetCombineAndStore(setOperation, storeKey, combineKeys, null, Aggregate.Sum, flags);
         }
         /// <summary>
         /// Sorted Set Combine And Store 操作
@@ -1647,12 +1512,10 @@ namespace NETCore.RedisKit
             {
                 return 0;
             }
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                var keys = combineKeys.ToArray();
-                return db.SortedSetCombineAndStore(setOperation, storeKey, keys, null, Aggregate.Sum, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var keys = combineKeys.ToArray();
+            return db.SortedSetCombineAndStore(setOperation, storeKey, keys, null, Aggregate.Sum, flags);
         }
         /// <summary>
         ///  Sorted Set Expire At DeteTime 操作
@@ -1664,11 +1527,9 @@ namespace NETCore.RedisKit
         public bool SortedSetExpireAt(RedisKey key, DateTime expiresAt, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyExpire(key, expiresAt, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyExpire(key, expiresAt, flags);
         }
 
         /// <summary>
@@ -1681,11 +1542,9 @@ namespace NETCore.RedisKit
         public bool SortedSetExpireIn(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyExpire(key, expiresIn, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyExpire(key, expiresIn, flags);
         }
         #endregion
 
@@ -1705,12 +1564,10 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                var value = DataSerialize(val);
-                return db.HashSet(key, hashField, value, when, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var value = DataSerialize(val);
+            return db.HashSet(key, hashField, value, when, flags);
         }
 
         /// <summary>
@@ -1728,11 +1585,9 @@ namespace NETCore.RedisKit
             {
                 return;
             }
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                db.HashSet(key, hashFields.ToArray(), flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            db.HashSet(key, hashFields.ToArray(), flags);
         }
 
         /// <summary>
@@ -1746,11 +1601,9 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.HashDelete(key, hashField, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.HashDelete(key, hashField, flags);
         }
         /// <summary>
         /// Hash Remove 操作(删除多条)
@@ -1766,11 +1619,9 @@ namespace NETCore.RedisKit
             {
                 return 0;
             }
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.HashDelete(key, hashFields, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.HashDelete(key, hashFields, flags);
         }
 
         /// <summary>
@@ -1787,11 +1638,9 @@ namespace NETCore.RedisKit
             {
                 return 0;
             }
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.HashDelete(key, hashFields.ToArray(), flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.HashDelete(key, hashFields.ToArray(), flags);
         }
 
         /// <summary>
@@ -1803,11 +1652,9 @@ namespace NETCore.RedisKit
         public bool HashRemoveAll(RedisKey key, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyDelete(key, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyDelete(key, flags);
         }
 
         /// <summary>
@@ -1821,11 +1668,9 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.HashExists(key, hashField, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.HashExists(key, hashField, flags);
 
         }
         /// <summary>
@@ -1837,11 +1682,9 @@ namespace NETCore.RedisKit
         public long HashCount(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.HashLength(key, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.HashLength(key, flags);
         }
 
         /// <summary>
@@ -1856,16 +1699,14 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             Guard.ArgumentNotNullOrEmpty(hashField, nameof(hashField));
-            using (var redis = _RedisProvider.Redis)
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var value = db.HashGet(key, hashField, flags);
+            if (!value.IsNullOrEmpty)
             {
-                var db = redis.GetDatabase();
-                var value = db.HashGet(key, hashField, flags);
-                if (!value.IsNullOrEmpty)
-                {
-                    return DataDserialize<T>(value);
-                }
-                return default(T);
+                return DataDserialize<T>(value);
             }
+            return default(T);
         }
 
         /// <summary>
@@ -1883,21 +1724,19 @@ namespace NETCore.RedisKit
             var result = new List<T>();
             if (hashFields != null && hashFields.Any())
             {
-                using (var redis = _RedisProvider.Redis)
-                {
-                    var db = redis.GetDatabase();
-                    var values = db.HashGet(key, hashFields.ToArray(), flags);
+                ConnectionMultiplexer redis = _RedisProvider.Redis;
+                IDatabase db = redis.GetDatabase();
+                var values = db.HashGet(key, hashFields.ToArray(), flags);
 
-                    if (values != null && values.Length > 0)
+                if (values != null && values.Length > 0)
+                {
+                    values.ForEach(x =>
                     {
-                        values.ForEach(x =>
+                        if (!x.IsNullOrEmpty)
                         {
-                            if (!x.IsNullOrEmpty)
-                            {
-                                result.Add(DataDserialize<T>(x));
-                            }
-                        });
-                    }
+                            result.Add(DataDserialize<T>(x));
+                        }
+                    });
                 }
             }
             return result;
@@ -1914,23 +1753,21 @@ namespace NETCore.RedisKit
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
             var result = new List<T>();
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                var values = db.HashValues(key, flags);
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            var values = db.HashValues(key, flags);
 
-                if (values != null && values.Length > 0)
+            if (values != null && values.Length > 0)
+            {
+                values.ForEach(x =>
                 {
-                    values.ForEach(x =>
+                    if (!x.IsNullOrEmpty)
                     {
-                        if (!x.IsNullOrEmpty)
-                        {
-                            result.Add(DataDserialize<T>(x));
-                        }
-                    });
-                }
-                return result;
+                        result.Add(DataDserialize<T>(x));
+                    }
+                });
             }
+            return result;
         }
 
         /// <summary>
@@ -1942,11 +1779,9 @@ namespace NETCore.RedisKit
         public HashEntry[] HashGetAll(RedisKey key, CommandFlags flags = CommandFlags.PreferSlave)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.HashGetAll(key, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.HashGetAll(key, flags);
         }
 
         /// <summary>
@@ -1959,11 +1794,9 @@ namespace NETCore.RedisKit
         public bool HashExpireAt(RedisKey key, DateTime expiresAt, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyExpire(key, expiresAt, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyExpire(key, expiresAt, flags);
         }
 
         /// <summary>
@@ -1976,11 +1809,9 @@ namespace NETCore.RedisKit
         public bool HashExpireIn(RedisKey key, TimeSpan expiresIn, CommandFlags flags = CommandFlags.DemandMaster)
         {
             Guard.ArgumentNotNullOrEmpty(key, nameof(key));
-            using (var redis = _RedisProvider.Redis)
-            {
-                var db = redis.GetDatabase();
-                return db.KeyExpire(key, expiresIn, flags);
-            }
+            ConnectionMultiplexer redis = _RedisProvider.Redis;
+            IDatabase db = redis.GetDatabase();
+            return db.KeyExpire(key, expiresIn, flags);
         }
         #endregion
 
