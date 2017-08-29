@@ -5,7 +5,7 @@ using System.Text;
 namespace NETCore.RedisKit.Exceptions
 {
     /// <summary>
-    /// 序列化异常
+    /// Serizlize exception
     /// </summary>
     public class SerializeException:Exception
     {

@@ -178,8 +178,6 @@ namespace NETCore.RedisKit.Infrastructure
         /// <returns></returns>
         private Lazy<ConnectionMultiplexer> lazyConnection()
         {
-            //TODO 连接失败需要处理
-
             return new Lazy<ConnectionMultiplexer>(() =>
              {
                  return ConnectionMultiplexer.Connect(_ConfigurationOptions);

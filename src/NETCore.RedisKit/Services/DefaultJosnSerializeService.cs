@@ -6,14 +6,17 @@ using Newtonsoft.Json;
 
 namespace NETCore.RedisKit.Services
 {
+    /// <summary>
+    /// Derfault json serialize service
+    /// </summary>
     public class DefaultJosnSerializeService:ISerializeService
     {
         /// <summary>
-        /// JSON序列化
+        /// Object serialize
         /// </summary>
-        /// <typeparam name="T">泛型类</typeparam>
-        /// <param name="value">序列化对象</param>
-        /// <returns>序列化之后的json字符串</returns>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="val">Serialize value</param>
+        /// <returns>Json string</returns>
         public string ObjectSerialize<T>(T val)
         {
             if (val == null)
@@ -27,16 +30,18 @@ namespace NETCore.RedisKit.Services
             }
             catch (Exception ex)
             {
-                throw new SerializeException("default json service serialize error", ex);
+                throw new SerializeException("Default json service serialize error", ex);
             }
         }
 
+
         /// <summary>
-        /// JSON反序列化
+        /// Object deserialize
         /// </summary>
-        /// <typeparam name="T">泛型类</typeparam>
-        /// <param name="value">json字符串</param>
-        /// <returns>反序列化之后的对象</returns>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="val">Json string</param>
+        /// <returns>Object</returns>
+
         public T ObjectDserialize<T>(string val)
         {
             if (string.IsNullOrEmpty(val))
@@ -51,7 +56,7 @@ namespace NETCore.RedisKit.Services
             catch (Exception ex)
             {
 
-                throw new SerializeException("default json service dserialize error", ex);
+                throw new SerializeException("Default json service dserialize error", ex);
             }
 
         }

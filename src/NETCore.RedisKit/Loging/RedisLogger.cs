@@ -15,7 +15,7 @@ namespace NETCore.RedisKit.Loging
 
         public RedisLogger(ILoggerFactory loggerFactory, RedisKitOptions redisKitOptions)
         {
-            _Logger = loggerFactory.CreateLogger("NETCore.RedisKit.RedisService.Logging");
+            _Logger = loggerFactory.CreateLogger("NETCore.RedisKit.Logging");
             _RedisKitOptions = redisKitOptions;
             _IsShowLog = _RedisKitOptions.IsShowLog;
         }

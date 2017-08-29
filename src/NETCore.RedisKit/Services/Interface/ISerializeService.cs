@@ -7,19 +7,19 @@ namespace NETCore.RedisKit.Services
     public interface ISerializeService
     {
         /// <summary>
-        /// 对象序列化
+        /// Object serialize
         /// </summary>
-        /// <typeparam name="T">泛型类</typeparam>
-        /// <param name="value">序列化对象</param>
-        /// <returns>序列化之后的字符串</returns>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="val">Serialize value</param>
+        /// <returns>Serialized string</returns>
         string ObjectSerialize<T>(T val);
 
         /// <summary>
-        /// 对象反序列化
+        /// Object deserialize
         /// </summary>
-        /// <typeparam name="T">泛型类</typeparam>
-        /// <param name="value">序列化字符串</param>
-        /// <returns>反序列化之后的对象</returns>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="val">Serialized string</param>
+        /// <returns>Object</returns>
         T ObjectDserialize<T>(string val);
 
     }
