@@ -3,7 +3,7 @@
 [![NuGet](https://img.shields.io/nuget/v/NETCore.RedisKit.svg)](https://nuget.org/packages/NETCore.RedisKit)
 [![NETCore CLR](https://img.shields.io/badge/.NETCore%20Clr-2.0-brightgreen.svg)](https://www.microsoft.com/net/core)
 [![Exchange.Redis](https://img.shields.io/badge/Exchange.Redis-1.2.6-orange.svg)](https://github.com/StackExchange/StackExchange.Redis)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](#)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
 
 [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis) Tools. Easy use redis in your asp.net core project.
 
