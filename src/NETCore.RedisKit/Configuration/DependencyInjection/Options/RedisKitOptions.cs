@@ -55,12 +55,12 @@ namespace NETCore.RedisKit.Configuration
         /// <summary>
         /// time out ,defalult is 200 miniseconds
         /// </summary>
-        public int ConnectTimeout { get; set; } = 1000;
+        public int ConnectTimeout { get; set; } = 200;
 
         /// <summary>
         /// async time out ,defalult is 200 miniseconds
         /// </summary>
-        public int SyncTimeout { get; set; } = 1000;
+        public int SyncTimeout { get; set; } = 200;
 
         /// <summary>
         /// Default database index, from 0 to databases - 1

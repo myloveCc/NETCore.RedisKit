@@ -3,21 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using NETCore.RedisKit.Loging;
+using Microsoft.Extensions.Logging;
 
 namespace NETCore.RedisKit.Web.Controllers
 {
     public class HomeController:Controller
     {
         private readonly IRedisService _RedisService;
-        public HomeController(IRedisService redisService)
+        private readonly ILogger _Logger;
+        public HomeController(IRedisService redisService, ILogger<HomeController> logger)
         {
             _RedisService = redisService;
+            _Logger = logger;
         }
 
         public IActionResult Index()
         {
-            _RedisService.ItemSet("hello", "world");
+            try
+            {
+                _RedisService.ItemSet("hello", "world");
+            }
+            catch (Exception ex)
+            {
+                _Logger.LogError(1, ex, "设置Redis缓存失败");
+            }
+
+
             return View();
         }
 
@@ -25,7 +36,17 @@ namespace NETCore.RedisKit.Web.Controllers
         {
 
             ViewData["Message"] = "Your application description page.";
-            ViewData["Hello"] = _RedisService.ItemGet<string>("hello");
+
+            try
+            {
+                ViewData["Hello"] = _RedisService.ItemGet<string>("hello");
+            }
+            catch (Exception ex)
+            {
+
+                _Logger.LogError(2, ex, "获取Redis缓存失败");
+            }
+
             return View();
         }
 
