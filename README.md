@@ -24,7 +24,7 @@ Install-Package NETCore.RedisKit -Version 2.0.1-beta2
 | `allowAdmin={bool}`       | `AllowAdmin`	            |  `false`                  | Enables a range of commands that are considered risky|
 | `channelPrefix={string}`  | `ChannelPrefix`           |  `null`                   | Optional channel prefix for all pub/sub operations |
 | `connectRetry={int}`      | `ConnectRetry`            |  `3`                      | The number of times to repeat connect attempts during initial `Connect` |
-| `connectTimeout={int}`    | `ConnectTimeout`	        |  `1000`                   | Timeout (ms) for connect operations |
+| `connectTimeout={int}`    | `ConnectTimeout`	        |  `200`                   | Timeout (ms) for connect operations |
 | `configChannel={string}`  | `ConfigurationChannel`    |  `__Booksleeve_MasterChanged` | Broadcast channel name for communicating configuration changes |
 | `defaultDatabase={int?}`  | `DefaultDatabase`         |  `null`                   | Default database index, from `0` to databases `- 1`|
 | `keepAlive={int}`         | `KeepAlive`               |  `180	`                   | Time (seconds) at which to send a message to help keep sockets alive |
@@ -36,7 +36,7 @@ Install-Package NETCore.RedisKit -Version 2.0.1-beta2
 | `ssl={bool}`              | `Ssl`                     |  `false`                  | Specifies that SSL encryption should be used |
 | `sslHost={string}`        | `SslHost`                 |  `null`                   | Enforces a particular SSL host identity on the server’s certificate |
 | `sslProtocols={enum?}`	| `SslProtocols`            |  `null`                   | Ssl/Tls versions supported when using an encrypted connection. Use ‘\|’ to provide multiple values. |
-| `syncTimeout={int}`       | `SyncTimeout`             |  `1000`                   | Time (ms) to allow for synchronous operations |
+| `syncTimeout={int}`       | `SyncTimeout`             |  `200`                   | Time (ms) to allow for synchronous operations |
 | `tiebreaker={string}`     | `TieBreaker`              |  `__Booksleeve_TieBreak`  | Key to use for selecting a server in an ambiguous master scenario  |
 | `version={string}`        | `DefaultVersion`          |  `(3.0 in Azure, else 2.0)` | Redis version level (useful when the server does not make this available) |
 | `writeBuffer={int}`       | `WriteBuffer`             |  `4096`                   | Size of the output buffer |
